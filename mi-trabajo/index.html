@@ -103,6 +103,11 @@ nav.tabs button.on{color:var(--acc);font-weight:700}
 .g2 input,.g3 input,.g2 select,.g3 select{min-width:0;padding-left:6px;padding-right:6px}
 .g2 label,.g3 label{font-size:12px;color:var(--mut);display:block}
 input[type=color]{padding:2px;height:40px}
+input[type=date],input[type=time],input[type=month]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;min-height:42px;text-align:left}
+input::-webkit-date-and-time-value{text-align:left;margin:0}
+.g2 input,.g3 input,.g2 select,.g3 select{font-size:15px}
+.g3 input:disabled,.g2 input:disabled{font-size:13px;opacity:.7}
+.mesfila small{white-space:nowrap}
 .mesfila{display:grid;grid-template-columns:88px 1fr 96px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
 .mesfila .b{height:10px;background:var(--bg);border-radius:6px;overflow:hidden}
 .mesfila .b i{display:block;height:100%;background:var(--acc);border-radius:6px}
@@ -113,7 +118,7 @@ input[type=color]{padding:2px;height:40px}
 .nommes{font-weight:800;font-size:17px;white-space:nowrap}
 .nomscroll{overflow-x:auto;margin:0 -6px;padding:0 6px}
 .nom .nomscroll table{width:100%;table-layout:fixed;font-size:12px;border-collapse:collapse}
-.nomsem{margin-top:14px} .nomsem td,.nomsem th{font-size:13px} .nomsem tr.fuerte td{font-weight:800;background:var(--bg)}
+.nomsem{margin-top:14px;table-layout:fixed} .nomsem td,.nomsem th{font-size:12.5px;padding-left:2px;padding-right:2px} .nomsem th.r{white-space:normal} .nomsem th:first-child{width:19%} .nomsem tr.fuerte td{font-weight:800;background:var(--bg)}
 .nom .nomscroll th{background:var(--bg);border:1px solid var(--line);text-align:center;padding:4px 2px;font-size:10px;color:var(--ink)}
 .nom .nomscroll td{border:1px solid var(--line);text-align:center;padding:0;vertical-align:top;font-variant-numeric:tabular-nums}
 .nom .dn{display:block;background:#15181c;color:#fff;font-weight:700;padding:1px 0}
@@ -161,7 +166,7 @@ body.sindinero .dinero::placeholder{color:transparent}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', VERSION='13';
+const CLAVE='miTrabajo.v2', VERSION='14';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -430,7 +435,7 @@ function pintaNomina(){
       if(d<1){ const x=new Date(y,m,d), dd=S.dias[clave(x.getFullYear(),x.getMonth(),x.getDate())]; if(dd&&!esExtra(dd)) ant+=horasDia(dd); h+='<td class="gris"></td>'; continue; }
       if(d>n){ h+='<td class="gris"></td>'; continue; }
       const k=clave(y,m,d), dia=S.dias[k], c=calc(k); wH+=c.h; wN+=c.hN; wX+=c.hX;
-      const txt=!dia||(!c.t&&!c.h)?'DESCANSO':(c.t&&c.t.tipo==='festivo'?'FESTIVO':(c.t&&c.t.tipo==='vacaciones'?'VAC':num(c.h)));
+      const txt=!dia||(!c.t&&!c.h)?'–':(c.t&&c.t.tipo==='festivo'?'FEST':(c.t&&c.t.tipo==='vacaciones'?'VAC':num(c.h)));
       h+='<td class="clic" data-k="'+k+'"><span class="dn">'+d+'</span><span class="hh'+(isNaN(parseFloat(txt))?' peq':'')+'">'+txt+'</span></td>';
     }
     tH+=wH;
@@ -530,9 +535,10 @@ function pintaAnio(){
   const desc=+S.ajustes.descuento||0;
   let h='<div class="card hero"><div class="lbl">Total del año '+y+'</div><div class="big">'+eur(T.cobro)+'</div>'
     +'<div class="sub">'+(desc?'<span>Bruto<b>'+eur(T.total)+'</b></span>':'')+'<span>Extras<b>'+eur(T.extra)+'</b></span><span>Días trabajados<b>'+T.trab+'</b></span><span>Vacaciones<b>'+T.vac+' días</b></span></div></div>';
-  h+='<div class="card"><div class="stats">'+st(num(T.hN)+' h','horas normales')+st(num(T.hX)+' h','horas extra')+st(eur(T.total/12),'media al mes')+'</div></div>';
+  h+='<div class="card"><div class="stats">'+st(num(T.hN)+' h','horas normales')+st(num(T.hX)+' h','horas extra')+st(eur(T.cobro/Math.max(1,rs.filter(r=>r.filas.length).length)),'media por mes trabajado')+'</div></div>';
   h+='<div class="card"><h2>Mes a mes</h2>';
-  rs.forEach((r,m)=>{ h+='<div class="mesfila" data-m="'+m+'"><span style="text-transform:capitalize">'+MESES[m]+'<small>'+r.trab+' días · '+num(r.hX)+' h extra</small></span>'
+  if(!rs.some(r=>r.filas.length)) h+='<p class="nota">No hay nada anotado en '+y+'.</p>';
+  rs.forEach((r,m)=>{ if(!r.filas.length) return; h+='<div class="mesfila" data-m="'+m+'"><span><b style="text-transform:capitalize;font-weight:600">'+MESES[m]+'</b><small>'+r.trab+' días · '+num(r.hX)+' h extra</small></span>'
     +'<span class="b"><i style="width:'+Math.round(r.total/max*100)+'%"></i></span><span class="e">'+eur(banco(r))+'</span></div>'; });
   h+='</div>';
   $('#v-anio').innerHTML=h;
