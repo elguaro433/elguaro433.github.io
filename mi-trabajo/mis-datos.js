@@ -55,18 +55,21 @@ window.DATOS_INICIALES={
 },
 "2026-11-03": {
 "t": 16,
+"h": 8,
 "ex": 420,
 "noc": 390,
 "nota": "Entré a las 9:30 y salí a las 4:30"
 },
 "2026-11-04": {
 "t": 16,
+"h": 8,
 "ex": 360,
 "noc": 330,
 "nota": "9:30 hasta 3:30"
 },
 "2026-11-05": {
 "t": 16,
+"h": 8,
 "ex": 420,
 "noc": 390,
 "nota": "De 9:30 a 4:30"
@@ -91,7 +94,8 @@ window.DATOS_INICIALES={
 "nota": "Desde las 9:30 hasta 1am"
 },
 "2026-11-11": {
-"t": 16
+"t": 16,
+"h": 8
 },
 "2026-11-12": {
 "t": 16
