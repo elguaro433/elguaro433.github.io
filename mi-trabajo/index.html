@@ -166,7 +166,7 @@ body.sindinero .dinero::placeholder{color:transparent}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', VERSION='14';
+const CLAVE='miTrabajo.v2', VERSION='15';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -199,6 +199,10 @@ function normalizar(d){
   // Prima fija al mes (si este teléfono aún no la tiene, se toma la de los datos de partida)
   if(!a.prima){ const p0=window.DATOS_INICIALES&&window.DATOS_INICIALES.ajustes&&window.DATOS_INICIALES.ajustes.prima; a.prima=Object.assign({eur:0,nomina:false},p0||{}); }
   if(!a.prima.meses) a.prima.meses={};
+  // Nóminas de julio a octubre de 2026 (pedido por Emmanuel el 11-nov-2026): se añaden una vez los días que falten, sin tocar los que ya haya
+  if(!a.parcheNominas){ a.parcheNominas=1; const p0=window.DATOS_INICIALES;
+    if(p0&&p0.dias){ for(const k in p0.dias) if(k<'2026-11-01'&&!d.dias[k]) d.dias[k]=JSON.parse(JSON.stringify(p0.dias[k])); }
+    if(a.vac.desde==='2026-08-31'&&!+a.vac.saldo){ a.vac.desde='2026-06-30'; a.vac.saldo=3; } }
   if(!a.parche1111){ a.parche1111=1; ['2026-11-03','2026-11-04','2026-11-05','2026-11-11'].forEach(k=>{ const x=d.dias[k], t=x&&d.turnos.find(q=>q.id===x.t); if(x&&t&&t.tipo==='trabajo'&&x.h==null&&!x.sal) x.h=8; }); }   // meses en que Emmanuel ha marcado que se la han dado
   // Nóminas jul–oct 2026: el sábado no es «siempre extra» (cuenta para las 40 h) y el día de vacaciones sale del sueldo mensual ÷ 30
   d.turnos.forEach(t=>{ if(t.tipo==='extra') t.tipo='trabajo'; });
