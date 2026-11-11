@@ -57,7 +57,7 @@ body.emp{--acc:#1e56d6;--acc2:#3d7dff;--accInk:#ffffff}
 .btn.bad{background:transparent;color:var(--bad);border:1px solid var(--line)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal .dow{text-align:center;font-size:12px;color:var(--mut);padding-bottom:2px}
-.day{position:relative;min-height:58px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:4px 3px;text-align:center;overflow:hidden}
+.day{position:relative;min-height:64px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:4px 3px;text-align:center;overflow:hidden}
 .day.vac{visibility:hidden}
 .day .n{font-size:13px;font-weight:700}
 .day .a{font-size:10px;line-height:1.1;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -297,6 +297,22 @@ function pintaMes(){
   const H=esActual?resumenMes(y,m,hk):null;
   const desc=+S.ajustes.descuento||0;
   let h='';
+  // calendario
+  const n=new Date(y,m+1,0).getDate(), off=(new Date(y,m,1).getDay()+6)%7;
+  h+='<div class="card"><div class="cal">'+DOW.map(x=>'<div class="dow">'+x+'</div>').join('');
+  for(let i=0;i<off;i++) h+='<div class="day vac"></div>';
+  for(let d=1;d<=n;d++){
+    const k=clave(y,m,d), dia=S.dias[k], t=dia?turno(dia.t):null;
+    const stl=t?' style="background:'+esc(t.color)+';color:'+esc(t.texto)+';border-color:'+esc(t.color)+'"':'';
+    h+='<button class="day'+(k===hk?' hoy':'')+'" data-k="'+k+'"'+stl+'><span class="n">'+d+'</span>'
+      +'<span class="a">'+(t?esc(t.abr):(dia?'Libre':''))+'</span>'
+      +(dia&&(dia.ex||dia.h!=null||dia.sal)?'<span class="x">'+num(horasDia(dia))+' h</span>':'')
+      +(dia&&dia.noc?'<span class="x">🌙 '+num(dia.noc/60)+' h</span>':'')
+      +(dia&&dia.ing?'<span class="x">+'+(oculto?'•••':num(dia.ing))+' €</span>':'')
+      +(dia&&dia.nota?'<span class="dot"></span>':'')+'</button>';
+  }
+  h+='</div></div>';
+
   h+='<div class="card hero"><div class="lbl">'+(desc?(pasado?'Al banco este mes':'Al banco a fin de mes'):(pasado?'Ganado en el mes':'Ganarás a fin de mes'))+'</div>'
     +'<div class="big">'+eur(desc?neto(R.total):R.total)+'</div><div class="sub">'
     +(desc?'<span>Bruto<b>'+eur(R.total)+'</b></span><span>CASS '+num(desc)+' %<b>−'+eur(R.total-neto(R.total))+'</b></span>':'')
@@ -326,22 +342,6 @@ function pintaMes(){
     +'</div></div>';
 
   h+=tarjetaVac(y,m,R);
-
-  // calendario
-  const n=new Date(y,m+1,0).getDate(), off=(new Date(y,m,1).getDay()+6)%7;
-  h+='<div class="card"><div class="cal">'+DOW.map(x=>'<div class="dow">'+x+'</div>').join('');
-  for(let i=0;i<off;i++) h+='<div class="day vac"></div>';
-  for(let d=1;d<=n;d++){
-    const k=clave(y,m,d), dia=S.dias[k], t=dia?turno(dia.t):null;
-    const stl=t?' style="background:'+esc(t.color)+';color:'+esc(t.texto)+';border-color:'+esc(t.color)+'"':'';
-    h+='<button class="day'+(k===hk?' hoy':'')+'" data-k="'+k+'"'+stl+'><span class="n">'+d+'</span>'
-      +'<span class="a">'+(t?esc(t.abr):(dia?'Libre':''))+'</span>'
-      +(dia&&(dia.ex||dia.h!=null||dia.sal)?'<span class="x">'+num(horasDia(dia))+' h</span>':'')
-      +(dia&&dia.noc?'<span class="x">🌙 '+num(dia.noc/60)+' h</span>':'')
-      +(dia&&dia.ing?'<span class="x">+'+(oculto?'•••':num(dia.ing))+' €</span>':'')
-      +(dia&&dia.nota?'<span class="dot"></span>':'')+'</button>';
-  }
-  h+='</div></div>';
 
   // semanas, como la hoja de la empresa
   const n0=new Date(y,m+1,0).getDate();
