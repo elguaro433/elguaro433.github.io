@@ -266,6 +266,26 @@ function tarjetaVac(y,m,R){
 }
 const neto=b=>b*(1-(+S.ajustes.descuento||0)/100);
 
+/* ---------- Cargar mis datos con un código (los datos van cifrados) ---------- */
+async function cargarConCodigo(cod){
+  cod=String(cod||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!cod) throw new Error('vacio');
+  const r=await fetch('datos.enc.json',{cache:'no-store'}).catch(()=>null); if(!r||!r.ok) throw new Error('nofile');
+  const j=await r.json(), b=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(cod),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(j.s),iterations:j.it,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b(j.iv)},key,b(j.ct));
+  S=normalizar(JSON.parse(new TextDecoder().decode(pt))); guardar(); vista='mes'; pinta(); scrollTo(0,0);
+}
+async function pideCodigo(v,btn){
+  if(btn){ btn.disabled=true; btn.textContent='Cargando…'; }
+  try{ await cargarConCodigo(v); }
+  catch(e){ alert(e&&e.message==='nofile'?'No he podido descargar los datos. Comprueba que tienes conexión.':e&&e.message==='vacio'?'Escribe tu código.':'Ese código no es correcto.'); if(btn){ btn.disabled=false; btn.textContent='Cargar'; } }
+}
+const cajaCodigo=t=>'<div class="card"><h2>Cargar mis datos</h2><p class="nota" style="margin:0 0 10px">'+t+'</p><div class="acc"><input class="codIn" placeholder="XXXX-XXXX-XXXX" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" style="flex:2"><button class="btn codOk" style="flex:1">Cargar</button></div></div>';
+document.addEventListener('click',e=>{ const b=e.target.closest('.codOk'); if(!b) return;
+  if(Object.keys(S.dias).length&&!confirm('Se cambiará todo lo que hay ahora en este teléfono por los datos guardados con tu código. ¿Seguir?')) return;
+  pideCodigo(b.parentElement.querySelector('.codIn').value,b); });
+
 /* ---------- Vista MES ---------- */
 function pintaMes(){
   const {y,m}=cur, hk=hoyK(), mk=y+'-'+p2(m+1);
@@ -291,6 +311,7 @@ function pintaMes(){
       +col('Te cae al banco',H?eur(neto(H.total)):'',eur(neto(R.total)),'th')
       +'</table></div>';
   }
+  if(!Object.keys(S.dias).length) h=cajaCodigo('¿Primera vez en este teléfono? Escribe tu código y aparecerán tus horas, precios y calendario.')+h;
   if(!pasado && R.libresLV.length){
     const pend=R.libresLV.filter(k=>k>=hk||!esActual);
     if(pend.length) h+='<div class="card aviso"><span>Hay <b>'+pend.length+'</b> días de lunes a viernes sin anotar. El cálculo no los cuenta.</span><button class="btn" id="rellenar">Rellenar</button></div>';
@@ -506,6 +527,7 @@ function pintaAjustes(){
     +'<div class="fila"><label>Días que generas al mes</label><input class="corto" type="number" step="0.1" min="0" id="vMes" value="'+(+v.porMes||0)+'"></div>'
     +'<div class="fila"><label>€ por día de vacaciones<small>Lo que te pagan por cada día de vacaciones</small></label><input class="corto dinero" type="'+(oculto?'password':'number')+'" '+(oculto?'readonly ':'')+'step="0.01" min="0" id="vEur" value="'+(+v.eurDia||0)+'"></div>'
     +'<div class="fila"><label>Saldo de partida (días)<small>Lo que tenías el '+esc(v.desde.split('-').reverse().join('/'))+'</small></label><input class="corto" type="number" step="0.5" id="vSaldo" value="'+(+v.saldo||0)+'"></div></div>';
+  h+=cajaCodigo('Vuelve a traer los datos de partida con tu código. Ojo: sustituye lo que tengas anotado en este teléfono.');
   h+='<div class="card"><h2>Copia de seguridad</h2><p class="nota">Los datos se guardan solo en este dispositivo. Guarda una copia de vez en cuando.</p>'
     +'<div class="acc"><button class="btn" id="exp">Guardar copia</button><button class="btn sec" id="imp">Recuperar copia</button></div>'
     +(window.DATOS_INICIALES?'<p style="margin:12px 0 0"><button class="btn sec" id="shifter" style="width:100%">Volver a cargar los datos de Shifter</button></p>':'')+'</div>';
@@ -642,6 +664,7 @@ $('#fichero').addEventListener('change',e=>{
 });
 
 guardar(); pinta();
+{ const mh=location.hash.match(/c=([A-Za-z0-9-]+)/); if(mh){ try{history.replaceState(null,'',location.pathname);}catch(e){} if(!Object.keys(S.dias).length) pideCodigo(mh[1]); } }
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 </script>
