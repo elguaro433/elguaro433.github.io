@@ -167,7 +167,7 @@ details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', VERSION='18';
+const CLAVE='miTrabajo.v2', VERSION='19';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -534,6 +534,7 @@ function pintaAjustes(){
     +'<div class="fila"><label>€ por día de vacaciones<small>Vacío = automático: '+eur(vacDia(hk))+' (sueldo de un mes de 40 h por semana ÷ 30, como en la nómina)</small></label><input class="corto dinero" type="'+(oculto?'password':'number')+'" '+(oculto?'readonly ':'')+'step="0.01" min="0" id="vEur" placeholder="auto" value="'+(+v.eurDia||'')+'"></div>'
     +'<div class="fila"><label>Saldo de partida (días)<small>Lo que tenías el '+esc(v.desde.split('-').reverse().join('/'))+'</small></label><input class="corto" type="number" step="0.5" id="vSaldo" value="'+(+v.saldo||0)+'"></div></details>';
   h+='<div class="card"><div class="fila" style="margin:0"><label>Versión '+VERSION+'<small>Se actualiza sola al abrirla con conexión</small></label><button class="btn sec" id="act">Buscar actualización</button></div></div>';
+  h+='<p class="nota" style="text-align:center;margin:16px 0 4px">App creada por Emmanuel Díaz</p>';
   $('#v-ajustes').innerHTML=h;
 }
 
