@@ -176,7 +176,7 @@ let cur={y:hoyD.getFullYear(),m:hoyD.getMonth()};
 function cargar(){
   try{ const t=localStorage.getItem(CLAVE); if(t) return normalizar(JSON.parse(t)); }catch(e){}
   if(window.DATOS_INICIALES) return normalizar(JSON.parse(JSON.stringify(window.DATOS_INICIALES)));
-  return JSON.parse(JSON.stringify(POR_DEFECTO));
+  return normalizar(JSON.parse(JSON.stringify(POR_DEFECTO)));
 }
 function normalizar(d){
   d.turnos=Array.isArray(d.turnos)?d.turnos:[]; d.dias=d.dias||{};
