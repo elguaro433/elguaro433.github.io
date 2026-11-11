@@ -1033,6 +1033,7 @@ window.DATOS_INICIALES={
 "descuento": 6.5,
 "pctExtra": 40,
 "pctNoche": 20,
+"prima": {"eur": 200, "dia": 15, "desde": "2026-11", "nomina": false},
 "horasSemana": 40,
 "turnoDefecto": 16,
 "tarifas": [
