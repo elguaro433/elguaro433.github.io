@@ -157,7 +157,7 @@ body.sindinero .dinero::placeholder{color:transparent}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2';
+const CLAVE='miTrabajo.v2', VERSION='8';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -533,6 +533,7 @@ function pintaAjustes(){
   h+='<div class="card"><h2>Copia de seguridad</h2><p class="nota">Los datos se guardan solo en este dispositivo. Guarda una copia de vez en cuando.</p>'
     +'<div class="acc"><button class="btn" id="exp">Guardar copia</button><button class="btn sec" id="imp">Recuperar copia</button></div>'
     +(window.DATOS_INICIALES?'<p style="margin:12px 0 0"><button class="btn sec" id="shifter" style="width:100%">Volver a cargar los datos de Shifter</button></p>':'')+'</div>';
+  h+='<div class="card"><div class="fila" style="margin:0"><label>Versión '+VERSION+'<small>Se actualiza sola al abrirla con conexión</small></label><button class="btn sec" id="act">Buscar actualización</button></div></div>';
   $('#v-ajustes').innerHTML=h;
 }
 
@@ -636,6 +637,7 @@ $('#v-ajustes').addEventListener('click',e=>{
     const t=S.turnos[+b.dataset.borra], usos=Object.values(S.dias).filter(d=>d.t===t.id).length;
     if(!confirm('¿Borrar el turno «'+t.nombre+'»?'+(usos?' Lo usan '+usos+' días, que quedarán como libres.':''))) return;
     S.turnos.splice(+b.dataset.borra,1); guardar(); pintaAjustes();
+  } else if(b.id==='act'){ b.textContent='Buscando…'; actualizar(true);
   } else if(b.id==='subida'){
     if(oculto) return alert('El dinero está oculto. Toca el ojo de arriba para mostrarlo y poder cambiar el precio.');
     const act=tarifa(hoyK()).n, v=prompt('¿Cuánto cobras ahora la hora normal? (antes '+num(act)+' €)', String(act).replace('.',','));
@@ -668,6 +670,18 @@ $('#fichero').addEventListener('change',e=>{
 guardar(); pinta();
 { const mh=location.hash.match(/c=([A-Za-z0-9-]+)/); if(mh){ try{history.replaceState(null,'',location.pathname);}catch(e){} if(!Object.keys(S.dias).length) pideCodigo(mh[1]); } }
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+// Actualización: si en la web hay una versión más nueva, se limpia lo guardado de la app (no tus datos) y se recarga
+async function actualizar(forzar){
+  try{
+    const v=(await (await fetch('version.txt?'+Date.now(),{cache:'no-store'})).text()).trim();
+    if(!forzar&&(v===VERSION||sessionStorage.getItem('miTrabajo.act')===v)) return false;
+    sessionStorage.setItem('miTrabajo.act',v);
+    if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.map(k=>caches.delete(k))); }
+    const r=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration(); if(r) await r.update().catch(()=>{});
+    location.replace(location.pathname+'?v='+encodeURIComponent(v)); return true;
+  }catch(e){ if(forzar) alert('No he podido buscar la actualización. Comprueba la conexión.'); return false; }
+}
+if(location.protocol.startsWith('http')){ actualizar(false); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) actualizar(false); }); }
 if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 </script>
 </body>
