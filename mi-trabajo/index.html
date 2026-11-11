@@ -61,7 +61,7 @@ body.emp{--acc:#1e56d6;--acc2:#3d7dff;--accInk:#ffffff}
 .day.vac{visibility:hidden}
 .day .n{font-size:13px;font-weight:700}
 .day .a{font-size:10px;line-height:1.1;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.day .x{font-size:10px;font-weight:700;display:block}
+.day .x{font-size:10px;font-weight:700;display:block;white-space:nowrap}
 .day.hoy{outline:3px solid var(--acc);outline-offset:-1px}
 .day .dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
 table{width:100%;border-collapse:collapse;font-size:14px}
@@ -89,6 +89,9 @@ nav.tabs button.on{color:var(--acc);font-weight:700}
 .step button{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:20px}
 .step b{min-width:78px;text-align:center;font-variant-numeric:tabular-nums}
 .fila input.corto{width:110px;text-align:right}
+.step input.horas{width:84px;text-align:center;font-size:20px;font-weight:800;padding:6px 4px}
+.reparto{background:var(--bg);border-radius:12px;padding:10px 12px;margin:-4px 0 12px;font-size:15px}
+.reparto small{display:block;color:var(--mut);font-size:12px;margin-top:3px}
 .total{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;border-top:1px solid var(--line);padding-top:12px;margin:6px 0 12px}
 .acc{display:flex;gap:8px}
 .acc .btn{flex:1;padding:12px}
@@ -157,7 +160,7 @@ body.sindinero .dinero::placeholder{color:transparent}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', VERSION='8';
+const CLAVE='miTrabajo.v2', VERSION='9';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -186,6 +189,10 @@ function normalizar(d){
   const a=d.ajustes;
   if(!a.vac) a.vac={desde:'2026-08-31',saldo:0,porMes:2.5,eurDia:0};
   if(a.pctNoche==null) a.pctNoche=20;
+  if(a.horasDia==null) a.horasDia=8;
+  // Nóminas jul–oct 2026: el sábado no es «siempre extra» (cuenta para las 40 h) y el día de vacaciones sale del sueldo mensual ÷ 30
+  d.turnos.forEach(t=>{ if(t.tipo==='extra') t.tipo='trabajo'; });
+  if(+a.vac.eurDia===191.59) a.vac.eurDia=0;
   if(a.pctExtra==null) a.pctExtra=(a.precioNormal&&a.precioExtra)?Math.round((a.precioExtra/a.precioNormal-1)*1000)/10:40;
   if(!Array.isArray(a.tarifas)||!a.tarifas.length) a.tarifas=[{desde:'2026-11-01',normal:+a.precioNormal||0}];
   return d;
@@ -211,26 +218,45 @@ function horasDia(d){
   if(t){ h=(d.h!=null&&d.h!=='')?+d.h:hTurno(t); h=Math.max(0,h-(d.sal||0)/60); }
   return h+(d.ex||0)/60;
 }
-// Como la hoja de la empresa: las primeras 40 h de cada semana (lunes a domingo) son normales
-// y el resto se paga como extra (40 %). Las horas de la semana que caen en el mes anterior también cuentan.
-// Días que no cuentan para las 40 h de la semana: sábados extra, festivos y vacaciones (van en líneas aparte de la hoja)
-const esExtra=d=>{ const t=d&&turno(d.t); return !!(t&&t.tipo!=='trabajo'); };
-function calc(k,ov){
+// Como la hoja de la empresa (comprobado con las nóminas de julio a octubre de 2026): las primeras 40 h de cada
+// semana (lunes a domingo, en orden) son normales y el resto extra al 40 %. Las horas de la semana que caen en el
+// mes anterior también cuentan para las 40. Festivos y vacaciones no cuentan: van en líneas aparte.
+const esExtra=d=>{ const t=d&&turno(d.t); return !!(t&&(t.tipo==='festivo'||t.tipo==='vacaciones')); };
+const tr2=n=>Math.floor(n*100+1e-6)/100;   // la hoja de la empresa corta los céntimos, no redondea
+// Reparto de una semana día a día. Las horas extra de cada mes salen de la regla de las 40 h (lo que paga la empresa);
+// dentro del mes se apuntan primero a lo que cada día pasa de 8 h y lo que sobre a los últimos días (el sábado).
+function repartoSemana(k,ov){
   const get=x=>(ov&&x===k)?ov:S.dias[x];
-  const d=get(k), r={h:0,hN:0,hX:0,hNoc:0,hF:0,normal:0,extra:0,noche:0,festE:0,vacE:0,ing:0,total:0,t:d?turno(d.t):null};
-  if(!d) return r;
   const [y,m,dd]=k.split('-').map(Number), lun=dd-((new Date(y,m-1,dd).getDay()+6)%7);
-  const tope=+S.ajustes.horasSemana||40; let ac=0;
-  for(let i=0;i<7;i++){ const x=new Date(y,m-1,lun+i), kk=clave(x.getFullYear(),x.getMonth(),x.getDate()); if(kk===k) break; if(!esExtra(get(kk))) ac+=horasDia(get(kk)); }
-  r.h=horasDia(d); const tp=r.t?r.t.tipo:'';
-  if(tp==='vacaciones'){ r.h=0; r.vacE=+((S.ajustes.vac||{}).eurDia)||0; }
-  else if(tp==='festivo'){ r.hF=r.h; r.h=0; r.festE=r.hF*tarifa(k).n; }
-  r.hN=tp==='extra'?0:Math.min(r.h,Math.max(0,tope-ac)); r.hX=r.h-r.hN;
-  const tf=tarifa(k); r.normal=r.hN*tf.n; r.extra=r.hX*tf.x;
+  const tope=+S.ajustes.horasSemana||40, jor=+S.ajustes.horasDia||8, ds=[]; let ac=0;
+  for(let i=0;i<7;i++){
+    const x=new Date(y,m-1,lun+i), kk=clave(x.getFullYear(),x.getMonth(),x.getDate()), d=get(kk);
+    const h=(d&&!esExtra(d))?horasDia(d):0, n=Math.min(h,Math.max(0,tope-ac)); ac+=h;
+    ds.push({k:kk,mes:kk.slice(0,7),h,x:h-n,e:0});
+  }
+  const R={};
+  ds.forEach(o=>{ R[o.k]=o; if(o.hecho) return;
+    const g=ds.filter(p=>p.mes===o.mes); let q=g.reduce((a,p)=>a+p.x,0);
+    g.forEach(p=>{ p.hecho=1; p.e=Math.min(Math.max(0,p.h-jor),q); q-=p.e; });
+    for(let i=g.length-1;i>=0&&q>1e-9;i--){ const e=Math.min(g[i].h-g[i].e,q); g[i].e+=e; q-=e; }
+  });
+  return R;
+}
+function calc(k,ov){
+  const d=(ov||S.dias[k]), r={h:0,hN:0,hX:0,hNoc:0,hF:0,normal:0,extra:0,noche:0,festE:0,vacE:0,ing:0,total:0,t:d?turno(d.t):null};
+  if(!d) return r;
+  r.h=horasDia(d); const tp=r.t?r.t.tipo:'', tf=tarifa(k);
+  if(tp==='vacaciones'){ r.h=0; r.vacE=vacDia(k); }
+  else if(tp==='festivo'){ r.hF=r.h; r.h=0; r.festE=r.hF*tf.n; }
+  r.hX=r.h?repartoSemana(k,ov)[k].e:0; r.hN=r.h-r.hX;
+  r.normal=r.hN*tf.n; r.extra=r.hX*tf.x;
   r.hNoc=(d.noc||0)/60; r.noche=r.hNoc*tf.n*(+S.ajustes.pctNoche||0)/100;
   r.ing=+d.ing||0; r.total=r.normal+r.extra+r.noche+r.festE+r.vacE+r.ing;
   return r;
 }
+// Lo que pagan por un día de vacaciones. Nómina de agosto de 2026: 8 días = 766,36 €, o sea
+// el sueldo de un mes a 40 h por semana (precio × 40 × 52 ÷ 12) repartido entre 30 días. Si en Ajustes hay un importe, manda ese.
+function vacDia(k){ const v=S.ajustes.vac||{}; return (+v.eurDia)||tarifa(k).n*(+S.ajustes.horasSemana||40)*52/12/30; }
 // Precio de la hora vigente en una fecha (por si hay subidas de sueldo)
 function tarifa(k){
   const ts=S.ajustes.tarifas.slice().sort((a,b)=>a.desde<b.desde?-1:1);
@@ -251,6 +277,8 @@ function resumenMes(y,m,hastaK){
     else if(c.h>0||c.ing>0) r.trab++;
     r.filas.push({k,d,dia,c});
   }
+  ['normal','extra','noche','festE','vacE'].forEach(f=>r[f]=tr2(r[f]));
+  r.total=Math.round((r.normal+r.extra+r.noche+r.festE+r.vacE+r.ing)*100)/100;
   return r;
 }
 // Saldo de vacaciones al final de un mes (como el cuadro «Vacances» de la hoja)
@@ -260,13 +288,14 @@ function vacSaldo(y,m){
   return (+v.saldo||0)+meses*(+v.porMes||0)-hechas;
 }
 function tarjetaVac(y,m,R){
-  const v=S.ajustes.vac, a=new Date(y,m-1,1), acum=vacSaldo(a.getFullYear(),a.getMonth()), pend=vacSaldo(y,m), gen=pend+R.vac-acum;
+  const v=S.ajustes.vac, vd=vacDia(clave(y,m,1)), a=new Date(y,m-1,1), acum=vacSaldo(a.getFullYear(),a.getMonth()), pend=vacSaldo(y,m), gen=pend+R.vac-acum;
   return '<div class="card"><h2>Vacaciones</h2><div class="stats" style="grid-template-columns:repeat(4,1fr)">'
     +st(num(acum),'acumuladas antes')+st('+'+num(gen),'generadas este mes')+st(num(R.vac),'hechas este mes')+st(num(pend),'pendientes a fin de mes')+'</div>'
     +(pend<0?'<p class="nota" style="margin:10px 0 0;color:var(--bad)">Quedas debiendo '+num(-pend)+' días de vacaciones: te los pagan por adelantado y los irás recuperando con los '+num(v.porMes)+' días que generas cada mes.</p>':'')
-    +'<p class="nota" style="margin:8px 0 0">Generas '+num(v.porMes)+' días al mes. Cada día de vacaciones se paga a '+eur(v.eurDia)+' y cuentan también sábados y domingos.</p></div>';
+    +'<p class="nota" style="margin:8px 0 0">Generas '+num(v.porMes)+' días al mes. Cada día de vacaciones se paga a '+eur(vd)+' (el sueldo de un mes de 40 h por semana entre 30) y cuentan también sábados y domingos.</p></div>';
 }
-const neto=b=>b*(1-(+S.ajustes.descuento||0)/100);
+const cass=b=>tr2(b*(+S.ajustes.descuento||0)/100);
+const neto=b=>b-cass(b);
 
 /* ---------- Cargar mis datos con un código (los datos van cifrados) ---------- */
 async function cargarConCodigo(cod){
@@ -307,6 +336,7 @@ function pintaMes(){
     h+='<button class="day'+(k===hk?' hoy':'')+'" data-k="'+k+'"'+stl+'><span class="n">'+d+'</span>'
       +'<span class="a">'+(t?esc(t.abr):(dia?'Libre':''))+'</span>'
       +(dia&&(dia.ex||dia.h!=null||dia.sal)?'<span class="x">'+num(horasDia(dia))+' h</span>':'')
+      +(dia&&calc(k).hX?'<span class="x">+'+num(calc(k).hX)+' ext</span>':'')
       +(dia&&dia.noc?'<span class="x">🌙 '+num(dia.noc/60)+' h</span>':'')
       +(dia&&dia.ing?'<span class="x">+'+(oculto?'•••':num(dia.ing))+' €</span>':'')
       +(dia&&dia.nota?'<span class="dot"></span>':'')+'</button>';
@@ -351,14 +381,14 @@ function pintaMes(){
       +Object.values(sem).map(s=>'<tr><td>'+s.a+(s.b!==s.a?'–'+s.b:'')+'</td><td class="r">'+num(s.hN)+'</td><td class="r">'+num(s.hX)+'</td><td class="r">'+num(s.h)+'</td></tr>').join('')
       +'<tr><th>Total</th><th class="r">'+num(R.hN)+'</th><th class="r">'+num(R.hX)+'</th><th class="r">'+num(R.hN+R.hX)+'</th></tr>'
       +'<tr><th>€</th><th class="r">'+eur(R.normal)+'</th><th class="r">'+eur(R.extra)+'</th><th class="r">'+eur(R.normal+R.extra)+'</th></tr></table>'
-      +'<p class="nota" style="margin:8px 0 0">Las primeras '+num(+S.ajustes.horasSemana||40)+' h de cada semana van a '+eur(tarifa(clave(y,m,n0)).n)+' y el resto a '+eur(tarifa(clave(y,m,n0)).x)+' ('+num(S.ajustes.pctExtra)+' % más).</p>'+'<button class="btn sec comp" style="width:100%;margin-top:12px;padding:11px">📤 Enviar mis horas en PDF</button>'+'</div>';
+      +'<p class="nota" style="margin:8px 0 0">Las primeras '+num(+S.ajustes.horasSemana||40)+' h de cada semana van a '+eur(tarifa(clave(y,m,n0)).n)+' y el resto a '+eur(tarifa(clave(y,m,n0)).x)+' ('+num(S.ajustes.pctExtra)+' % más). En una semana completa eso es lo mismo que '+num(+S.ajustes.horasDia||8)+' h normales al día y lo demás extra.</p>'+'<button class="btn sec comp" style="width:100%;margin-top:12px;padding:11px">📤 Enviar mis horas en PDF</button>'+'</div>';
   }
 
   // detalle
   h+='<div class="card"><h2>Detalle del mes</h2>';
   if(!R.filas.length) h+='<p class="nota">Todavía no hay nada anotado. Toca un día del calendario.</p>';
   else{
-    h+='<table><tr><th>Día</th><th>Turno</th><th class="r">Horas</th><th class="r">Extra</th><th class="r">€</th></tr>';
+    h+='<table><tr><th>Día</th><th>Turno</th><th class="r">Normales</th><th class="r">Extra</th><th class="r">€</th></tr>';
     R.filas.forEach(f=>{
       const w=DIAS[new Date(y,m,f.d).getDay()].slice(0,3);
       h+='<tr class="clic" data-k="'+f.k+'"><td>'+w+' '+f.d+'</td><td>'+(f.c.t?esc(f.c.t.nombre):'Libre')
@@ -405,7 +435,7 @@ function pintaNomina(){
     +fila('Horas normales',num(R.hN)+' h × '+eur(tf.n),eur(R.normal))
     +fila('Horas al '+num(S.ajustes.pctExtra)+' %',num(R.hX)+' h × '+eur(tf.x),eur(R.extra))
     +fila('FESTIVOS (horas)',num(R.festH)+' h × '+eur(tf.n),eur(R.festE))
-    +fila('VACACIONES (hechas)',num(R.vac)+' días × '+eur(S.ajustes.vac.eurDia),eur(R.vacE))
+    +fila('VACACIONES (hechas)',num(R.vac)+' días × '+eur(vacDia(clave(y,m,1))),eur(R.vacE))
     +fila('NOCTURNIDAD (horas)',num(R.hNoc)+' h × '+eur(tf.n*(+S.ajustes.pctNoche||0)/100),eur(R.noche))
     +fila('PRIMAS / OTROS','',eur(R.ing))
     +fila('TOTAL BRUTO','',eur(R.total),'fuerte')
@@ -509,7 +539,7 @@ function pintaAjustes(){
   S.turnos.forEach((t,i)=>{
     h+='<div class="turno" data-i="'+i+'"><div class="g2"><div><label>Nombre</label><input data-f="nombre" value="'+esc(t.nombre)+'"></div><div><label>Texto corto (calendario)</label><input data-f="abr" value="'+esc(t.abr)+'"></div></div>'
       +'<div class="g3"><div><label>Entrada</label><input type="time" data-f="ini" value="'+esc(t.ini)+'"></div><div><label>Salida</label><input type="time" data-f="fin" value="'+esc(t.fin)+'"></div><div><label>Descanso (min)</label><input type="number" min="0" data-f="descanso" value="'+(+t.descanso||0)+'"></div></div>'
-      +'<div class="g2"><div><label>Tipo</label><select data-f="tipo">'+[['trabajo','trabajo'],['extra','siempre extra'],['vacaciones','vacaciones'],['festivo','festivo']].map(x=>'<option value="'+x[0]+'"'+(t.tipo===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></div><div><label>Horas que cuenta</label><input value="'+num(hTurno(t))+' h" disabled></div></div>'
+      +'<div class="g2"><div><label>Tipo</label><select data-f="tipo">'+[['trabajo','trabajo'],['vacaciones','vacaciones'],['festivo','festivo']].map(x=>'<option value="'+x[0]+'"'+(t.tipo===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></div><div><label>Horas que cuenta</label><input value="'+num(hTurno(t))+' h" disabled></div></div>'
       +'<div class="g3"><div><label>Color</label><input type="color" data-f="color" value="'+esc(t.color)+'"></div><div><label>Color letra</label><input type="color" data-f="texto" value="'+esc(t.texto)+'"></div>'
       +'<div><label>&nbsp;</label><button class="btn bad" data-borra="'+i+'" style="width:100%">Borrar</button></div></div>'
       +'</div>';
@@ -521,13 +551,14 @@ function pintaAjustes(){
     +'<div class="fila"><label>Turno de lunes a viernes<small>El que se pone al pulsar «Rellenar»</small></label><select id="aDef" style="width:170px">'+S.turnos.map(t=>'<option value="'+t.id+'"'+(t.id===S.ajustes.turnoDefecto?' selected':'')+'>'+esc(t.nombre)+'</option>').join('')+'</select></div>'
     +'<div class="fila"><label>Horas extra: % de más<small>40 % = la hora normal × 1,4</small></label><input class="corto" type="number" step="0.5" min="0" id="aPct" value="'+(+S.ajustes.pctExtra||0)+'"></div>'
     +'<div class="fila"><label>Recargo nocturno: % de más<small>Horas entre las 22 h y las 6 h. Mínimo legal en Andorra: 20 %</small></label><input class="corto" type="number" step="0.5" min="0" id="aNoche" value="'+(+S.ajustes.pctNoche||0)+'"></div>'
-    +'<div class="fila"><label>Horas normales por semana<small>Lo que pase de aquí se paga como extra</small></label><input class="corto" type="number" step="0.5" min="0" id="aSemana" value="'+(+S.ajustes.horasSemana||40)+'"></div>'
+    +'<div class="fila"><label>Horas normales por día<small>Al anotar un día, lo que pase de aquí sale como hora extra</small></label><input class="corto" type="number" step="0.5" min="0" id="aJor" value="'+(+S.ajustes.horasDia||8)+'"></div>'
+    +'<div class="fila"><label>Horas normales por semana<small>Así paga la empresa: lo que pase de aquí en la semana es extra</small></label><input class="corto" type="number" step="0.5" min="0" id="aSemana" value="'+(+S.ajustes.horasSemana||40)+'"></div>'
     +'<div class="fila"><label>Descuento de la CASS (%)<small>Lo que te quitan del bruto; el resto va al banco. En Andorra el trabajador paga 6,5 %</small></label><input class="corto" type="number" step="0.1" min="0" max="100" id="aDesc" value="'+(+S.ajustes.descuento||0)+'"></div></div>';
 
   const v=S.ajustes.vac;
   h+='<div class="card"><h2>Vacaciones</h2>'
     +'<div class="fila"><label>Días que generas al mes</label><input class="corto" type="number" step="0.1" min="0" id="vMes" value="'+(+v.porMes||0)+'"></div>'
-    +'<div class="fila"><label>€ por día de vacaciones<small>Lo que te pagan por cada día de vacaciones</small></label><input class="corto dinero" type="'+(oculto?'password':'number')+'" '+(oculto?'readonly ':'')+'step="0.01" min="0" id="vEur" value="'+(+v.eurDia||0)+'"></div>'
+    +'<div class="fila"><label>€ por día de vacaciones<small>Vacío = automático: '+eur(vacDia(hk))+' (sueldo de un mes de 40 h por semana ÷ 30, como en la nómina)</small></label><input class="corto dinero" type="'+(oculto?'password':'number')+'" '+(oculto?'readonly ':'')+'step="0.01" min="0" id="vEur" placeholder="auto" value="'+(+v.eurDia||'')+'"></div>'
     +'<div class="fila"><label>Saldo de partida (días)<small>Lo que tenías el '+esc(v.desde.split('-').reverse().join('/'))+'</small></label><input class="corto" type="number" step="0.5" id="vSaldo" value="'+(+v.saldo||0)+'"></div></div>';
   h+=cajaCodigo('Vuelve a traer los datos de partida con tu código. Ojo: sustituye lo que tengas anotado en este teléfono.');
   h+='<div class="card"><h2>Copia de seguridad</h2><p class="nota">Los datos se guardan solo en este dispositivo. Guarda una copia de vez en cuando.</p>'
@@ -549,33 +580,52 @@ function pintaHoja(){
   let h='<h3>'+ed.fecha+'</h3><div class="chips">'
     +S.turnos.map(x=>'<button class="chip'+(d.t===x.id?' on':'')+'" data-t="'+x.id+'" style="background:'+esc(x.color)+';color:'+esc(x.texto)+'">'+esc(x.nombre)+'</button>').join('')
     +'<button class="chip'+(!turno(d.t)?' on':'')+'" data-t="0">Libre</button></div>';
-  if(t) h+='<div class="fila"><label>Horas del turno<small>'+esc(t.ini)+'–'+esc(t.fin)+' · '+num(hTurno(t))+' h. Cámbialo si hiciste otras</small></label><input class="corto" type="number" step="0.25" min="0" id="dH" placeholder="'+num(hTurno(t))+'" value="'+(d.h!=null?d.h:'')+'"></div>';
-  h+='<div class="fila"><label>Horas de más<small>Noche, alargar la jornada…</small></label><div class="step"><button data-s="ex" data-v="-30">−</button><b>'+hm(d.ex||0)+'</b><button data-s="ex" data-v="30">+</button></div></div>';
-  h+='<div class="fila"><label>De ellas, de noche<small>Entre las 22 h y las 6 h: +'+eur(tarifa(ed.k).n*(+S.ajustes.pctNoche||0)/100)+'/h</small></label><div class="step"><button data-s="noc" data-v="-30">−</button><b>'+hm(d.noc||0)+'</b><button data-s="noc" data-v="30">+</button></div></div>';
-  if(t) h+='<div class="fila"><label>Salí antes / entré tarde<small>Se descuenta de las horas normales</small></label><div class="step"><button data-s="sal" data-v="-30">−</button><b>'+hm(d.sal||0)+'</b><button data-s="sal" data-v="30">+</button></div></div>';
+  const tp=t?t.tipo:'', T=horasDia(d);
+  if(tp!=='vacaciones'){
+    h+='<div class="fila"><label>'+(tp==='festivo'?'Horas del festivo<small>Se pagan a precio normal</small>':'Horas trabajadas<small>Hasta '+num(jorDia())+' h no hay extra. Lo que pase de '+num(jorDia())+' es hora extra</small>')+'</label>'
+      +'<div class="step"><button data-s="T" data-v="-0.5">−</button><input class="horas" type="number" inputmode="decimal" step="0.25" min="0" id="dT" value="'+(+T.toFixed(2))+'"><button data-s="T" data-v="0.5">+</button></div></div>';
+    if(tp!=='festivo') h+='<div class="reparto" id="dDet">'+detDia(c)+'</div>';
+    h+='<div class="fila"><label>De ellas, de noche<small>Entre las 22 h y las 6 h: +'+eur(tarifa(ed.k).n*(+S.ajustes.pctNoche||0)/100)+'/h</small></label><div class="step"><button data-s="noc" data-v="-30">−</button><b>'+hm(d.noc||0)+'</b><button data-s="noc" data-v="30">+</button></div></div>';
+  }
   h+='<div class="fila"><label>Otro ingreso (€)<small>Plus, dieta, trabajo aparte…</small></label><input class="corto dinero" type="'+(oculto&&d.ing?'password':'number')+'" step="0.01" id="dIng" value="'+(d.ing||'')+'"></div>'
     +'<textarea id="dNota" rows="2" placeholder="Nota del día">'+esc(d.nota||'')+'</textarea>'
-    +'<div class="total"><span>Este día<small id="dDet" style="display:block;font-size:12px;font-weight:400;color:var(--mut)">'+detDia(c)+'</small></span><span id="dTot">'+eur(c.total)+'</span></div>'
+    +'<div class="total"><span>Este día</span><span id="dTot">'+eur(c.total)+'</span></div>'
     +'<div class="acc">'+(ed.existe?'<button class="btn bad" id="dBorra">Borrar</button>':'')+'<button class="btn sec" id="dCanc">Cancelar</button><button class="btn" id="dOk">Guardar</button></div>';
   $('#sheet').innerHTML=h;
 }
-const detDia=c=>(c.t&&c.t.tipo==='extra'?'Este turno es siempre extra. ':'')+num(c.hN)+' h normales + '+num(c.hX)+' h al 40 % (según la semana)'+(c.hNoc?' + nocturnidad '+eur(c.noche):'');
+const jorDia=()=>+S.ajustes.horasDia||8;
+const hTxt=n=>num(n)+(n===1?' hora':' horas');
+function detDia(c){
+  const dia=Math.max(0,c.h-jorDia()), tope=num(+S.ajustes.horasSemana||40);
+  const sem=c.hX>dia+1e-9?'La empresa cuenta por semanas: esta semana ya pasas de las '+tope+' h normales, así que de este día te paga '+hTxt(c.hX)+' como extra.'
+    :c.hX<dia-1e-9?'La empresa cuenta por semanas: las primeras '+tope+' h son normales, así que '+(c.hX>0?'de este día solo te paga '+hTxt(c.hX)+' como extra.':'este día sale entero como normal.'):'';
+  return '<b>'+(c.hX>0?(c.hN>0?hTxt(c.hN)+' normales + ':'')+hTxt(c.hX)+' extra':hTxt(c.h)+' normales · sin extra')+'</b>'
+    +(sem?'<small>'+sem+'</small>':'')
+    +(c.hNoc?'<small>Nocturnidad: +'+eur(c.noche)+'</small>':'');
+}
+// Pone el total de horas del día (lo que escribe Emmanuel); las «horas de más» antiguas quedan dentro del total
+function ponHoras(d,T){
+  T=Math.max(0,Math.round((+T||0)*100)/100); d.sal=0; const t=turno(d.t);
+  if(t){ d.ex=0; if(Math.abs(T-hTurno(t))<1e-9) delete d.h; else d.h=T; } else { delete d.h; d.ex=Math.round(T*60); }
+  if((d.noc||0)>T*60) d.noc=Math.round(T*60);
+}
 function leeHoja(){
-  const d=ed.d, hI=$('#dH'), iI=$('#dIng'), nI=$('#dNota');
-  if(hI){ if(hI.value==='') delete d.h; else d.h=Math.max(0,+hI.value||0); } else delete d.h;
+  const d=ed.d, tI=$('#dT'), iI=$('#dIng'), nI=$('#dNota');
+  if(tI&&tI.value!==''){ const T=parseFloat(String(tI.value).replace(',','.')); if(isFinite(T)&&Math.abs(T-horasDia(d))>1e-9) ponHoras(d,T); }
   d.ing=+iI.value||0; d.nota=nI.value.trim();
 }
 function cierra(){ $('#sheetbg').classList.remove('on'); ed=null; }
 
 $('#sheetbg').addEventListener('click',e=>{ if(e.target.id==='sheetbg') cierra(); });
-$('#sheet').addEventListener('input',e=>{ if(e.target.id==='dH'||e.target.id==='dIng'){ leeHoja(); const c=calc(ed.k,ed.d); $('#dTot').textContent=eur(c.total); $('#dDet').textContent=detDia(c); } });
+$('#sheet').addEventListener('input',e=>{ if(e.target.id==='dT'||e.target.id==='dIng'){ leeHoja(); const c=calc(ed.k,ed.d); $('#dTot').textContent=eur(c.total); const dd=$('#dDet'); if(dd) dd.innerHTML=detDia(c); } });
 $('#sheet').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
   if(b.dataset.comp!=null) return compartir(b.dataset.comp);
   if(b.id==='cCanc') return cierra();
   if(!ed) return;
-  if(b.dataset.t!=null){ leeHoja(); ed.d.t=+b.dataset.t; if(!turno(ed.d.t)){ed.d.sal=0;delete ed.d.h;} pintaHoja(); }
-  else if(b.dataset.s){ leeHoja(); ed.d[b.dataset.s]=Math.max(0,(ed.d[b.dataset.s]||0)+(+b.dataset.v)); pintaHoja(); }
+  if(b.dataset.t!=null){ leeHoja(); const d=ed.d; d.t=+b.dataset.t; delete d.h; d.ex=0; d.sal=0; d.noc=Math.min(d.noc||0,Math.round(horasDia(d)*60)); pintaHoja(); }
+  else if(b.dataset.s==='T'){ leeHoja(); ponHoras(ed.d,horasDia(ed.d)+(+b.dataset.v)); pintaHoja(); }
+  else if(b.dataset.s){ leeHoja(); ed.d.noc=Math.min(Math.round(horasDia(ed.d)*60),Math.max(0,(ed.d.noc||0)+(+b.dataset.v))); pintaHoja(); }
   else if(b.id==='dCanc') cierra();
   else if(b.id==='dBorra'){ delete S.dias[ed.k]; guardar(); cierra(); pinta(); }
   else if(b.id==='dOk'){
@@ -626,6 +676,7 @@ $('#v-ajustes').addEventListener('change',e=>{
   else if(el.id==='aNom') S.ajustes.nombre=el.value.trim();
   else if(el.id==='aPct') S.ajustes.pctExtra=+el.value||0;
   else if(el.id==='aNoche') S.ajustes.pctNoche=+el.value||0;
+  else if(el.id==='aJor') S.ajustes.horasDia=+el.value||8;
   else if(el.id==='aSemana') S.ajustes.horasSemana=+el.value||40;
   else if(el.id==='aDesc') S.ajustes.descuento=Math.min(100,Math.max(0,+el.value||0));
   else return;

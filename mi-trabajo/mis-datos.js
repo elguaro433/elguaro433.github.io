@@ -21,7 +21,7 @@ window.DATOS_INICIALES={
 "descanso": 0,
 "color": "#6ecff6",
 "texto": "#000000",
-"tipo": "extra"
+"tipo": "trabajo"
 },
 {
 "id": 7,
@@ -1041,7 +1041,7 @@ window.DATOS_INICIALES={
 "desde": "2026-08-31",
 "saldo": 0,
 "porMes": 2.5,
-"eurDia": 191.59
+"eurDia": 0
 },
 "empresa": {
 "nombre": "MTS Treballs Públics",
