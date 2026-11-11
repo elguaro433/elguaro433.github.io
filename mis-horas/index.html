@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1e56d6">
+<title>Mi Trabajo</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mi Trabajo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<style>
+:root{
+  --bg:#f3f5f7; --card:#ffffff; --ink:#15202b; --mut:#667785; --line:#e1e6ea;
+  --acc:#0f766e; --acc2:#14b8a6; --accInk:#ffffff; --warn:#b45309; --bad:#b91c1c;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0e1518; --card:#182226; --ink:#e8eef1; --mut:#93a4ad; --line:#27353b; --acc:#14b8a6; --acc2:#0f766e; --accInk:#04201d; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding-bottom:84px}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
+.wrap{max-width:720px;margin:0 auto;padding:12px 16px}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+@media (display-mode: standalone){ header.top{padding-top:calc(env(safe-area-inset-top) + 14px)} }
+.marca{display:none;align-items:center;gap:10px;max-width:720px;margin:0 auto;padding:8px 16px 0}
+.marca img{height:34px;border-radius:6px;background:#fff;padding:3px 6px}
+.marca b{font-size:16px;display:block;line-height:1.15}
+.marca small{font-size:11px;color:var(--mut);display:block}
+.tira{display:none;height:4px;background:linear-gradient(90deg,#1e56d6 0 33.3%,#f5c400 33.3% 66.6%,#e2231a 66.6%)}
+body.emp .marca{display:flex} body.emp .tira{display:block}
+body.emp{--acc:#1e56d6;--acc2:#3d7dff;--accInk:#ffffff}
+@media (prefers-color-scheme: dark){ body.emp{--acc:#6f9bff;--acc2:#1e56d6;--accInk:#06122e} body.emp .hero{background:linear-gradient(135deg,#3d7dff,#1e56d6)} }
+.nav{display:flex;align-items:center;justify-content:space-between;max-width:720px;margin:0 auto;padding:10px 16px}
+.nav h1{font-size:19px;margin:0;text-transform:capitalize}
+.nav button{border:1px solid var(--line);background:var(--card);border-radius:10px;width:42px;height:38px;font-size:18px}
+.nav .hoy{width:auto;padding:0 12px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.hero{background:linear-gradient(135deg,var(--acc2),var(--acc));color:#fff;border:0}
+.hero .lbl{font-size:13px;opacity:.9;text-transform:uppercase;letter-spacing:.04em}
+.hero .big{font-size:40px;font-weight:800;line-height:1.1;margin:2px 0 8px;font-variant-numeric:tabular-nums}
+.hero .sub{display:flex;gap:18px;flex-wrap:wrap;font-size:14px}
+.hero .sub b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:8px;background:rgba(255,255,255,.3);margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;background:#fff;border-radius:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--bg);border-radius:12px;padding:10px}
+.stat b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--mut)}
+.aviso{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}
+.btn{border:0;background:var(--acc);color:var(--accInk);border-radius:10px;padding:9px 14px;font-weight:600}
+.btn.sec{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.btn.bad{background:transparent;color:var(--bad);border:1px solid var(--line)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .dow{text-align:center;font-size:12px;color:var(--mut);padding-bottom:2px}
+.day{position:relative;min-height:70px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:4px 3px;text-align:center;overflow:hidden}
+.day.vac{visibility:hidden}
+.day .n{font-size:12px;font-weight:600;opacity:.75;display:block}
+.day .a{font-size:10px;line-height:1.2;display:block;white-space:nowrap;overflow:hidden}
+.day .a b{font-size:12px;letter-spacing:-.2px}
+.day .x{font-size:9.5px;line-height:1.25;font-weight:700;display:block;white-space:nowrap;letter-spacing:-.3px}
+.day.hoy{outline:3px solid var(--acc);outline-offset:-1px}
+.day .dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+th{font-size:12px;color:var(--mut);font-weight:600}
+tr.clic{cursor:pointer}
+.nota{color:var(--mut);font-size:12px}
+h2{font-size:16px;margin:0 0 10px}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;max-width:200px;border:0;background:none;padding:10px 4px 12px;font-size:13px;color:var(--mut)}
+nav.tabs button i{display:block;font-style:normal;font-size:20px}
+nav.tabs button.on{color:var(--acc);font-weight:700}
+.sheetbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.sheetbg.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+.sheet h3{margin:0 0 12px;font-size:18px;text-transform:capitalize}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{border:2px solid transparent;border-radius:12px;padding:8px 12px;font-size:14px;font-weight:600;background:var(--bg);color:var(--ink)}
+.chip.on{border-color:var(--ink)}
+.fila{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.fila label{font-size:14px}
+.fila small{display:block;color:var(--mut);font-size:12px}
+.step{display:flex;align-items:center;gap:8px}
+.step button{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:20px}
+.step b{min-width:78px;text-align:center;font-variant-numeric:tabular-nums}
+.fila input.corto{width:110px;text-align:right}
+.step input.horas{width:84px;text-align:center;font-size:20px;font-weight:800;padding:6px 4px}
+.reparto{background:var(--bg);border-radius:12px;padding:10px 12px;margin:-4px 0 12px;font-size:15px}
+.reparto small{display:block;color:var(--mut);font-size:12px;margin-top:3px}
+.total{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;border-top:1px solid var(--line);padding-top:12px;margin:6px 0 12px}
+.acc{display:flex;gap:8px}
+.acc .btn{flex:1;padding:12px}
+.turno{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.g2>div,.g3>div{min-width:0}
+.g2 input,.g3 input,.g2 select,.g3 select{min-width:0;padding-left:6px;padding-right:6px}
+.g2 label,.g3 label{font-size:12px;color:var(--mut);display:block}
+input[type=color]{padding:2px;height:40px}
+input[type=date],input[type=time],input[type=month]{-webkit-appearance:none;appearance:none;display:block;min-width:0;max-width:100%;min-height:42px;text-align:left}
+input::-webkit-date-and-time-value{text-align:left;margin:0}
+.g2 input,.g3 input,.g2 select,.g3 select{font-size:15px}
+.g3 input:disabled,.g2 input:disabled{font-size:13px;opacity:.7}
+.mesfila small{white-space:nowrap}
+.mesfila{display:grid;grid-template-columns:88px 1fr 96px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
+.mesfila .b{height:10px;background:var(--bg);border-radius:6px;overflow:hidden}
+.mesfila .b i{display:block;height:100%;background:var(--acc);border-radius:6px}
+.mesfila .e{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.mesfila small{color:var(--mut);display:block;font-size:11px;font-weight:400}
+.nomcab{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.nomcab small{display:block;color:var(--mut);font-size:12px}
+.nommes{font-weight:800;font-size:17px;white-space:nowrap}
+.nomscroll{overflow-x:auto;margin:0 -6px;padding:0 6px}
+.nom .nomscroll table{width:100%;table-layout:fixed;font-size:12px;border-collapse:collapse}
+.nomsem{margin-top:14px;table-layout:fixed} .nomsem td,.nomsem th{font-size:12.5px;padding-left:2px;padding-right:2px} .nomsem th.r{white-space:normal} .nomsem th:first-child{width:19%} .nomsem tr.fuerte td{font-weight:800;background:var(--bg)}
+.nom .nomscroll th{background:var(--bg);border:1px solid var(--line);text-align:center;padding:4px 2px;font-size:10px;color:var(--ink)}
+.nom .nomscroll td{border:1px solid var(--line);text-align:center;padding:0;vertical-align:top;font-variant-numeric:tabular-nums}
+.nom .dn{display:block;background:#15181c;color:#fff;font-weight:700;padding:1px 0}
+.nom .hh{display:block;padding:4px 0;font-weight:600} .nom .hh.peq{font-size:7.5px;letter-spacing:-.2px;font-weight:700;padding:6px 0}
+.nom td.gris{background:var(--line);opacity:.5}
+.nom td.sep,.nom th.sep{border-left:3px solid var(--mut)}
+.nom .nomscroll td.sep,.nom .nomscroll td.sep~td{padding:9px 4px;vertical-align:middle}
+.nom td.fuerte{font-weight:800}
+.nom tr.tot td{font-weight:800;padding:6px 4px;background:var(--bg)}
+.nomres{margin-top:14px} .nomres td{font-size:13px} .nomres tr.fuerte td{font-weight:800;background:var(--bg)}
+.nomres tr.liq td{font-size:16px;color:var(--acc)}
+body.sindinero .dinero{-webkit-text-security:disc;color:transparent;text-shadow:0 0 0 var(--mut)}
+body.sindinero .dinero::placeholder{color:transparent}
+.oculto{display:none}
+details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="marca" id="marca"></div>
+  <div class="nav">
+    <button id="ant" aria-label="Anterior">‹</button>
+    <h1 id="titulo"></h1>
+    <span style="display:flex;gap:6px"><button id="ojo" aria-label="Ocultar o mostrar el dinero" title="Ocultar o mostrar el dinero">👁</button><button class="hoy" id="hoy">Hoy</button><button id="sig" aria-label="Siguiente">›</button></span>
+  </div>
+  <div class="tira"></div>
+</header>
+
+<main class="wrap">
+  <section id="v-mes"></section>
+  <section id="v-nomina" class="oculto"></section>
+  <section id="v-anio" class="oculto"></section>
+  <section id="v-ajustes" class="oculto"></section>
+</main>
+
+<nav class="tabs">
+  <button data-v="mes" class="on"><i>📅</i>Mes</button>
+  <button data-v="nomina"><i>🧾</i>Nómina</button>
+  <button data-v="anio"><i>📊</i>Año</button>
+  <button data-v="ajustes"><i>⚙️</i>Ajustes</button>
+</nav>
+
+<div class="sheetbg" id="sheetbg"><div class="sheet" id="sheet"></div></div>
+<input type="file" id="fichero" accept=".json,application/json" class="oculto">
+
+<script>
+'use strict';
+const CLAVE='misHoras.v1', CACHE_PRE='mis-horas-', VERSION='21';
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DOW=['L','M','X','J','V','S','D'];
+const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+const POR_DEFECTO={
+  turnos:[{id:1,nombre:'Jornada normal',abr:'9 horas',ini:'08:00',fin:'18:00',descanso:60,color:'#a2d39c',texto:'#000000',tipo:'trabajo'},
+          {id:2,nombre:'Sábado 5 horas',abr:'5 horas',ini:'08:00',fin:'13:00',descanso:0,color:'#6ecff6',texto:'#000000',tipo:'trabajo'},
+          {id:3,nombre:'Vacaciones',abr:'Vac',ini:'08:00',fin:'16:00',descanso:0,color:'#f7977a',texto:'#550804',tipo:'vacaciones'},
+          {id:4,nombre:'Festivo',abr:'Festivo',ini:'08:00',fin:'16:00',descanso:0,color:'#9e0b0f',texto:'#efefef',tipo:'festivo'}],
+  dias:{}, ajustes:{descuento:6.5,pctExtra:40,pctNoche:20,horasSemana:40,horasDia:8,turnoDefecto:1,tarifas:[{desde:'2000-01-01',normal:0}],
+    prima:{eur:0,nomina:false,meses:{}}, parcheNominas:1,parcheOct:1,parcheSep16:1,parche1111:1}
+};
+
+let S=cargar();
+let vista='mes';
+const hoyD=new Date();
+let cur={y:hoyD.getFullYear(),m:hoyD.getMonth()};
+
+function cargar(){
+  // Si lo guardado está vacío (se abrió antes de tener datos) y hay datos de partida, se usan los de partida
+  try{ const t=localStorage.getItem(CLAVE); if(t){ const d=normalizar(JSON.parse(t)); if(Object.keys(d.dias).length||!window.DATOS_INICIALES) return d; } }catch(e){}
+  if(window.DATOS_INICIALES) return normalizar(JSON.parse(JSON.stringify(window.DATOS_INICIALES)));
+  return normalizar(JSON.parse(JSON.stringify(POR_DEFECTO)));
+}
+function normalizar(d){
+  d.turnos=Array.isArray(d.turnos)?d.turnos:[]; d.dias=d.dias||{};
+  d.ajustes=Object.assign({descuento:0,precioNormal:0,precioExtra:0,horasSemana:40,turnoDefecto:(d.turnos[0]||{}).id||0},d.ajustes||{});
+  const a=d.ajustes;
+  if(!a.vac){ const h=new Date(), f=new Date(h.getFullYear(),h.getMonth(),0); a.vac={desde:f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0'),saldo:0,porMes:2.5,eurDia:0}; }
+  if(a.pctNoche==null) a.pctNoche=20;
+  if(a.horasDia==null) a.horasDia=8;
+  // Prima fija al mes (si este teléfono aún no la tiene, se toma la de los datos de partida)
+  if(!a.prima){ const p0=window.DATOS_INICIALES&&window.DATOS_INICIALES.ajustes&&window.DATOS_INICIALES.ajustes.prima; a.prima=Object.assign({eur:0,nomina:false},p0||{}); }
+  if(!a.prima.meses) a.prima.meses={};
+  // Nóminas de julio a octubre de 2026 (pedido por Emmanuel el 11-nov-2026): se añaden una vez los días que falten, sin tocar los que ya haya
+  if(!a.parcheNominas){ a.parcheNominas=1; const p0=window.DATOS_INICIALES;
+    if(p0&&p0.dias){ for(const k in p0.dias) if(k<'2026-11-01'&&!d.dias[k]) d.dias[k]=JSON.parse(JSON.stringify(p0.dias[k])); }
+    if(p0&&a.vac.desde==='2026-08-31'&&!+a.vac.saldo){ a.vac.desde='2026-06-30'; a.vac.saldo=3; } }
+  // Semana del 19-oct-2026 tal como sale en la hoja (miércoles 5 h, viernes 8 h, sábado 5 h): mismo total, días corregidos
+  if(!a.parcheOct){ a.parcheOct=1; const p0=window.DATOS_INICIALES, q=k=>d.dias[k]&&Object.keys(d.dias[k]).length===1&&d.dias[k].t===16;
+    if(p0&&p0.dias&&q('2026-10-21')&&q('2026-10-23')&&!d.dias['2026-10-24']) ['2026-10-21','2026-10-23','2026-10-24','2026-09-16'].forEach(k=>{ if(p0.dias[k]) d.dias[k]=JSON.parse(JSON.stringify(p0.dias[k])); }); }
+  // 16-sep-2026: Emmanuel confirmó (11-nov-2026) que hizo 3 h de noche; la empresa pagó 2
+  if(!a.parcheSep16){ a.parcheSep16=1; const x=d.dias['2026-09-16']; if(window.DATOS_INICIALES&&x&&x.t===16&&x.h===11&&x.noc===120){ x.h=12; x.noc=180; x.nota='Hice 3 h de noche (12 h en total). La empresa pagó 2: falta 1 h, unos 26,5 € brutos'; } }
+  if(!a.parche1111){ a.parche1111=1; ['2026-11-03','2026-11-04','2026-11-05','2026-11-11'].forEach(k=>{ const x=d.dias[k], t=x&&d.turnos.find(q=>q.id===x.t); if(window.DATOS_INICIALES&&x&&t&&t.tipo==='trabajo'&&x.h==null&&!x.sal) x.h=8; }); }   // meses en que Emmanuel ha marcado que se la han dado
+  // Nóminas jul–oct 2026: el sábado no es «siempre extra» (cuenta para las 40 h) y el día de vacaciones sale del sueldo mensual ÷ 30
+  d.turnos.forEach(t=>{ if(t.tipo==='extra') t.tipo='trabajo'; });
+  if(+a.vac.eurDia===191.59) a.vac.eurDia=0;
+  if(a.pctExtra==null) a.pctExtra=(a.precioNormal&&a.precioExtra)?Math.round((a.precioExtra/a.precioNormal-1)*1000)/10:40;
+  if(!Array.isArray(a.tarifas)||!a.tarifas.length) a.tarifas=[{desde:'2026-11-01',normal:+a.precioNormal||0}];
+  return d;
+}
+function guardar(){ try{localStorage.setItem(CLAVE,JSON.stringify(S));}catch(e){alert('No se pudo guardar en este dispositivo.');} }
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let oculto=false; try{ oculto=localStorage.getItem('misHoras.oculto')==='1'; }catch(e){}
+const eur=n=>oculto?'••• €':new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(n||0);
+const num=n=>new Intl.NumberFormat('es-ES',{maximumFractionDigits:2}).format(n||0);
+const p2=n=>String(n).padStart(2,'0');
+const clave=(y,m,d)=>y+'-'+p2(m+1)+'-'+p2(d);
+const hoyK=()=>{const d=new Date();return clave(d.getFullYear(),d.getMonth(),d.getDate());};
+const turno=id=>S.turnos.find(t=>t.id===id);
+const mins=h=>{const [a,b]=String(h||'0:0').split(':').map(Number);return (a||0)*60+(b||0);};
+function hTurno(t){ let m=mins(t.fin)-mins(t.ini); if(m<0)m+=1440; return Math.max(0,(m-(+t.descanso||0))/60); }
+function hm(min){ const h=Math.floor(min/60), m=min%60; return (h?h+' h ':'')+(m||!h?m+' min':''); }
+
+// Horas trabajadas (o pagadas) en un día
+function horasDia(d){
+  if(!d) return 0; const t=turno(d.t); let h=0;
+  if(t){ h=(d.h!=null&&d.h!=='')?+d.h:hTurno(t); h=Math.max(0,h-(d.sal||0)/60); }
+  return h+(d.ex||0)/60;
+}
+// Como la hoja de la empresa (comprobado con las nóminas de julio a octubre de 2026): las primeras 40 h de cada
+// semana (lunes a domingo, en orden) son normales y el resto extra al 40 %. Las horas de la semana que caen en el
+// mes anterior también cuentan para las 40. Festivos y vacaciones no cuentan: van en líneas aparte.
+const esExtra=d=>{ const t=d&&turno(d.t); return !!(t&&(t.tipo==='festivo'||t.tipo==='vacaciones')); };
+const tr2=n=>Math.floor(n*100+1e-6)/100;   // la hoja de la empresa corta los céntimos, no redondea
+// Reparto de una semana día a día. Las horas extra de cada mes salen de la regla de las 40 h (lo que paga la empresa);
+// dentro del mes se apuntan primero a lo que cada día pasa de 8 h y lo que sobre a los últimos días (el sábado).
+function repartoSemana(k,ov){
+  const get=x=>(ov&&x===k)?ov:S.dias[x];
+  const [y,m,dd]=k.split('-').map(Number), lun=dd-((new Date(y,m-1,dd).getDay()+6)%7);
+  const tope=+S.ajustes.horasSemana||40, jor=+S.ajustes.horasDia||8, ds=[]; let ac=0;
+  for(let i=0;i<7;i++){
+    const x=new Date(y,m-1,lun+i), kk=clave(x.getFullYear(),x.getMonth(),x.getDate()), d=get(kk);
+    const h=(d&&!esExtra(d))?horasDia(d):0, n=Math.min(h,Math.max(0,tope-ac)); ac+=h;
+    ds.push({k:kk,mes:kk.slice(0,7),h,x:h-n,e:0});
+  }
+  const R={};
+  ds.forEach(o=>{ R[o.k]=o; if(o.hecho) return;
+    const g=ds.filter(p=>p.mes===o.mes); let q=g.reduce((a,p)=>a+p.x,0);
+    g.forEach(p=>{ p.hecho=1; p.e=Math.min(Math.max(0,p.h-jor),q); q-=p.e; });
+    for(let i=g.length-1;i>=0&&q>1e-9;i--){ const e=Math.min(g[i].h-g[i].e,q); g[i].e+=e; q-=e; }
+  });
+  return R;
+}
+function calc(k,ov){
+  const d=(ov||S.dias[k]), r={h:0,hN:0,hX:0,hNoc:0,hF:0,normal:0,extra:0,noche:0,festE:0,vacE:0,ing:0,total:0,t:d?turno(d.t):null};
+  if(!d) return r;
+  r.h=horasDia(d); const tp=r.t?r.t.tipo:'', tf=tarifa(k);
+  if(tp==='vacaciones'){ r.h=0; r.vacE=vacDia(k); }
+  else if(tp==='festivo'){ r.hF=r.h; r.h=0; r.festE=r.hF*tf.n; }
+  r.hX=r.h?repartoSemana(k,ov)[k].e:0; r.hN=r.h-r.hX;
+  r.normal=r.hN*tf.n; r.extra=r.hX*tf.x;
+  r.hNoc=(d.noc||0)/60; r.noche=r.hNoc*tf.n*(+S.ajustes.pctNoche||0)/100;
+  r.ing=+d.ing||0; r.total=r.normal+r.extra+r.noche+r.festE+r.vacE+r.ing;
+  return r;
+}
+// Lo que pagan por un día de vacaciones. Nómina de agosto de 2026: 8 días = 766,36 €, o sea
+// el sueldo de un mes a 40 h por semana (precio × 40 × 52 ÷ 12) repartido entre 30 días. Si en Ajustes hay un importe, manda ese.
+function vacDia(k){ const v=S.ajustes.vac||{}; return (+v.eurDia)||tarifa(k).n*(+S.ajustes.horasSemana||40)*52/12/30; }
+// Precio de la hora vigente en una fecha (por si hay subidas de sueldo)
+function tarifa(k){
+  const ts=S.ajustes.tarifas.slice().sort((a,b)=>a.desde<b.desde?-1:1);
+  let t=ts[0]; ts.forEach(x=>{ if(x.desde<=k) t=x; });
+  const n=+(t&&t.normal)||0; return {n, x:n*(1+(+S.ajustes.pctExtra||0)/100)};
+}
+function resumenMes(y,m,hastaK){
+  const n=new Date(y,m+1,0).getDate();
+  const r={total:0,normal:0,extra:0,ing:0,hN:0,hX:0,hNoc:0,noche:0,festH:0,festE:0,vacE:0,trab:0,vac:0,fest:0,libresLV:[],filas:[]};
+  for(let d=1;d<=n;d++){
+    const k=clave(y,m,d), dia=S.dias[k];
+    if(hastaK && k>hastaK) continue;
+    if(!dia){ const w=new Date(y,m,d).getDay(); if(w>=1&&w<=5) r.libresLV.push(k); continue; }
+    const c=calc(k);
+    r.total+=c.total; r.normal+=c.normal; r.extra+=c.extra; r.ing+=c.ing; r.hX+=c.hX; r.hN+=c.hN; r.hNoc+=c.hNoc; r.noche+=c.noche; r.festH+=c.hF; r.festE+=c.festE; r.vacE+=c.vacE;
+    if(c.t){ if(c.t.tipo==='vacaciones') r.vac++; else if(c.t.tipo==='festivo') r.fest++; else r.trab++; }
+    else if(c.h>0||c.ing>0) r.trab++;
+    r.filas.push({k,d,dia,c});
+  }
+  ['normal','extra','noche','festE','vacE'].forEach(f=>r[f]=tr2(r[f]));
+  // Prima: solo cuenta en los meses en que él marca «me la han dado». En nómina entra en el bruto (con CASS); si no, va aparte
+  const pr=S.ajustes.prima||{}, mk=y+'-'+p2(m+1), pe=(+pr.eur>0&&pr.meses&&pr.meses[mk])?+pr.eur:0;
+  r.prima=pe; r.primaN=pr.nomina?pe:0; r.primaF=pr.nomina?0:pe;
+  r.total=Math.round((r.normal+r.extra+r.noche+r.festE+r.vacE+r.ing+r.primaN)*100)/100;
+  return r;
+}
+// Saldo de vacaciones al final de un mes (como el cuadro «Vacances» de la hoja)
+function vacSaldo(y,m){
+  const v=S.ajustes.vac, [by,bm]=v.desde.split('-').map(Number), meses=Math.max(0,(y-by)*12+(m+1-bm)), fin=clave(y,m,new Date(y,m+1,0).getDate());
+  let hechas=0; for(const k in S.dias){ if(k>v.desde&&k<=fin){ const t=turno(S.dias[k].t); if(t&&t.tipo==='vacaciones') hechas++; } }
+  return (+v.saldo||0)+meses*(+v.porMes||0)-hechas;
+}
+function tarjetaVac(y,m,R){
+  const v=S.ajustes.vac, vd=vacDia(clave(y,m,1)), a=new Date(y,m-1,1), acum=vacSaldo(a.getFullYear(),a.getMonth()), pend=vacSaldo(y,m), gen=pend+R.vac-acum;
+  return '<div class="card"><h2>Vacaciones</h2><div class="stats" style="grid-template-columns:repeat(4,1fr)">'
+    +st(num(acum),'acumuladas antes')+st('+'+num(gen),'generadas este mes')+st(num(R.vac),'hechas este mes')+st(num(pend),'pendientes a fin de mes')+'</div>'
+    +(pend<0?'<p class="nota" style="margin:10px 0 0;color:var(--bad)">Quedas debiendo '+num(-pend)+' días de vacaciones: te los pagan por adelantado y los irás recuperando con los '+num(v.porMes)+' días que generas cada mes.</p>':'')
+    +'<p class="nota" style="margin:8px 0 0">Cada día se paga a '+eur(vd)+'. Cuentan sábados y domingos.</p></div>';
+}
+const cass=b=>tr2(b*(+S.ajustes.descuento||0)/100);
+const neto=b=>b-cass(b);
+const banco=R=>((+S.ajustes.descuento||0)?neto(R.total):R.total)+(R.primaF||0);   // lo que llega: neto + prima pagada aparte
+
+/* ---------- Vista MES ---------- */
+function pintaMes(){
+  const {y,m}=cur, hk=hoyK(), mk=y+'-'+p2(m+1);
+  $('#titulo').textContent=MESES[m]+' '+y;
+  const R=resumenMes(y,m);
+  const esActual=hk.startsWith(mk), pasado=mk<hk.slice(0,7);
+  const H=esActual?resumenMes(y,m,hk):null;
+  const desc=+S.ajustes.descuento||0;
+  let h='';
+  // calendario
+  const n=new Date(y,m+1,0).getDate(), off=(new Date(y,m,1).getDay()+6)%7;
+  h+='<div class="card"><div class="cal">'+DOW.map(x=>'<div class="dow">'+x+'</div>').join('');
+  for(let i=0;i<off;i++) h+='<div class="day vac"></div>';
+  for(let d=1;d<=n;d++){
+    const k=clave(y,m,d), dia=S.dias[k], t=dia?turno(dia.t):null;
+    const stl=t?' style="background:'+esc(t.color)+';color:'+esc(t.texto)+';border-color:'+esc(t.color)+'"':'';
+    h+='<button class="day'+(k===hk?' hoy':'')+'" data-k="'+k+'"'+stl+'><span class="n">'+d+'</span>'
+      +'<span class="a">'+(dia&&(!t||t.tipo==='trabajo')?(horasDia(dia)?'<b>'+num(horasDia(dia))+' h</b>':'Libre'):(t?esc(t.abr):''))+'</span>'
+      +(dia&&calc(k).hX?'<span class="x">+'+num(calc(k).hX)+' ext</span>':'')
+      +(dia&&dia.noc?'<span class="x">🌙'+num(dia.noc/60)+'</span>':'')
+      +(dia&&dia.ing?'<span class="x">+'+(oculto?'•••':num(dia.ing))+' €</span>':'')
+      +(dia&&dia.nota?'<span class="dot"></span>':'')+'</button>';
+  }
+  h+='</div></div>';
+
+  h+='<div class="card hero"><div class="lbl">'+(desc?(pasado?'Al banco este mes':'Al banco a fin de mes'):(pasado?'Ganado en el mes':'Ganarás a fin de mes'))+'</div>'
+    +'<div class="big">'+eur(banco(R))+'</div><div class="sub">'
+    +(desc?'<span>Bruto<b>'+eur(R.total)+'</b></span><span>CASS '+num(desc)+' %<b>−'+eur(R.total-neto(R.total))+'</b></span>':'')
+    +(R.primaF?'<span>Prima (aparte)<b>+'+eur(R.primaF)+'</b></span>':'')
+    +(H?'<span>Llevas hasta hoy<b>'+eur(banco(H))+'</b></span>':'')+'</div>'
+    +(H&&R.total>0?'<div class="bar"><i style="width:'+Math.round(H.total/R.total*100)+'%"></i></div>':'')+'</div>';
+
+  { const pr=S.ajustes.prima, dada=!!pr.meses[mk];
+    if(+pr.eur>0) h+='<div class="card aviso"><span>'+(dada?'Prima de '+eur(pr.eur)+': <b>cobrada</b>':'Prima de '+eur(pr.eur)+': <b>sin cobrar</b>')+'</span><button class="btn'+(dada?' sec':'')+'" id="primaBtn">'+(dada?'Quitar':'Me la han dado')+'</button></div>'; }
+  if(!pasado && R.libresLV.length){
+    const pend=R.libresLV.filter(k=>k>=hk||!esActual);
+    if(pend.length) h+='<div class="card aviso"><span>Hay <b>'+pend.length+'</b> días de lunes a viernes sin anotar.</span><button class="btn" id="rellenar">Rellenar</button></div>';
+  }
+
+  h+='<div class="card"><div class="stats">'
+    +st(R.trab,'días trabajados')+st(num(R.hN)+' h','horas normales')+st(num(R.hX)+' h','horas extra')
+    +(R.hNoc?st(num(R.hNoc)+' h','horas de noche'):'')+(R.fest?st(R.fest,'festivos'):'')+(R.vac?st(R.vac,'días de vacaciones'):'')
+    +st(num(vacSaldo(y,m)),'vacaciones pendientes')
+    +'</div><button class="btn sec comp" style="width:100%;margin-top:12px;padding:11px">📤 Enviar mis horas en PDF</button></div>';
+  $('#v-mes').innerHTML=h;
+}
+const st=(v,l)=>'<div class="stat"><b>'+v+'</b><span>'+l+'</span></div>';
+
+/* ---------- Vista NÓMINA (como la hoja de la empresa) ---------- */
+function pintaNomina(){
+  const {y,m}=cur, n=new Date(y,m+1,0).getDate(), off=(new Date(y,m,1).getDay()+6)%7;
+  $('#titulo').textContent=MESES[m]+' '+y;
+  const R=resumenMes(y,m), tf=tarifa(clave(y,m,n)), desc=+S.ajustes.descuento||0, e=S.ajustes.empresa||{};
+  let h='<div class="card nom"><div class="nomcab"><div><b>'+esc(e.nombre||'Mi trabajo')+'</b><small>Calculado por la app · toca un día para cambiarlo</small></div><div class="nommes">'+MESES[m].toUpperCase()+' '+y+'</div></div>';
+  h+='<div class="nomscroll"><table><tr>'+['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'].map(x=>'<th>'+x+'.</th>').join('')
+    +'<th class="sep">HORAS</th></tr>';
+  let tH=0; const sems=[];
+  for(let s=1-off;s<=n;s+=7){
+    let wH=0,wN=0,wX=0,ant=0; h+='<tr>';
+    for(let i=0;i<7;i++){
+      const d=s+i;
+      if(d<1){ const x=new Date(y,m,d), dd=S.dias[clave(x.getFullYear(),x.getMonth(),x.getDate())]; if(dd&&!esExtra(dd)) ant+=horasDia(dd); h+='<td class="gris"></td>'; continue; }
+      if(d>n){ h+='<td class="gris"></td>'; continue; }
+      const k=clave(y,m,d), dia=S.dias[k], c=calc(k); wH+=c.h; wN+=c.hN; wX+=c.hX;
+      const txt=!dia||(!c.t&&!c.h)?'–':(c.t&&c.t.tipo==='festivo'?'FEST':(c.t&&c.t.tipo==='vacaciones'?'VAC':num(c.h)));
+      h+='<td class="clic" data-k="'+k+'"><span class="dn">'+d+'</span><span class="hh'+(isNaN(parseFloat(txt))?' peq':'')+'">'+txt+'</span></td>';
+    }
+    tH+=wH;
+    h+='<td class="sep fuerte">'+num(wH)+'</td></tr>'; sems.push({a:Math.max(1,s),b:Math.min(n,s+6),ant,wN,wX,wH});
+  }
+  h+='<tr class="tot"><td colspan="7" style="text-align:right;padding-right:8px">TOTAL HORAS:</td><td class="sep">'+num(tH)+'</td></tr></table></div>';
+  h+='<table class="nomsem"><tr><th>Semana</th><th class="r">Mes ant.</th><th class="r">Normales<br>'+eur(tf.n)+'</th><th class="r">Al '+num(S.ajustes.pctExtra)+' %<br>'+eur(tf.x)+'</th><th class="r">Total<br>horas</th></tr>'
+    +sems.map(w=>'<tr><td>'+w.a+(w.b!==w.a?'–'+w.b:'')+'</td><td class="r">'+(w.ant?num(w.ant):'–')+'</td><td class="r">'+num(w.wN)+'</td><td class="r">'+num(w.wX)+'</td><td class="r">'+num(w.wH)+'</td></tr>').join('')
+    +'<tr class="fuerte"><td>Horas</td><td></td><td class="r">'+num(R.hN)+'</td><td class="r">'+num(R.hX)+'</td><td class="r">'+num(R.hN+R.hX)+'</td></tr>'
+    +'<tr class="fuerte"><td>Euros</td><td></td><td class="r">'+eur(R.normal)+'</td><td class="r">'+eur(R.extra)+'</td><td class="r">'+eur(R.normal+R.extra)+'</td></tr></table>';
+  const fila=(a,b,c,cls)=>'<tr'+(cls?' class="'+cls+'"':'')+'><td>'+a+'</td><td class="r">'+(b||'')+'</td><td class="r">'+c+'</td></tr>';
+  h+='<table class="nomres">'
+    +fila('SUBTOTAL',num(R.hN+R.hX)+' h',eur(R.normal+R.extra),'fuerte')
+    +fila('Horas normales',num(R.hN)+' h × '+eur(tf.n),eur(R.normal))
+    +fila('Horas al '+num(S.ajustes.pctExtra)+' %',num(R.hX)+' h × '+eur(tf.x),eur(R.extra))
+    +fila('FESTIVOS (horas)',num(R.festH)+' h × '+eur(tf.n),eur(R.festE))
+    +fila('VACACIONES (hechas)',num(R.vac)+' días × '+eur(vacDia(clave(y,m,1))),eur(R.vacE))
+    +fila('NOCTURNIDAD (horas)',num(R.hNoc)+' h × '+eur(tf.n*(+S.ajustes.pctNoche||0)/100),eur(R.noche))
+    +fila('PRIMAS / OTROS',R.primaN?'prima '+eur(R.primaN):'',eur(R.ing+R.primaN))
+    +fila('TOTAL BRUTO','',eur(R.total),'fuerte')
+    +(desc?fila('CASS ('+num(desc)+' %)','','−'+eur(R.total-neto(R.total)))+fila('LÍQUIDO · al banco','',eur(neto(R.total)),'fuerte liq'):'')
+    +(R.primaF?fila('Prima (aparte)','','+'+eur(R.primaF))+fila('TOTAL QUE TE LLEGA','',eur(banco(R)),'fuerte'):'')
+    +'</table></div>'+tarjetaVac(y,m,R);
+  $('#v-nomina').innerHTML=h;
+}
+
+/* ---------- Compartir horas en PDF (sin dinero) ---------- */
+function pdfTexto(s){ return String(s).replace(/[–—]/g,'-').replace(/[^\x00-\xff]/g,'?').replace(/([\\()])/g,'\\$1'); }
+function hazPdf(L){
+  let c='';
+  L.forEach(o=>{ if(o.l) c+=(o.g?'0.75 G ':'0 G ')+o.l[0]+' '+o.l[1]+' m '+o.l[2]+' '+o.l[3]+' l S\n'; else c+='BT /'+(o.b?'F2':'F1')+' '+(o.z||10)+' Tf '+o.x+' '+o.y+' Td ('+pdfTexto(o.t)+') Tj ET\n'; });
+  const objs=['<< /Type /Catalog /Pages 2 0 R >>','<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
+    '<< /Length '+c.length+' >>\nstream\n'+c+'endstream'];
+  let out='%PDF-1.4\n'; const off=[];
+  objs.forEach((o,i)=>{ off.push(out.length); out+=(i+1)+' 0 obj\n'+o+'\nendobj\n'; });
+  const xr=out.length;
+  out+='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n'+off.map(n=>String(n).padStart(10,'0')+' 00000 n \n').join('')+'trailer\n<< /Size '+(objs.length+1)+' /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF';
+  const u=new Uint8Array(out.length); for(let i=0;i<out.length;i++) u[i]=out.charCodeAt(i)&255; return u;
+}
+const fechaES=f=>p2(f.getDate())+'/'+p2(f.getMonth()+1)+'/'+f.getFullYear();
+function docHoras(desde,nDias,titulo){
+  const L=[], X=[40,150,270]; let y=795;
+  L.push({x:40,y,t:'Horas trabajadas',b:1,z:18}); y-=22;
+  L.push({x:40,y,t:titulo,b:1,z:12}); y-=18;
+  if(S.ajustes.nombre){ L.push({x:40,y,t:S.ajustes.nombre,z:12}); y-=14; }
+  y-=10; ['Día','Fecha','Horas'].forEach((t,i)=>L.push({x:X[i],y,t,b:1})); y-=5; L.push({l:[40,y,555,y]}); y-=13;
+  const T={h:0,hN:0,hX:0,noc:0,fest:0,vac:0,dias:0};
+  for(let i=0;i<nDias;i++){
+    const f=new Date(desde.getFullYear(),desde.getMonth(),desde.getDate()+i), k=clave(f.getFullYear(),f.getMonth(),f.getDate()), d=S.dias[k], c=calc(k), tp=c.t?c.t.tipo:'';
+    const hs=tp==='festivo'?'Festivo':tp==='vacaciones'?'Vacaciones':(c.h?num(c.h)+' h':'Descanso');
+    const dn=DIAS[f.getDay()]; [dn[0].toUpperCase()+dn.slice(1),fechaES(f),hs].forEach((t,j)=>L.push({x:X[j],y,t,b:j===2&&c.h>0}));
+    if(f.getDay()===0&&i<nDias-1) L.push({l:[40,y-4,555,y-4],g:1});
+    T.h+=c.h; T.hN+=c.hN; T.hX+=c.hX; T.noc+=c.hNoc; if(tp==='festivo') T.fest++; else if(tp==='vacaciones') T.vac++; else if(c.h>0) T.dias++;
+    y-=14;
+  }
+  y+=8; L.push({l:[40,y,555,y]}); y-=18;
+  L.push({x:40,y,t:'Total de horas: '+num(T.h)+' h',b:1,z:13}); y-=18;
+  L.push({x:40,y,t:'Días trabajados: '+T.dias,z:11});
+  L.push({x:40,y:40,t:'Generado el '+fechaES(new Date())+' ',z:8});
+  return hazPdf(L);
+}
+function semanasDelMes(y,m){
+  const n=new Date(y,m+1,0).getDate(), off=(new Date(y,m,1).getDay()+6)%7, r=[];
+  for(let s=1-off;s<=n;s+=7){ const a=new Date(y,m,s), b=new Date(y,m,s+6); r.push({a,b,t:'Semana del '+a.getDate()+(a.getMonth()!==b.getMonth()?' de '+MESES[a.getMonth()]:'')+' al '+b.getDate()+' de '+MESES[b.getMonth()]+' de '+b.getFullYear()}); }
+  return r;
+}
+function abreCompartir(){
+  const {y,m}=cur; ed=null;
+  $('#sheet').innerHTML='<h3 style="text-transform:none">Enviar mis horas en PDF</h3><p class="nota" style="margin:0 0 12px">El PDF lleva solo tu nombre y los días con sus horas. No sale ningún precio, ni la empresa, ni tus notas.</p>'
+    +'<button class="btn" data-comp="m" style="width:100%;padding:12px;margin-bottom:10px">Todo '+MESES[m]+' de '+y+'</button>'
+    +semanasDelMes(y,m).map((w,i)=>'<button class="btn sec" data-comp="'+i+'" style="width:100%;padding:11px;margin-bottom:8px;text-align:left">'+w.t+'</button>').join('')
+    +'<button class="btn sec" id="cCanc" style="width:100%;padding:11px;margin-top:4px">Cancelar</button>';
+  $('#sheetbg').classList.add('on');
+}
+function pdfDe(cual){
+  const {y,m}=cur;
+  if(cual==='m') return {bytes:docHoras(new Date(y,m,1),new Date(y,m+1,0).getDate(),MESES[m][0].toUpperCase()+MESES[m].slice(1)+' de '+y),nombre:'Horas '+MESES[m]+' '+y+'.pdf'};
+  const w=semanasDelMes(y,m)[+cual]; return {bytes:docHoras(w.a,7,w.t),nombre:'Horas semana '+p2(w.a.getDate())+'-'+p2(w.a.getMonth()+1)+' a '+p2(w.b.getDate())+'-'+p2(w.b.getMonth()+1)+'-'+w.b.getFullYear()+'.pdf'};
+}
+async function compartir(cual){
+  const {bytes,nombre}=pdfDe(cual), blob=new Blob([bytes],{type:'application/pdf'});
+  try{
+    const file=new File([blob],nombre,{type:'application/pdf'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:nombre.replace('.pdf','')}); return cierra(); }
+  }catch(e){ if(e&&e.name==='AbortError') return; }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=nombre; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); cierra();
+}
+
+/* ---------- Vista AÑO ---------- */
+function pintaAnio(){
+  const y=cur.y; $('#titulo').textContent='Año '+y;
+  const rs=MESES.map((_,m)=>resumenMes(y,m)), max=Math.max(1,...rs.map(r=>r.total));
+  const T=rs.reduce((a,r)=>({total:a.total+r.total,extra:a.extra+r.extra+r.ing+r.prima,cobro:a.cobro+banco(r),hN:a.hN+r.hN,hX:a.hX+r.hX,trab:a.trab+r.trab,vac:a.vac+r.vac}),{total:0,extra:0,cobro:0,hN:0,hX:0,trab:0,vac:0});
+  const desc=+S.ajustes.descuento||0;
+  let h='<div class="card hero"><div class="lbl">Total del año '+y+'</div><div class="big">'+eur(T.cobro)+'</div>'
+    +'<div class="sub">'+(desc?'<span>Bruto<b>'+eur(T.total)+'</b></span>':'')+'<span>Extras<b>'+eur(T.extra)+'</b></span><span>Días trabajados<b>'+T.trab+'</b></span><span>Vacaciones<b>'+T.vac+' días</b></span></div></div>';
+  h+='<div class="card"><div class="stats">'+st(num(T.hN)+' h','horas normales')+st(num(T.hX)+' h','horas extra')+st(eur(T.cobro/Math.max(1,rs.filter(r=>r.filas.length).length)),'media por mes trabajado')+'</div></div>';
+  h+='<div class="card"><h2>Mes a mes</h2>';
+  if(!rs.some(r=>r.filas.length)) h+='<p class="nota">No hay nada anotado en '+y+'.</p>';
+  rs.forEach((r,m)=>{ if(!r.filas.length) return; h+='<div class="mesfila" data-m="'+m+'"><span><b style="text-transform:capitalize;font-weight:600">'+MESES[m]+'</b><small>'+r.trab+' días · '+num(r.hX)+' h extra</small></span>'
+    +'<span class="b"><i style="width:'+Math.round(r.total/max*100)+'%"></i></span><span class="e">'+eur(banco(r))+'</span></div>'; });
+  h+='</div>';
+  $('#v-anio').innerHTML=h;
+}
+
+/* ---------- Ajustes ---------- */
+let masAbierto=false;
+function pintaAjustes(){
+  $('#titulo').textContent='Ajustes';
+  const hk=hoyK(), ts=S.ajustes.tarifas.slice().sort((a,b)=>a.desde<b.desde?-1:1);
+  let h='<div class="card"><h2>Precio de la hora</h2><p class="nota">Ahora cobras <b>'+eur(tarifa(hk).n)+'</b> la hora normal y <b>'+eur(tarifa(hk).x)+'</b> la extra.</p>';
+  ts.forEach(t=>{ const i=S.ajustes.tarifas.indexOf(t);
+    h+='<div class="g3 tarifa" data-i="'+i+'"><div><label>Desde el día</label><input type="date" data-tf="desde" value="'+esc(t.desde)+'"></div><div><label>€ hora normal</label><input class="dinero" type="'+(oculto?'password':'number')+'" '+(oculto?'readonly ':'')+'step="0.01" min="0" data-tf="normal" value="'+(+t.normal||0)+'"></div>'
+      +'<div><label>&nbsp;</label>'+(ts.length>1?'<button class="btn bad" data-borratf="'+i+'" style="width:100%">Quitar</button>':'<input value="extra '+(oculto?'•••':num(tarifa(t.desde).x))+' €" disabled>')+'</div></div>'; });
+  h+='<button class="btn" id="subida" style="width:100%">Me han subido el sueldo</button>'
+    +'</div>';
+  const pr=S.ajustes.prima, v=S.ajustes.vac;
+  h+='<div class="card"><h2>Prima</h2>'
+    +'<div class="fila"><label>Importe (€)<small>Se suma al pulsar «Me la han dado» en Mes</small></label><input class="corto dinero" type="'+(oculto?'password':'number')+'" '+(oculto?'readonly ':'')+'step="0.01" min="0" id="pEur" value="'+(+pr.eur||0)+'"></div>'
+    +'<div class="fila" style="margin:0"><label>¿Va en la nómina?<small>Sí = le quitan la CASS</small></label><select id="pNom" style="width:110px"><option value="0"'+(pr.nomina?'':' selected')+'>No</option><option value="1"'+(pr.nomina?' selected':'')+'>Sí</option></select></div></div>';
+  h+='<div class="card"><h2>Copia de seguridad</h2><div class="acc"><button class="btn" id="exp">Guardar copia</button><button class="btn sec" id="imp">Recuperar copia</button></div></div>';
+  h+='<details class="card mas" id="masAj"'+(masAbierto?' open':'')+'><summary>Más ajustes</summary><h2 style="margin-top:14px">Turnos</h2>';
+  S.turnos.forEach((t,i)=>{
+    h+='<div class="turno" data-i="'+i+'"><div class="g2"><div><label>Nombre</label><input data-f="nombre" value="'+esc(t.nombre)+'"></div><div><label>Texto corto (calendario)</label><input data-f="abr" value="'+esc(t.abr)+'"></div></div>'
+      +'<div class="g3"><div><label>Entrada</label><input type="time" data-f="ini" value="'+esc(t.ini)+'"></div><div><label>Salida</label><input type="time" data-f="fin" value="'+esc(t.fin)+'"></div><div><label>Descanso (min)</label><input type="number" min="0" data-f="descanso" value="'+(+t.descanso||0)+'"></div></div>'
+      +'<div class="g2"><div><label>Tipo</label><select data-f="tipo">'+[['trabajo','trabajo'],['vacaciones','vacaciones'],['festivo','festivo']].map(x=>'<option value="'+x[0]+'"'+(t.tipo===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></div><div><label>Horas que cuenta</label><input value="'+num(hTurno(t))+' h" disabled></div></div>'
+      +'<div class="g3"><div><label>Color</label><input type="color" data-f="color" value="'+esc(t.color)+'"></div><div><label>Color letra</label><input type="color" data-f="texto" value="'+esc(t.texto)+'"></div>'
+      +'<div><label>&nbsp;</label><button class="btn bad" data-borra="'+i+'" style="width:100%">Borrar</button></div></div>'
+      +'</div>';
+  });
+  h+='<button class="btn sec" id="nuevoT">+ Añadir turno</button>';
+
+  h+='<h2 style="margin-top:18px">Nombres</h2><div class="fila"><label>Tu nombre<small>Sale en el PDF de horas</small></label><input id="aNom" style="width:190px" value="'+esc(S.ajustes.nombre||'')+'"></div><div class="fila"><label>Nombre de la empresa<small>Sale arriba en la app. Déjalo vacío para quitarlo</small></label><input id="aEmp" style="width:190px" value="'+esc((S.ajustes.empresa||{}).nombre||'')+'"></div>';
+  h+='<h2 style="margin-top:18px">Cálculo</h2>'
+    +'<div class="fila"><label>Turno de lunes a viernes<small>El que se pone al pulsar «Rellenar»</small></label><select id="aDef" style="width:170px">'+S.turnos.map(t=>'<option value="'+t.id+'"'+(t.id===S.ajustes.turnoDefecto?' selected':'')+'>'+esc(t.nombre)+'</option>').join('')+'</select></div>'
+    +'<div class="fila"><label>Horas extra: % de más<small>40 % = la hora normal × 1,4</small></label><input class="corto" type="number" step="0.5" min="0" id="aPct" value="'+(+S.ajustes.pctExtra||0)+'"></div>'
+    +'<div class="fila"><label>Recargo nocturno: % de más<small>Horas entre las 22 h y las 6 h. Mínimo legal en Andorra: 20 %</small></label><input class="corto" type="number" step="0.5" min="0" id="aNoche" value="'+(+S.ajustes.pctNoche||0)+'"></div>'
+    +'<div class="fila"><label>Horas normales por día<small>Al anotar un día, lo que pase de aquí sale como hora extra</small></label><input class="corto" type="number" step="0.5" min="0" id="aJor" value="'+(+S.ajustes.horasDia||8)+'"></div>'
+    +'<div class="fila"><label>Horas normales por semana<small>Así paga la empresa: lo que pase de aquí en la semana es extra</small></label><input class="corto" type="number" step="0.5" min="0" id="aSemana" value="'+(+S.ajustes.horasSemana||40)+'"></div>'
+    +'<div class="fila"><label>Descuento de la CASS (%)<small>Lo que te quitan del bruto; el resto va al banco. En Andorra el trabajador paga 6,5 %</small></label><input class="corto" type="number" step="0.1" min="0" max="100" id="aDesc" value="'+(+S.ajustes.descuento||0)+'"></div>';
+
+  h+='<h2 style="margin-top:18px">Vacaciones</h2>'
+    +'<div class="fila"><label>Días que generas al mes</label><input class="corto" type="number" step="0.1" min="0" id="vMes" value="'+(+v.porMes||0)+'"></div>'
+    +'<div class="fila"><label>€ por día de vacaciones<small>Vacío = automático: '+eur(vacDia(hk))+' (sueldo de un mes de 40 h por semana ÷ 30, como en la nómina)</small></label><input class="corto dinero" type="'+(oculto?'password':'number')+'" '+(oculto?'readonly ':'')+'step="0.01" min="0" id="vEur" placeholder="auto" value="'+(+v.eurDia||'')+'"></div>'
+    +'<div class="fila"><label>Saldo de partida (días)<small>Lo que tenías el '+esc(v.desde.split('-').reverse().join('/'))+'</small></label><input class="corto" type="number" step="0.5" id="vSaldo" value="'+(+v.saldo||0)+'"></div></details>';
+  h+='<div class="card"><div class="fila" style="margin:0"><label>Versión '+VERSION+'<small>Se actualiza sola al abrirla con conexión</small></label><button class="btn sec" id="act">Buscar actualización</button></div></div>';
+  h+='<p class="nota" style="text-align:center;margin:16px 0 4px">App creada por Emmanuel Díaz</p>';
+  $('#v-ajustes').innerHTML=h;
+}
+
+/* ---------- Hoja de día ---------- */
+let ed=null;
+function abreDia(k){
+  const [y,m,d]=k.split('-').map(Number);
+  ed={k,d:Object.assign({t:S.dias[k]?S.dias[k].t:S.ajustes.turnoDefecto,ex:0,sal:0,ing:0,nota:''},S.dias[k]||{}),existe:!!S.dias[k],fecha:DIAS[new Date(y,m-1,d).getDay()]+' '+d+' de '+MESES[m-1]};
+  pintaHoja(); $('#sheetbg').classList.add('on');
+}
+function pintaHoja(){
+  const d=ed.d, c=calc(ed.k,d), t=c.t;
+  let h='<h3>'+ed.fecha+'</h3><div class="chips">'
+    +S.turnos.map(x=>'<button class="chip'+(d.t===x.id?' on':'')+'" data-t="'+x.id+'" style="background:'+esc(x.color)+';color:'+esc(x.texto)+'">'+esc(x.nombre)+'</button>').join('')
+    +'<button class="chip'+(!turno(d.t)?' on':'')+'" data-t="0">Libre</button></div>';
+  const tp=t?t.tipo:'', T=horasDia(d);
+  if(tp!=='vacaciones'){
+    h+='<div class="fila"><label>'+(tp==='festivo'?'Horas del festivo<small>Se pagan a precio normal</small>':'Horas trabajadas<small>Más de '+num(jorDia())+' = extra</small>')+'</label>'
+      +'<div class="step"><button data-s="T" data-v="-0.5">−</button><input class="horas" type="number" inputmode="decimal" step="0.25" min="0" id="dT" value="'+(+T.toFixed(2))+'"><button data-s="T" data-v="0.5">+</button></div></div>';
+    if(tp!=='festivo') h+='<div class="reparto" id="dDet">'+detDia(c)+'</div>';
+    h+='<div class="fila"><label>De ellas, de noche<small>De 22 h a 6 h</small></label><div class="step"><button data-s="noc" data-v="-30">−</button><b>'+hm(d.noc||0)+'</b><button data-s="noc" data-v="30">+</button></div></div>';
+  }
+  h+='<div class="fila"><label>Otro ingreso (€)</label><input class="corto dinero" type="'+(oculto&&d.ing?'password':'number')+'" step="0.01" id="dIng" value="'+(d.ing||'')+'"></div>'
+    +'<textarea id="dNota" rows="2" placeholder="Nota del día">'+esc(d.nota||'')+'</textarea>'
+    +'<div class="total"><span>Este día</span><span id="dTot">'+eur(c.total)+'</span></div>'
+    +'<div class="acc">'+(ed.existe?'<button class="btn bad" id="dBorra">Borrar</button>':'')+'<button class="btn sec" id="dCanc">Cancelar</button><button class="btn" id="dOk">Guardar</button></div>';
+  $('#sheet').innerHTML=h;
+}
+const jorDia=()=>+S.ajustes.horasDia||8;
+const hTxt=n=>num(n)+(n===1?' hora':' horas');
+function detDia(c){
+  const dia=Math.max(0,c.h-jorDia()), tope=num(+S.ajustes.horasSemana||40);
+  const sem=c.hX>dia+1e-9?'Esta semana ya pasas de '+tope+' h: este día cuenta como extra.'
+    :c.hX<dia-1e-9?'Esta semana no llega a '+tope+' h normales: la empresa paga menos extra.':'';
+  return '<b>'+(c.hX>0?(c.hN>0?hTxt(c.hN)+' normales + ':'')+hTxt(c.hX)+' extra':hTxt(c.h)+' normales · sin extra')+'</b>'
+    +(sem?'<small>'+sem+'</small>':'')
+    +(c.hNoc?'<small>Nocturnidad: +'+eur(c.noche)+'</small>':'');
+}
+// Pone el total de horas del día (lo que escribe Emmanuel); las «horas de más» antiguas quedan dentro del total
+function ponHoras(d,T){
+  T=Math.max(0,Math.round((+T||0)*100)/100); d.sal=0; const t=turno(d.t);
+  if(t){ d.ex=0; if(Math.abs(T-hTurno(t))<1e-9) delete d.h; else d.h=T; } else { delete d.h; d.ex=Math.round(T*60); }
+  if((d.noc||0)>T*60) d.noc=Math.round(T*60);
+}
+function leeHoja(){
+  const d=ed.d, tI=$('#dT'), iI=$('#dIng'), nI=$('#dNota');
+  if(tI&&tI.value!==''){ const T=parseFloat(String(tI.value).replace(',','.')); if(isFinite(T)&&Math.abs(T-horasDia(d))>1e-9) ponHoras(d,T); }
+  d.ing=+iI.value||0; d.nota=nI.value.trim();
+}
+function bienvenida(){
+  ed=null;
+  $('#sheet').innerHTML='<h3 style="text-transform:none">Bienvenido a Mi Trabajo</h3><p class="nota" style="margin:0 0 14px">Anota tus horas y mira cuánto ganas a fin de mes. Lo que escribas se guarda solo en este teléfono: nadie más lo ve.</p>'
+    +'<div class="fila"><label>Tu nombre</label><input id="bNom" style="width:190px" autocomplete="name"></div>'
+    +'<div class="fila"><label>¿Cuánto cobras la hora? (€)<small>La hora normal, en bruto</small></label><input class="corto" type="number" inputmode="decimal" step="0.01" min="0" id="bEur" placeholder="0,00"></div>'
+    +'<div class="fila"><label>Empresa<small>Opcional</small></label><input id="bEmp" style="width:190px"></div>'
+    +'<button class="btn" id="bOk" style="width:100%;padding:12px">Empezar</button>'
+    +'<p class="nota" style="margin:12px 0 0">Luego toca cada día para poner tus horas. Todo se puede cambiar en Ajustes.</p>';
+  $('#sheetbg').classList.add('on');
+}
+function cierra(){ $('#sheetbg').classList.remove('on'); ed=null; }
+
+$('#sheetbg').addEventListener('click',e=>{ if(e.target.id==='sheetbg') cierra(); });
+$('#sheet').addEventListener('input',e=>{ if(e.target.id==='dT'||e.target.id==='dIng'){ leeHoja(); const c=calc(ed.k,ed.d); $('#dTot').textContent=eur(c.total); const dd=$('#dDet'); if(dd) dd.innerHTML=detDia(c); } });
+$('#sheet').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.comp!=null) return compartir(b.dataset.comp);
+  if(b.id==='cCanc') return cierra();
+  if(b.id==='bOk'){
+    const n=parseFloat(String($('#bEur').value).replace(',','.'));
+    if(!(n>0)) return alert('Escribe cuánto cobras la hora, por ejemplo 15,50');
+    S.ajustes.tarifas=[{desde:'2000-01-01',normal:n}]; S.ajustes.nombre=$('#bNom').value.trim();
+    const em=$('#bEmp').value.trim(); if(em) S.ajustes.empresa={nombre:em};
+    S.ajustes.listo=true; guardar(); cierra(); return pinta();
+  }
+  if(!ed) return;
+  if(b.dataset.t!=null){ leeHoja(); const d=ed.d; d.t=+b.dataset.t; delete d.h; d.ex=0; d.sal=0; d.noc=Math.min(d.noc||0,Math.round(horasDia(d)*60)); pintaHoja(); }
+  else if(b.dataset.s==='T'){ leeHoja(); ponHoras(ed.d,horasDia(ed.d)+(+b.dataset.v)); pintaHoja(); }
+  else if(b.dataset.s){ leeHoja(); ed.d.noc=Math.min(Math.round(horasDia(ed.d)*60),Math.max(0,(ed.d.noc||0)+(+b.dataset.v))); pintaHoja(); }
+  else if(b.id==='dCanc') cierra();
+  else if(b.id==='dBorra'){ delete S.dias[ed.k]; guardar(); cierra(); pinta(); }
+  else if(b.id==='dOk'){
+    leeHoja(); const d=ed.d, o={t:d.t||0};
+    if(d.ex) o.ex=d.ex; if(d.noc) o.noc=d.noc; if(d.sal) o.sal=d.sal; if(d.ing) o.ing=d.ing; if(d.h!=null) o.h=d.h; if(d.nota) o.nota=d.nota;
+    S.dias[ed.k]=o; guardar(); cierra(); pinta();
+  }
+});
+
+/* ---------- Eventos ---------- */
+function pinta(){
+  document.body.classList.toggle('sindinero',oculto); $('#ojo').textContent=oculto?'🙈':'👁';
+  const e=S.ajustes.empresa; document.body.classList.toggle('emp',!!(e&&e.nombre));
+  $('#marca').innerHTML=e&&e.nombre?(e.logo&&/^data:image\//.test(e.logo)?'<img src="'+esc(e.logo)+'" alt="">':'')+'<span><b>'+esc(e.nombre)+'</b><small>'+esc(e.lema||'Mi horario y mi salario')+'</small></span>':'';
+  document.title=e&&e.nombre?'Mi Trabajo · '+e.nombre:'Mi Trabajo';
+  ['mes','nomina','anio','ajustes'].forEach(v=>$('#v-'+v).classList.toggle('oculto',v!==vista));
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===vista));
+  const nav=vista!=='ajustes'; ['#ant','#sig','#hoy'].forEach(s=>$(s).style.visibility=nav?'visible':'hidden');
+  if(vista==='mes') pintaMes(); else if(vista==='nomina') pintaNomina(); else if(vista==='anio') pintaAnio(); else pintaAjustes();
+}
+document.querySelector('nav.tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ vista=b.dataset.v; pinta(); scrollTo(0,0); } });
+function mueve(n){ if(vista==='anio') cur.y+=n; else { const d=new Date(cur.y,cur.m+n,1); cur={y:d.getFullYear(),m:d.getMonth()}; } pinta(); }
+$('#ojo').onclick=()=>{ oculto=!oculto; try{localStorage.setItem('misHoras.oculto',oculto?'1':'0');}catch(e){} if(ed) pintaHoja(); pinta(); };
+$('#ant').onclick=()=>mueve(-1); $('#sig').onclick=()=>mueve(1);
+$('#hoy').onclick=()=>{ const d=new Date(); cur={y:d.getFullYear(),m:d.getMonth()}; pinta(); };
+
+$('#v-mes').addEventListener('click',e=>{
+  if(e.target.closest('.comp')) return abreCompartir();
+  const k=e.target.closest('[data-k]'); if(k) return abreDia(k.dataset.k);
+  if(e.target.id==='primaBtn'){ const mk=cur.y+'-'+p2(cur.m+1), ms=S.ajustes.prima.meses; if(ms[mk]) delete ms[mk]; else ms[mk]=true; guardar(); return pinta(); }
+  if(e.target.id==='rellenar'){
+    const hk=hoyK(), esActual=hk.startsWith(cur.y+'-'+p2(cur.m+1));
+    resumenMes(cur.y,cur.m).libresLV.filter(k=>k>=hk||!esActual).forEach(k=>S.dias[k]={t:S.ajustes.turnoDefecto});
+    guardar(); pinta();
+  }
+});
+$('#v-nomina').addEventListener('click',e=>{ if(e.target.closest('.comp')) return abreCompartir(); const k=e.target.closest('[data-k]'); if(k) abreDia(k.dataset.k); });
+$('#v-anio').addEventListener('click',e=>{ const f=e.target.closest('[data-m]'); if(f){ cur.m=+f.dataset.m; vista='mes'; pinta(); scrollTo(0,0); } });
+
+$('#v-ajustes').addEventListener('change',e=>{
+  const el=e.target, caja=el.closest('.turno');
+  if(caja&&el.dataset.f){ const t=S.turnos[+caja.dataset.i], f=el.dataset.f; t[f]=['descanso','precio','precioExtra'].includes(f)?(+el.value||0):el.value; }
+  else if(el.id==='aDef') S.ajustes.turnoDefecto=+el.value;
+  else if(el.dataset.tf){ const t=S.ajustes.tarifas[+el.closest('.tarifa').dataset.i]; if(el.dataset.tf==='desde'){ if(el.value) t.desde=el.value; } else t.normal=+el.value||0; }
+  else if(el.id==='aEmp'){ S.ajustes.empresa=Object.assign({},S.ajustes.empresa,{nombre:el.value.trim()}); guardar(); return pinta(); }
+  else if(el.id==='vMes') S.ajustes.vac.porMes=+el.value||0;
+  else if(el.id==='vEur') S.ajustes.vac.eurDia=+el.value||0;
+  else if(el.id==='vSaldo') S.ajustes.vac.saldo=+el.value||0;
+  else if(el.id==='aNom') S.ajustes.nombre=el.value.trim();
+  else if(el.id==='aPct') S.ajustes.pctExtra=+el.value||0;
+  else if(el.id==='aNoche') S.ajustes.pctNoche=+el.value||0;
+  else if(el.id==='pEur') S.ajustes.prima.eur=+el.value||0;
+  else if(el.id==='pNom') S.ajustes.prima.nomina=el.value==='1';
+  else if(el.id==='aJor') S.ajustes.horasDia=+el.value||8;
+  else if(el.id==='aSemana') S.ajustes.horasSemana=+el.value||40;
+  else if(el.id==='aDesc') S.ajustes.descuento=Math.min(100,Math.max(0,+el.value||0));
+  else return;
+  guardar(); pintaAjustes();
+});
+$('#v-ajustes').addEventListener('toggle',e=>{ if(e.target.id==='masAj') masAbierto=e.target.open; },true);
+$('#v-ajustes').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.borra!=null){
+    const t=S.turnos[+b.dataset.borra], usos=Object.values(S.dias).filter(d=>d.t===t.id).length;
+    if(!confirm('¿Borrar el turno «'+t.nombre+'»?'+(usos?' Lo usan '+usos+' días, que quedarán como libres.':''))) return;
+    S.turnos.splice(+b.dataset.borra,1); guardar(); pintaAjustes();
+  } else if(b.id==='act'){ b.textContent='Buscando…'; actualizar(true);
+  } else if(b.id==='subida'){
+    if(oculto) return alert('El dinero está oculto. Toca el ojo de arriba para mostrarlo y poder cambiar el precio.');
+    const act=tarifa(hoyK()).n, v=prompt('¿Cuánto cobras ahora la hora normal? (antes '+num(act)+' €)', String(act).replace('.',','));
+    if(v==null) return; const n=parseFloat(v.replace(',','.')); if(!(n>0)) return alert('Escribe un precio, por ejemplo 17,25');
+    const f=prompt('¿Desde qué día? (año-mes-día)', hoyK().slice(0,8)+'01'); if(!f) return;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(f)) return alert('Pon la fecha así: 2027-01-01');
+    S.ajustes.tarifas=S.ajustes.tarifas.filter(t=>t.desde!==f); S.ajustes.tarifas.push({desde:f,normal:n}); guardar(); pintaAjustes();
+  } else if(b.dataset.borratf!=null){
+    if(confirm('¿Quitar este precio?')){ S.ajustes.tarifas.splice(+b.dataset.borratf,1); guardar(); pintaAjustes(); }
+  } else if(b.id==='nuevoT'){
+    S.turnos.push({id:Math.max(0,...S.turnos.map(t=>t.id))+1,nombre:'Turno nuevo',abr:'Turno',ini:'08:00',fin:'16:00',descanso:0,precio:0,precioExtra:0,color:'#c7d2fe',texto:'#000000',tipo:'trabajo'});
+    guardar(); pintaAjustes();
+  } else if(b.id==='exp'){
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));
+    a.download='mi-trabajo-copia-'+hoyK()+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  } else if(b.id==='imp') $('#fichero').click();
+});
+$('#fichero').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!d||!Array.isArray(d.turnos)||typeof d.dias!=='object') throw 0;
+      if(confirm('Se cambiará todo lo que hay ahora por la copia ('+Object.keys(d.dias).length+' días). ¿Seguir?')){ S=normalizar(d); guardar(); pinta(); } }
+    catch(x){ alert('Ese archivo no es una copia de Mi Trabajo.'); } e.target.value=''; };
+  r.readAsText(f);
+});
+
+guardar(); pinta();
+if(!window.DATOS_INICIALES&&!S.ajustes.listo&&!(tarifa(hoyK()).n>0)) bienvenida();
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+// Actualización: si en la web hay una versión más nueva, se limpia lo guardado de la app (no tus datos) y se recarga
+async function actualizar(forzar){
+  try{
+    const v=(await (await fetch('version.txt?'+Date.now(),{cache:'no-store'})).text()).trim();
+    if(!forzar&&(v===VERSION||sessionStorage.getItem('misHoras.act')===v)) return false;
+    sessionStorage.setItem('misHoras.act',v);
+    if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.filter(k=>k.startsWith(CACHE_PRE)).map(k=>caches.delete(k))); }
+    const r=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration(); if(r) await r.update().catch(()=>{});
+    location.replace(location.pathname+'?v='+encodeURIComponent(v)); return true;
+  }catch(e){ if(forzar) alert('No he podido buscar la actualización. Comprueba la conexión.'); return false; }
+}
+if(location.protocol.startsWith('http')){ actualizar(false); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) actualizar(false); }); }
+if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+</script>
+</body>
+</html>

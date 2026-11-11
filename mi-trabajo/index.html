@@ -168,16 +168,18 @@ details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', VERSION='20';
+const CLAVE='miTrabajo.v2', CACHE_PRE='mi-trabajo-', VERSION='21';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 
 const POR_DEFECTO={
-  turnos:[{id:1,nombre:'Jornada normal',abr:'8 h',ini:'08:00',fin:'17:00',descanso:60,precio:10,precioExtra:15,color:'#a2d39c',texto:'#000000',tipo:'trabajo'},
-          {id:2,nombre:'Vacaciones',abr:'Vac',ini:'08:00',fin:'16:00',descanso:0,precio:10,precioExtra:15,color:'#f7977a',texto:'#550804',tipo:'vacaciones'},
-          {id:3,nombre:'Festivo',abr:'Festivo',ini:'08:00',fin:'16:00',descanso:0,precio:10,precioExtra:15,color:'#9e0b0f',texto:'#efefef',tipo:'festivo'}],
-  dias:{}, ajustes:{descuento:0,precioNormal:10,precioExtra:14,pctExtra:40,horasSemana:40,turnoDefecto:1}
+  turnos:[{id:1,nombre:'Jornada normal',abr:'9 horas',ini:'08:00',fin:'18:00',descanso:60,color:'#a2d39c',texto:'#000000',tipo:'trabajo'},
+          {id:2,nombre:'Sábado 5 horas',abr:'5 horas',ini:'08:00',fin:'13:00',descanso:0,color:'#6ecff6',texto:'#000000',tipo:'trabajo'},
+          {id:3,nombre:'Vacaciones',abr:'Vac',ini:'08:00',fin:'16:00',descanso:0,color:'#f7977a',texto:'#550804',tipo:'vacaciones'},
+          {id:4,nombre:'Festivo',abr:'Festivo',ini:'08:00',fin:'16:00',descanso:0,color:'#9e0b0f',texto:'#efefef',tipo:'festivo'}],
+  dias:{}, ajustes:{descuento:6.5,pctExtra:40,pctNoche:20,horasSemana:40,horasDia:8,turnoDefecto:1,tarifas:[{desde:'2000-01-01',normal:0}],
+    prima:{eur:0,nomina:false,meses:{}}, parcheNominas:1,parcheOct:1,parcheSep16:1,parche1111:1}
 };
 
 let S=cargar();
@@ -195,7 +197,7 @@ function normalizar(d){
   d.turnos=Array.isArray(d.turnos)?d.turnos:[]; d.dias=d.dias||{};
   d.ajustes=Object.assign({descuento:0,precioNormal:0,precioExtra:0,horasSemana:40,turnoDefecto:(d.turnos[0]||{}).id||0},d.ajustes||{});
   const a=d.ajustes;
-  if(!a.vac) a.vac={desde:'2026-08-31',saldo:0,porMes:2.5,eurDia:0};
+  if(!a.vac){ const h=new Date(), f=new Date(h.getFullYear(),h.getMonth(),0); a.vac={desde:f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0'),saldo:0,porMes:2.5,eurDia:0}; }
   if(a.pctNoche==null) a.pctNoche=20;
   if(a.horasDia==null) a.horasDia=8;
   // Prima fija al mes (si este teléfono aún no la tiene, se toma la de los datos de partida)
@@ -204,13 +206,13 @@ function normalizar(d){
   // Nóminas de julio a octubre de 2026 (pedido por Emmanuel el 11-nov-2026): se añaden una vez los días que falten, sin tocar los que ya haya
   if(!a.parcheNominas){ a.parcheNominas=1; const p0=window.DATOS_INICIALES;
     if(p0&&p0.dias){ for(const k in p0.dias) if(k<'2026-11-01'&&!d.dias[k]) d.dias[k]=JSON.parse(JSON.stringify(p0.dias[k])); }
-    if(a.vac.desde==='2026-08-31'&&!+a.vac.saldo){ a.vac.desde='2026-06-30'; a.vac.saldo=3; } }
+    if(p0&&a.vac.desde==='2026-08-31'&&!+a.vac.saldo){ a.vac.desde='2026-06-30'; a.vac.saldo=3; } }
   // Semana del 19-oct-2026 tal como sale en la hoja (miércoles 5 h, viernes 8 h, sábado 5 h): mismo total, días corregidos
   if(!a.parcheOct){ a.parcheOct=1; const p0=window.DATOS_INICIALES, q=k=>d.dias[k]&&Object.keys(d.dias[k]).length===1&&d.dias[k].t===16;
     if(p0&&p0.dias&&q('2026-10-21')&&q('2026-10-23')&&!d.dias['2026-10-24']) ['2026-10-21','2026-10-23','2026-10-24','2026-09-16'].forEach(k=>{ if(p0.dias[k]) d.dias[k]=JSON.parse(JSON.stringify(p0.dias[k])); }); }
   // 16-sep-2026: Emmanuel confirmó (11-nov-2026) que hizo 3 h de noche; la empresa pagó 2
-  if(!a.parcheSep16){ a.parcheSep16=1; const x=d.dias['2026-09-16']; if(x&&x.t===16&&x.h===11&&x.noc===120){ x.h=12; x.noc=180; x.nota='Hice 3 h de noche (12 h en total). La empresa pagó 2: falta 1 h, unos 26,5 € brutos'; } }
-  if(!a.parche1111){ a.parche1111=1; ['2026-11-03','2026-11-04','2026-11-05','2026-11-11'].forEach(k=>{ const x=d.dias[k], t=x&&d.turnos.find(q=>q.id===x.t); if(x&&t&&t.tipo==='trabajo'&&x.h==null&&!x.sal) x.h=8; }); }   // meses en que Emmanuel ha marcado que se la han dado
+  if(!a.parcheSep16){ a.parcheSep16=1; const x=d.dias['2026-09-16']; if(window.DATOS_INICIALES&&x&&x.t===16&&x.h===11&&x.noc===120){ x.h=12; x.noc=180; x.nota='Hice 3 h de noche (12 h en total). La empresa pagó 2: falta 1 h, unos 26,5 € brutos'; } }
+  if(!a.parche1111){ a.parche1111=1; ['2026-11-03','2026-11-04','2026-11-05','2026-11-11'].forEach(k=>{ const x=d.dias[k], t=x&&d.turnos.find(q=>q.id===x.t); if(window.DATOS_INICIALES&&x&&t&&t.tipo==='trabajo'&&x.h==null&&!x.sal) x.h=8; }); }   // meses en que Emmanuel ha marcado que se la han dado
   // Nóminas jul–oct 2026: el sábado no es «siempre extra» (cuenta para las 40 h) y el día de vacaciones sale del sueldo mensual ÷ 30
   d.turnos.forEach(t=>{ if(t.tipo==='extra') t.tipo='trabajo'; });
   if(+a.vac.eurDia===191.59) a.vac.eurDia=0;
@@ -585,6 +587,16 @@ function leeHoja(){
   if(tI&&tI.value!==''){ const T=parseFloat(String(tI.value).replace(',','.')); if(isFinite(T)&&Math.abs(T-horasDia(d))>1e-9) ponHoras(d,T); }
   d.ing=+iI.value||0; d.nota=nI.value.trim();
 }
+function bienvenida(){
+  ed=null;
+  $('#sheet').innerHTML='<h3 style="text-transform:none">Bienvenido a Mi Trabajo</h3><p class="nota" style="margin:0 0 14px">Anota tus horas y mira cuánto ganas a fin de mes. Lo que escribas se guarda solo en este teléfono: nadie más lo ve.</p>'
+    +'<div class="fila"><label>Tu nombre</label><input id="bNom" style="width:190px" autocomplete="name"></div>'
+    +'<div class="fila"><label>¿Cuánto cobras la hora? (€)<small>La hora normal, en bruto</small></label><input class="corto" type="number" inputmode="decimal" step="0.01" min="0" id="bEur" placeholder="0,00"></div>'
+    +'<div class="fila"><label>Empresa<small>Opcional</small></label><input id="bEmp" style="width:190px"></div>'
+    +'<button class="btn" id="bOk" style="width:100%;padding:12px">Empezar</button>'
+    +'<p class="nota" style="margin:12px 0 0">Luego toca cada día para poner tus horas. Todo se puede cambiar en Ajustes.</p>';
+  $('#sheetbg').classList.add('on');
+}
 function cierra(){ $('#sheetbg').classList.remove('on'); ed=null; }
 
 $('#sheetbg').addEventListener('click',e=>{ if(e.target.id==='sheetbg') cierra(); });
@@ -593,6 +605,13 @@ $('#sheet').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
   if(b.dataset.comp!=null) return compartir(b.dataset.comp);
   if(b.id==='cCanc') return cierra();
+  if(b.id==='bOk'){
+    const n=parseFloat(String($('#bEur').value).replace(',','.'));
+    if(!(n>0)) return alert('Escribe cuánto cobras la hora, por ejemplo 15,50');
+    S.ajustes.tarifas=[{desde:'2000-01-01',normal:n}]; S.ajustes.nombre=$('#bNom').value.trim();
+    const em=$('#bEmp').value.trim(); if(em) S.ajustes.empresa={nombre:em};
+    S.ajustes.listo=true; guardar(); cierra(); return pinta();
+  }
   if(!ed) return;
   if(b.dataset.t!=null){ leeHoja(); const d=ed.d; d.t=+b.dataset.t; delete d.h; d.ex=0; d.sal=0; d.noc=Math.min(d.noc||0,Math.round(horasDia(d)*60)); pintaHoja(); }
   else if(b.dataset.s==='T'){ leeHoja(); ponHoras(ed.d,horasDia(ed.d)+(+b.dataset.v)); pintaHoja(); }
@@ -691,6 +710,7 @@ $('#fichero').addEventListener('change',e=>{
 });
 
 guardar(); pinta();
+if(!window.DATOS_INICIALES&&!S.ajustes.listo&&!(tarifa(hoyK()).n>0)) bienvenida();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
 // Actualización: si en la web hay una versión más nueva, se limpia lo guardado de la app (no tus datos) y se recarga
 async function actualizar(forzar){
@@ -698,7 +718,7 @@ async function actualizar(forzar){
     const v=(await (await fetch('version.txt?'+Date.now(),{cache:'no-store'})).text()).trim();
     if(!forzar&&(v===VERSION||sessionStorage.getItem('miTrabajo.act')===v)) return false;
     sessionStorage.setItem('miTrabajo.act',v);
-    if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.map(k=>caches.delete(k))); }
+    if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.filter(k=>k.startsWith(CACHE_PRE)).map(k=>caches.delete(k))); }
     const r=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration(); if(r) await r.update().catch(()=>{});
     location.replace(location.pathname+'?v='+encodeURIComponent(v)); return true;
   }catch(e){ if(forzar) alert('No he podido buscar la actualización. Comprueba la conexión.'); return false; }
