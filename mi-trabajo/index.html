@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Mi Trabajo">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <style>
 :root{
   --bg:#f3f5f7; --card:#ffffff; --ink:#15202b; --mut:#667785; --line:#e1e6ea;
@@ -27,9 +27,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
 .wrap{max-width:720px;margin:0 auto;padding:12px 16px}
 header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+@media (display-mode: standalone){ header.top{padding-top:calc(env(safe-area-inset-top) + 14px)} }
 .marca{display:none;align-items:center;gap:10px;max-width:720px;margin:0 auto;padding:8px 16px 0}
-.marca img{height:30px;border-radius:6px;background:#fff;padding:3px 6px}
-.marca b{font-size:15px;display:block;line-height:1.15}
+.marca img{height:34px;border-radius:6px;background:#fff;padding:3px 6px}
+.marca b{font-size:16px;display:block;line-height:1.15}
 .marca small{font-size:11px;color:var(--mut);display:block}
 .tira{display:none;height:4px;background:linear-gradient(90deg,#1e56d6 0 33.3%,#f5c400 33.3% 66.6%,#e2231a 66.6%)}
 body.emp .marca{display:flex} body.emp .tira{display:block}
@@ -167,7 +168,7 @@ details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', VERSION='19';
+const CLAVE='miTrabajo.v2', VERSION='20';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
