@@ -1,5 +1,5 @@
 // Mi Trabajo: funciona sin conexión. Primero intenta la red (para recibir cambios) y si no hay, usa la copia guardada.
-const CACHE='mi-trabajo-v16';
+const CACHE='mi-trabajo-v17';
 const BASE=['./','index.html','mis-datos.js','manifest.json','icon-192.png','icon-512.png','icon-180.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(BASE)).then(()=>self.skipWaiting())); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });

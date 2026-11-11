@@ -166,7 +166,7 @@ body.sindinero .dinero::placeholder{color:transparent}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', VERSION='16';
+const CLAVE='miTrabajo.v2', VERSION='17';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -206,6 +206,8 @@ function normalizar(d){
   // Semana del 19-oct-2026 tal como sale en la hoja (miércoles 5 h, viernes 8 h, sábado 5 h): mismo total, días corregidos
   if(!a.parcheOct){ a.parcheOct=1; const p0=window.DATOS_INICIALES, q=k=>d.dias[k]&&Object.keys(d.dias[k]).length===1&&d.dias[k].t===16;
     if(p0&&p0.dias&&q('2026-10-21')&&q('2026-10-23')&&!d.dias['2026-10-24']) ['2026-10-21','2026-10-23','2026-10-24','2026-09-16'].forEach(k=>{ if(p0.dias[k]) d.dias[k]=JSON.parse(JSON.stringify(p0.dias[k])); }); }
+  // 16-sep-2026: Emmanuel confirmó (11-nov-2026) que hizo 3 h de noche; la empresa pagó 2
+  if(!a.parcheSep16){ a.parcheSep16=1; const x=d.dias['2026-09-16']; if(x&&x.t===16&&x.h===11&&x.noc===120){ x.h=12; x.noc=180; x.nota='Hice 3 h de noche (12 h en total). La empresa pagó 2: falta 1 h, unos 26,5 € brutos'; } }
   if(!a.parche1111){ a.parche1111=1; ['2026-11-03','2026-11-04','2026-11-05','2026-11-11'].forEach(k=>{ const x=d.dias[k], t=x&&d.turnos.find(q=>q.id===x.t); if(x&&t&&t.tipo==='trabajo'&&x.h==null&&!x.sal) x.h=8; }); }   // meses en que Emmanuel ha marcado que se la han dado
   // Nóminas jul–oct 2026: el sábado no es «siempre extra» (cuenta para las 40 h) y el día de vacaciones sale del sueldo mensual ÷ 30
   d.turnos.forEach(t=>{ if(t.tipo==='extra') t.tipo='trabajo'; });

@@ -93,7 +93,7 @@ window.DATOS_INICIALES={
 "2026-09-12": {"t": 12},
 "2026-09-14": {"t": 16},
 "2026-09-15": {"t": 16},
-"2026-09-16": {"t": 16, "h": 11, "noc": 120, "nota": "Trabajo de noche. En Shifter apunté 3 h; la empresa pagó 2"},
+"2026-09-16": {"t": 16, "h": 12, "noc": 180, "nota": "Hice 3 h de noche (12 h en total). La empresa pagó 2: falta 1 h, unos 26,5 € brutos"},
 "2026-09-17": {"t": 16},
 "2026-09-18": {"t": 16},
 "2026-09-19": {"t": 12},
