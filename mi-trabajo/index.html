@@ -57,11 +57,12 @@ body.emp{--acc:#1e56d6;--acc2:#3d7dff;--accInk:#ffffff}
 .btn.bad{background:transparent;color:var(--bad);border:1px solid var(--line)}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal .dow{text-align:center;font-size:12px;color:var(--mut);padding-bottom:2px}
-.day{position:relative;min-height:64px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:4px 3px;text-align:center;overflow:hidden}
+.day{position:relative;min-height:70px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:4px 3px;text-align:center;overflow:hidden}
 .day.vac{visibility:hidden}
-.day .n{font-size:13px;font-weight:700}
-.day .a{font-size:10px;line-height:1.1;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.day .x{font-size:10px;font-weight:700;display:block;white-space:nowrap}
+.day .n{font-size:12px;font-weight:600;opacity:.75;display:block}
+.day .a{font-size:10px;line-height:1.2;display:block;white-space:nowrap;overflow:hidden}
+.day .a b{font-size:12px;letter-spacing:-.2px}
+.day .x{font-size:9.5px;line-height:1.25;font-weight:700;display:block;white-space:nowrap;letter-spacing:-.3px}
 .day.hoy{outline:3px solid var(--acc);outline-offset:-1px}
 .day .dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
 table{width:100%;border-collapse:collapse;font-size:14px}
@@ -160,7 +161,7 @@ body.sindinero .dinero::placeholder{color:transparent}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', VERSION='12';
+const CLAVE='miTrabajo.v2', VERSION='13';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -192,7 +193,8 @@ function normalizar(d){
   if(a.horasDia==null) a.horasDia=8;
   // Prima fija al mes (si este teléfono aún no la tiene, se toma la de los datos de partida)
   if(!a.prima){ const p0=window.DATOS_INICIALES&&window.DATOS_INICIALES.ajustes&&window.DATOS_INICIALES.ajustes.prima; a.prima=Object.assign({eur:0,nomina:false},p0||{}); }
-  if(!a.prima.meses) a.prima.meses={};   // meses en que Emmanuel ha marcado que se la han dado
+  if(!a.prima.meses) a.prima.meses={};
+  if(!a.parche1111){ a.parche1111=1; ['2026-11-03','2026-11-04','2026-11-05','2026-11-11'].forEach(k=>{ const x=d.dias[k], t=x&&d.turnos.find(q=>q.id===x.t); if(x&&t&&t.tipo==='trabajo'&&x.h==null&&!x.sal) x.h=8; }); }   // meses en que Emmanuel ha marcado que se la han dado
   // Nóminas jul–oct 2026: el sábado no es «siempre extra» (cuenta para las 40 h) y el día de vacaciones sale del sueldo mensual ÷ 30
   d.turnos.forEach(t=>{ if(t.tipo==='extra') t.tipo='trabajo'; });
   if(+a.vac.eurDia===191.59) a.vac.eurDia=0;
@@ -341,10 +343,9 @@ function pintaMes(){
     const k=clave(y,m,d), dia=S.dias[k], t=dia?turno(dia.t):null;
     const stl=t?' style="background:'+esc(t.color)+';color:'+esc(t.texto)+';border-color:'+esc(t.color)+'"':'';
     h+='<button class="day'+(k===hk?' hoy':'')+'" data-k="'+k+'"'+stl+'><span class="n">'+d+'</span>'
-      +'<span class="a">'+(t?esc(t.abr):(dia?'Libre':''))+'</span>'
-      +(dia&&(dia.ex||dia.h!=null||dia.sal)?'<span class="x">'+num(horasDia(dia))+' h</span>':'')
+      +'<span class="a">'+(dia&&(!t||t.tipo==='trabajo')?(horasDia(dia)?'<b>'+num(horasDia(dia))+' h</b>':'Libre'):(t?esc(t.abr):''))+'</span>'
       +(dia&&calc(k).hX?'<span class="x">+'+num(calc(k).hX)+' ext</span>':'')
-      +(dia&&dia.noc?'<span class="x">🌙 '+num(dia.noc/60)+' h</span>':'')
+      +(dia&&dia.noc?'<span class="x">🌙'+num(dia.noc/60)+'</span>':'')
       +(dia&&dia.ing?'<span class="x">+'+(oculto?'•••':num(dia.ing))+' €</span>':'')
       +(dia&&dia.nota?'<span class="dot"></span>':'')+'</button>';
   }
