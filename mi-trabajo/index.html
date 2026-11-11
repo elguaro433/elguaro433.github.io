@@ -175,7 +175,8 @@ const hoyD=new Date();
 let cur={y:hoyD.getFullYear(),m:hoyD.getMonth()};
 
 function cargar(){
-  try{ const t=localStorage.getItem(CLAVE); if(t) return normalizar(JSON.parse(t)); }catch(e){}
+  // Si lo guardado está vacío (se abrió antes de tener datos) y hay datos de partida, se usan los de partida
+  try{ const t=localStorage.getItem(CLAVE); if(t){ const d=normalizar(JSON.parse(t)); if(Object.keys(d.dias).length||!window.DATOS_INICIALES) return d; } }catch(e){}
   if(window.DATOS_INICIALES) return normalizar(JSON.parse(JSON.stringify(window.DATOS_INICIALES)));
   return normalizar(JSON.parse(JSON.stringify(POR_DEFECTO)));
 }
