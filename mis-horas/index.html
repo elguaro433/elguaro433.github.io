@@ -167,7 +167,7 @@ details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
 
 <script>
 'use strict';
-const CLAVE='misHoras.v1', CACHE_PRE='mis-horas-', VERSION='21';
+const CLAVE='misHoras.v1', CACHE_PRE='mis-horas-', VERSION='22';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -202,17 +202,6 @@ function normalizar(d){
   // Prima fija al mes (si este teléfono aún no la tiene, se toma la de los datos de partida)
   if(!a.prima){ const p0=window.DATOS_INICIALES&&window.DATOS_INICIALES.ajustes&&window.DATOS_INICIALES.ajustes.prima; a.prima=Object.assign({eur:0,nomina:false},p0||{}); }
   if(!a.prima.meses) a.prima.meses={};
-  // Nóminas de julio a octubre de 2026 (pedido por Emmanuel el 11-nov-2026): se añaden una vez los días que falten, sin tocar los que ya haya
-  if(!a.parcheNominas){ a.parcheNominas=1; const p0=window.DATOS_INICIALES;
-    if(p0&&p0.dias){ for(const k in p0.dias) if(k<'2026-11-01'&&!d.dias[k]) d.dias[k]=JSON.parse(JSON.stringify(p0.dias[k])); }
-    if(p0&&a.vac.desde==='2026-08-31'&&!+a.vac.saldo){ a.vac.desde='2026-06-30'; a.vac.saldo=3; } }
-  // Semana del 19-oct-2026 tal como sale en la hoja (miércoles 5 h, viernes 8 h, sábado 5 h): mismo total, días corregidos
-  if(!a.parcheOct){ a.parcheOct=1; const p0=window.DATOS_INICIALES, q=k=>d.dias[k]&&Object.keys(d.dias[k]).length===1&&d.dias[k].t===16;
-    if(p0&&p0.dias&&q('2026-10-21')&&q('2026-10-23')&&!d.dias['2026-10-24']) ['2026-10-21','2026-10-23','2026-10-24','2026-09-16'].forEach(k=>{ if(p0.dias[k]) d.dias[k]=JSON.parse(JSON.stringify(p0.dias[k])); }); }
-  // 16-sep-2026: Emmanuel confirmó (11-nov-2026) que hizo 3 h de noche; la empresa pagó 2
-  if(!a.parcheSep16){ a.parcheSep16=1; const x=d.dias['2026-09-16']; if(window.DATOS_INICIALES&&x&&x.t===16&&x.h===11&&x.noc===120){ x.h=12; x.noc=180; x.nota='Hice 3 h de noche (12 h en total). La empresa pagó 2: falta 1 h, unos 26,5 € brutos'; } }
-  if(!a.parche1111){ a.parche1111=1; ['2026-11-03','2026-11-04','2026-11-05','2026-11-11'].forEach(k=>{ const x=d.dias[k], t=x&&d.turnos.find(q=>q.id===x.t); if(window.DATOS_INICIALES&&x&&t&&t.tipo==='trabajo'&&x.h==null&&!x.sal) x.h=8; }); }   // meses en que Emmanuel ha marcado que se la han dado
-  // Nóminas jul–oct 2026: el sábado no es «siempre extra» (cuenta para las 40 h) y el día de vacaciones sale del sueldo mensual ÷ 30
   d.turnos.forEach(t=>{ if(t.tipo==='extra') t.tipo='trabajo'; });
   if(+a.vac.eurDia===191.59) a.vac.eurDia=0;
   if(a.pctExtra==null) a.pctExtra=(a.precioNormal&&a.precioExtra)?Math.round((a.precioExtra/a.precioNormal-1)*1000)/10:40;
@@ -240,7 +229,6 @@ function horasDia(d){
   if(t){ h=(d.h!=null&&d.h!=='')?+d.h:hTurno(t); h=Math.max(0,h-(d.sal||0)/60); }
   return h+(d.ex||0)/60;
 }
-// Como la hoja de la empresa (comprobado con las nóminas de julio a octubre de 2026): las primeras 40 h de cada
 // semana (lunes a domingo, en orden) son normales y el resto extra al 40 %. Las horas de la semana que caen en el
 // mes anterior también cuentan para las 40. Festivos y vacaciones no cuentan: van en líneas aparte.
 const esExtra=d=>{ const t=d&&turno(d.t); return !!(t&&(t.tipo==='festivo'||t.tipo==='vacaciones')); };
@@ -276,7 +264,6 @@ function calc(k,ov){
   r.ing=+d.ing||0; r.total=r.normal+r.extra+r.noche+r.festE+r.vacE+r.ing;
   return r;
 }
-// Lo que pagan por un día de vacaciones. Nómina de agosto de 2026: 8 días = 766,36 €, o sea
 // el sueldo de un mes a 40 h por semana (precio × 40 × 52 ÷ 12) repartido entre 30 días. Si en Ajustes hay un importe, manda ese.
 function vacDia(k){ const v=S.ajustes.vac||{}; return (+v.eurDia)||tarifa(k).n*(+S.ajustes.horasSemana||40)*52/12/30; }
 // Precio de la hora vigente en una fecha (por si hay subidas de sueldo)
@@ -299,7 +286,6 @@ function resumenMes(y,m,hastaK){
     r.filas.push({k,d,dia,c});
   }
   ['normal','extra','noche','festE','vacE'].forEach(f=>r[f]=tr2(r[f]));
-  // Prima: solo cuenta en los meses en que él marca «me la han dado». En nómina entra en el bruto (con CASS); si no, va aparte
   const pr=S.ajustes.prima||{}, mk=y+'-'+p2(m+1), pe=(+pr.eur>0&&pr.meses&&pr.meses[mk])?+pr.eur:0;
   r.prima=pe; r.primaN=pr.nomina?pe:0; r.primaF=pr.nomina?0:pe;
   r.total=Math.round((r.normal+r.extra+r.noche+r.festE+r.vacE+r.ing+r.primaN)*100)/100;
@@ -575,7 +561,6 @@ function detDia(c){
     +(sem?'<small>'+sem+'</small>':'')
     +(c.hNoc?'<small>Nocturnidad: +'+eur(c.noche)+'</small>':'');
 }
-// Pone el total de horas del día (lo que escribe Emmanuel); las «horas de más» antiguas quedan dentro del total
 function ponHoras(d,T){
   T=Math.max(0,Math.round((+T||0)*100)/100); d.sal=0; const t=turno(d.t);
   if(t){ d.ex=0; if(Math.abs(T-hTurno(t))<1e-9) delete d.h; else d.h=T; } else { delete d.h; d.ex=Math.round(T*60); }
