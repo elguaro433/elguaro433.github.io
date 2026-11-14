@@ -167,7 +167,7 @@ details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
 
 <script>
 'use strict';
-const CLAVE='misHoras.v1', CACHE_PRE='mis-horas-', VERSION='22';
+const CLAVE='misHoras.v1', CACHE_PRE='mis-horas-', VERSION='23';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -613,7 +613,8 @@ $('#sheet').addEventListener('click',e=>{
 function pinta(){
   document.body.classList.toggle('sindinero',oculto); $('#ojo').textContent=oculto?'🙈':'👁';
   const e=S.ajustes.empresa; document.body.classList.toggle('emp',!!(e&&e.nombre));
-  $('#marca').innerHTML=e&&e.nombre?(e.logo&&/^data:image\//.test(e.logo)?'<img src="'+esc(e.logo)+'" alt="">':'')+'<span><b>'+esc(e.nombre)+'</b><small>'+esc(e.lema||'Mi horario y mi salario')+'</small></span>':'';
+  const lg=e&&e.nombre?(e.logo&&/^data:image\//.test(e.logo)?e.logo:(/\bmts\b/i.test(e.nombre)?'logo-mts.png':'')):'';
+  $('#marca').innerHTML=e&&e.nombre?(lg?'<img src="'+esc(lg)+'" alt="">':'')+'<span><b>'+esc(e.nombre)+'</b><small>'+esc(e.lema||'Mi horario y mi salario')+'</small></span>':'';
   document.title=e&&e.nombre?'Mi Trabajo · '+e.nombre:'Mi Trabajo';
   ['mes','nomina','anio','ajustes'].forEach(v=>$('#v-'+v).classList.toggle('oculto',v!==vista));
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===vista));
