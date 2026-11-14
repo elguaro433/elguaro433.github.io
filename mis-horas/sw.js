@@ -1,5 +1,5 @@
 // Mi Trabajo: funciona sin conexión. Primero intenta la red (para recibir cambios) y si no hay, usa la copia guardada.
-const CACHE='mis-horas-v23';
+const CACHE='mis-horas-v24';
 const BASE=['./','index.html','manifest.json','icon-192.png','icon-512.png','icon-180.png','logo-mts.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(BASE)).then(()=>self.skipWaiting())); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k.startsWith(CACHE.replace(/v\d+$/,''))).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });

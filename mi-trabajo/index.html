@@ -168,7 +168,7 @@ details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', CACHE_PRE='mi-trabajo-', VERSION='23';
+const CLAVE='miTrabajo.v2', CACHE_PRE='mi-trabajo-', VERSION='24';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -179,7 +179,7 @@ const POR_DEFECTO={
           {id:3,nombre:'Vacaciones',abr:'Vac',ini:'08:00',fin:'16:00',descanso:0,color:'#f7977a',texto:'#550804',tipo:'vacaciones'},
           {id:4,nombre:'Festivo',abr:'Festivo',ini:'08:00',fin:'16:00',descanso:0,color:'#9e0b0f',texto:'#efefef',tipo:'festivo'}],
   dias:{}, ajustes:{descuento:6.5,pctExtra:40,pctNoche:20,horasSemana:40,horasDia:8,turnoDefecto:1,tarifas:[{desde:'2000-01-01',normal:0}],
-    prima:{eur:0,nomina:false,meses:{}}, parcheNominas:1,parcheOct:1,parcheSep16:1,parche1111:1}
+    prima:{eur:0,nomina:false,meses:{}}, parcheNominas:1,parcheOct:1,parcheSep16:1,parche1111:1,parche1114:1}
 };
 
 let S=cargar();
@@ -213,6 +213,8 @@ function normalizar(d){
   // 16-sep-2026: Emmanuel confirmó (11-nov-2026) que hizo 3 h de noche; la empresa pagó 2
   if(!a.parcheSep16){ a.parcheSep16=1; const x=d.dias['2026-09-16']; if(window.DATOS_INICIALES&&x&&x.t===16&&x.h===11&&x.noc===120){ x.h=12; x.noc=180; x.nota='Hice 3 h de noche (12 h en total). La empresa pagó 2: falta 1 h, unos 26,5 € brutos'; } }
   if(!a.parche1111){ a.parche1111=1; ['2026-11-03','2026-11-04','2026-11-05','2026-11-11'].forEach(k=>{ const x=d.dias[k], t=x&&d.turnos.find(q=>q.id===x.t); if(window.DATOS_INICIALES&&x&&t&&t.tipo==='trabajo'&&x.h==null&&!x.sal) x.h=8; }); }   // meses en que Emmanuel ha marcado que se la han dado
+  // 10-nov-2026: ese martes hizo 8 h de día más 3,5 h de noche (11,5 h), no 9 + 3,5 (dicho por Emmanuel el 14-nov-2026)
+  if(!a.parche1114){ a.parche1114=1; const x=d.dias['2026-11-10']; if(window.DATOS_INICIALES&&x&&!x.sal){ if(x.h==null&&x.ex===210) x.h=8; else if(x.h===12.5&&!x.ex) x.h=11.5; } }
   // Nóminas jul–oct 2026: el sábado no es «siempre extra» (cuenta para las 40 h) y el día de vacaciones sale del sueldo mensual ÷ 30
   d.turnos.forEach(t=>{ if(t.tipo==='extra') t.tipo='trabajo'; });
   if(+a.vac.eurDia===191.59) a.vac.eurDia=0;

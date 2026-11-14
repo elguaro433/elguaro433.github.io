@@ -174,6 +174,7 @@ window.DATOS_INICIALES={
 },
 "2026-11-10": {
 "t": 16,
+"h": 8,
 "ex": 210,
 "noc": 180,
 "nota": "Desde las 9:30 hasta 1am"
