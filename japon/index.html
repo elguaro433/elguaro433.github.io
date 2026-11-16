@@ -349,9 +349,9 @@ const DAYS=[
           {ic:'train',n:'Keisei Skyliner (Ueno → Narita)',d:'40 min.',g:'Narita International Airport',web:'https://www.keisei.co.jp/keisei/tetudou/skyliner/e/',a:2580,c:1290}],
   rain:{ic:'shop',n:'Kappabashi y Asakusa bajo techo',d:'Las tiendas de Kappabashi y los soportales de Asakusa sirven igual con lluvia.',g:'Kappabashi Dougu Street',web:'https://www.kappabashi.or.jp/en/',a:0,c:0}},
  {d:24,w:'mar',city:'madrid',ic:'plane',t:'Llegada a Madrid y vuelta a casa',tag:'Viaje',stay:'Casa (o una noche en Madrid)',
-  sched:[['?','KE913 llega a Madrid: mirar la hora exacta al reservar'],['+1 h','Pasaporte y maletas en Barajas T1'],['Opción A','Si llegáis temprano: AVE Madrid → Lleida (unas 2 h) y coche a La Seu (2 h)'],['Opción B','Si llegáis cansados o tarde: noche en un hotel del aeropuerto y viajar el 25']],
-  places:[{ic:'train',n:'AVE Madrid → Lleida',d:'Comprar en Renfe o Iryo cuando se sepa la hora de llegada. Dejar 3 h de margen tras aterrizar. Precio aproximado para los 4.',g:'Estación Madrid Puerta de Atocha',web:'https://www.renfe.com/es/es',fam:20400},
-          {id:'madhotel',opt:true,ic:'castle',n:'Noche en hotel junto a Barajas',d:'Opcional, para descansar antes de las 4 h de coche. Precio aproximado para los 4.',g:'hoteles aeropuerto Madrid Barajas',web:'https://www.booking.com/searchresults.es.html?ss=Aeropuerto+Madrid+Barajas',fam:17000}]}
+  sched:[['?','KE913 llega a Madrid: mirar la hora exacta al reservar'],['+1 h','Pasaporte y maletas en la T1 y recoger el coche del parking'],['Recomendado','Dormir en un hotel junto a Barajas: tras 15 h de viaje, conducir 6 h es peligroso'],['Día 25','Coche a La Seu, unos 600 km y 6 h con paradas']],
+  places:[{ic:'train',n:'Recoger el coche en el parking de Barajas',d:'Reservad el parking de larga estancia junto a la T1 (Korean Air sale de la T1) por internet, que es más barato. Ya está en el presupuesto.',g:'Aparcamiento larga estancia Barajas T1',web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html',a:0,c:0},
+          {id:'madhotel',opt:true,ic:'castle',n:'Noche en hotel junto a Barajas',d:'Muy recomendable antes de las 6 h de coche. Precio aproximado para los 4.',g:'hoteles aeropuerto Madrid Barajas',web:'https://www.booking.com/searchresults.es.html?ss=Aeropuerto+Madrid+Barajas',fam:17000}]}
 ];
 // Disney seguido: DisneySea pasa al 14 y el descanso de Ueno al 15
 {const a=DAYS[3],b=DAYS[4];[a.d,b.d]=[b.d,a.d];[a.w,b.w]=[b.w,a.w];DAYS[3]=b;DAYS[4]=a;}
@@ -379,7 +379,7 @@ const RES=[
  {k:'pcafe',n:'Pokémon Café (si lo eligen los niños)',when:'31 días antes a las 11:00 hora de España',date:'2027-07-21',web:'https://www.pokemoncenter-online.com/cafe/'},
  {k:'teamlab',n:'teamLab Planets (si hace falta)',when:'Julio de 2027',date:'2027-07-20',web:'https://www.teamlab.art/e/planets/'},
  {k:'shink',n:'Shinkansen y Romancecar',when:'Unas semanas antes',date:'2027-07-25',web:'https://smart-ex.jp/en/'},
- {k:'ave',n:'AVE Lleida ↔ Madrid',when:'Cuando salgan los billetes (unos 3 meses antes)',date:'2027-05-15',web:'https://www.renfe.com/es/es'},
+ {k:'parking',n:'Parking de Barajas (10–24 ago) y hotel en Madrid del 24',when:'1–2 meses antes, por internet',date:'2027-06-30',web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html'},
  {k:'esim',n:'eSIM de datos y Suica en el móvil',when:'La semana antes',date:'2027-08-03',web:''}
 ];
 const PACK=[
@@ -410,7 +410,8 @@ const KIDS=[
 ];
 const FIXED=[
  {n:'Vuelos Korean Air (ya mirado)',eur:3523},
- {n:'La Seu ↔ Madrid (coche + AVE, aprox.)',eur:450},
+ {n:'Coche La Seu ↔ Barajas: gasolina ~1.200 km (aprox.)',eur:230},
+ {n:'Parking del aeropuerto de Barajas, 10–24 ago (15 días, aprox.)',eur:120,web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html'},
  {n:'Hoteles Tokio, 8 noches (~110–180 €/noche)',eur:1150,web:'https://www.booking.com/searchresults.es.html?ss=Asakusa'},
  {id:'ryokan',opt:true,n:'Ryokan en Hakone, 1 noche con cena',eur:320,web:'https://www.booking.com/searchresults.es.html?ss=Hakone'},
  {n:'Hotel Kioto, 3 noches (~130–200 €/noche)',eur:480,web:'https://www.booking.com/searchresults.es.html?ss=Kyoto+Station'},
