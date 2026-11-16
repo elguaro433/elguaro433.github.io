@@ -260,6 +260,7 @@ input,textarea,select{font-size:16px}
 </nav>
 <script>
 const G=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+const R=q=>'https://www.google.com/maps/dir/?api=1&travelmode=transit&destination='+encodeURIComponent(q);
 const F=q=>'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(q);
 // ---------- ilustraciones a color (escenas de 64×64) ----------
 const BG=(c1,c2,h=40)=>`<rect width="64" height="64" rx="14" fill="${c1}"/><path d="M0 ${h}H64V50a14 14 0 0 1-14 14H14A14 14 0 0 1 0 50Z" fill="${c2}"/>`;
@@ -459,7 +460,7 @@ function priceHtml(p){
 }
 function placeHtml(p,col){
   return `<div class="place"><div class="ic">${svg(p.ic,col)}</div><div style="min-width:0"><h3>${p.n}</h3><p>${p.d}</p>
-  <div class="links"><a href="${G(p.g)}" target="_blank" rel="noopener">📍 Google Maps</a><a href="${F(p.g)}" target="_blank" rel="noopener">📷 Ver fotos</a>${p.web?`<a href="${p.web}" target="_blank" rel="noopener">🌐 Web / reservar</a>`:''}</div></div>
+  <div class="links"><a href="${G(p.g)}" target="_blank" rel="noopener">📍 Google Maps</a><a href="${R(p.g)}" target="_blank" rel="noopener">🚇 Cómo llegar</a><a href="${F(p.g)}" target="_blank" rel="noopener">📷 Ver fotos</a>${p.web?`<a href="${p.web}" target="_blank" rel="noopener">🌐 Web / reservar</a>`:''}</div></div>
   <div class="price" style="${isOn(p.id)?'':'opacity:.45'}">${priceHtml(p)}${p.opt?`<label class="opt"><input type="checkbox" data-opt="${p.id}" ${isOn(p.id)?'checked':''}> Lo incluimos</label>`:''}</div></div>`;
 }
 function renderDays(){
