@@ -1,0 +1,569 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Japón en familia 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Nunito+Sans:wght@400;600;700&display=swap">
+<style>
+/* Layout: app de viaje; mapa real de Honshu + línea de días por ciudad, tarjeta del día con ilustración, lugares (mapa, fotos, web, precio ¥/€), plan de lluvia, día de los niños y presupuesto */
+:root{
+  --bg:#f7f5f0; --paper:#ffffff; --ink:#1f2433; --muted:#5d6475; --line:#e3ded3;
+  --ai:#24407a; --ai-soft:#e6ecf7; --shu:#c8452c; --shu-soft:#fbe9e4; --matcha:#4c7a3c; --matcha-soft:#e8f1e2; --sun:#b07a10; --sun-soft:#fbf1dc; --rain:#2f6f8f; --rain-soft:#e1eff5;
+  --sea:#dbe7ef; --land:#f1ebdd; --landline:#cfc6b3;
+  --c-tokio:#24407a; --c-hakone:#4c7a3c; --c-kioto:#c8452c; --c-nara:#b07a10; --c-disney:#7a3f9a;
+  --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN",system-ui,sans-serif;
+  --body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13161f; --paper:#1c202b; --ink:#ecebe6; --muted:#a6abb8; --line:#2e3342;
+  --ai:#8eaaf0; --ai-soft:#1f2a45; --shu:#f08a70; --shu-soft:#3a221d; --matcha:#9cc883; --matcha-soft:#1f2e1a; --sun:#e8b54a; --sun-soft:#352a14; --rain:#7cc0e0; --rain-soft:#15303d;
+  --sea:#162231; --land:#262b37; --landline:#3a4152;
+  --c-tokio:#8eaaf0; --c-hakone:#9cc883; --c-kioto:#f08a70; --c-nara:#e8b54a; --c-disney:#c99be0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13161f; --paper:#1c202b; --ink:#ecebe6; --muted:#a6abb8; --line:#2e3342;
+  --ai:#8eaaf0; --ai-soft:#1f2a45; --shu:#f08a70; --shu-soft:#3a221d; --matcha:#9cc883; --matcha-soft:#1f2e1a; --sun:#e8b54a; --sun-soft:#352a14; --rain:#7cc0e0; --rain-soft:#15303d;
+  --sea:#162231; --land:#262b37; --landline:#3a4152;
+  --c-tokio:#8eaaf0; --c-hakone:#9cc883; --c-kioto:#f08a70; --c-nara:#e8b54a; --c-disney:#c99be0; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 60px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+a{color:var(--ai)}
+.kicker{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--shu);font-weight:700}
+h1{font-size:clamp(30px,6vw,46px);font-weight:900;line-height:1.08;margin-top:4px}
+h1 span{color:var(--ai)}
+.sub{color:var(--muted);margin:8px 0 0;max-width:64ch}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
+.top{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;margin-top:18px}
+@media (max-width:780px){.top{grid-template-columns:1fr}}
+.mapbox svg{width:100%;height:auto;display:block;border-radius:10px}
+.small{font-size:13px;color:var(--muted)}
+.side{display:grid;gap:10px;align-content:start}
+.big{font-family:var(--display);font-size:30px;font-weight:900;color:var(--ai);line-height:1.1}
+.fx{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px}
+.fx input[type=number]{width:72px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+/* línea de días */
+.strip{margin-top:20px}
+.notebox{display:grid;gap:6px}
+.notebox textarea,.free{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);font:inherit;resize:vertical}
+.nav{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.nav a{font-weight:700;font-size:14px;text-decoration:none;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 12px}
+.count{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+.count b{font-family:var(--display);font-size:34px;color:var(--shu)}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.checks li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.checks li.done{opacity:.6}
+.checks li.done .t{text-decoration:line-through}
+.checks input{width:20px;height:20px;accent-color:var(--matcha)}
+.checks .w{font-size:13px;color:var(--muted)}
+.late{color:var(--shu);font-weight:700}
+.bar2{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:8px 0 12px}
+.bar2 i{display:block;height:100%;background:var(--matcha)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.hotel h3{font-size:17px}
+.hotel .pp{font-weight:700;font-variant-numeric:tabular-nums;margin-top:6px}
+.packgrp h3{font-size:16px;margin-bottom:6px}
+.phr{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;font-size:15px}
+.phr span:nth-child(even){font-weight:700;color:var(--ai)}
+.emerg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.emerg div{background:var(--shu-soft);border-radius:12px;padding:12px}
+.emerg b{display:block;font-family:var(--display);font-size:26px;color:var(--shu)}
+.strip .bar{display:grid;grid-template-columns:repeat(14,minmax(52px,1fr));gap:4px;overflow-x:auto;padding-bottom:6px}
+.strip button{border:2px solid transparent;border-radius:10px;padding:8px 2px 6px;cursor:pointer;font:inherit;color:#fff;text-align:center;min-width:52px}
+.strip button b{display:block;font-family:var(--display);font-size:20px;line-height:1}
+.strip button small{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.9}
+.strip button i{display:block;font-style:normal;font-size:15px;line-height:1.3}
+.strip button[aria-pressed=true]{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.citykey{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin-top:6px}
+.citykey span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;background:var(--k);vertical-align:-1px}
+button:focus-visible,a:focus-visible,input:focus-visible,.dot:focus-visible{outline:3px solid var(--shu);outline-offset:2px}
+/* tarjeta del día */
+.daycard{margin-top:14px;padding:0;overflow:hidden}
+.hero{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;padding:16px;background:linear-gradient(120deg,var(--hc),color-mix(in srgb,var(--hc) 55%,var(--paper)));color:#fff}
+.hero svg{width:100%;height:auto;max-width:150px;border-radius:22px;box-shadow:0 6px 18px rgba(0,0,0,.25);background:#fff}
+.hero h2{font-size:clamp(22px,4vw,30px);color:#fff}
+.hero .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.hero .meta span{background:rgba(255,255,255,.2);border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700}
+@media (max-width:520px){.hero{grid-template-columns:90px 1fr;gap:10px}}
+.inner{padding:16px;display:grid;gap:14px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:7px 14px;font:inherit;font-weight:700;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tabs button.rainbtn[aria-pressed=true]{background:var(--rain);border-color:var(--rain);color:#fff}
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.timeline li{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:6px 0;border-left:2px dashed var(--line);margin-left:30px;padding-left:14px;position:relative}
+.timeline li::before{content:"";position:absolute;left:-7px;top:12px;width:12px;height:12px;border-radius:50%;background:var(--hc);border:2px solid var(--paper)}
+.timeline .h{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);margin-left:-60px;width:52px;text-align:right}
+.timeline li{grid-template-columns:0 1fr}
+.places{display:grid;gap:10px}
+.place{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:start;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper)}
+.place .ic{width:64px;height:64px;border-radius:12px;background:color-mix(in srgb,var(--hc) 14%,var(--paper));display:grid;place-items:center}
+.place .ic svg{width:64px;height:64px;display:block}
+.place h3{font-size:17px}
+.place p{margin:3px 0 0;color:var(--muted);font-size:14px}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.links a{font-size:13px;font-weight:700;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--bg)}
+.price{text-align:right;font-variant-numeric:tabular-nums;font-size:14px;min-width:0}
+.price b{display:block;font-family:var(--display);font-size:18px}
+.opt{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);margin-top:6px;justify-content:flex-end}
+@media (max-width:600px){.place{grid-template-columns:52px 1fr}.place .ic{width:52px;height:52px}.price{grid-column:1/-1;text-align:left}.opt{justify-content:flex-start}}
+.rainbox{background:var(--rain-soft);border-radius:12px;padding:12px 14px}
+.rainbox h3{color:var(--rain);font-size:17px}
+.kids{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.kid{border:2px solid var(--line);border-radius:14px;padding:12px;background:var(--paper);cursor:pointer;text-align:left;font:inherit;color:var(--ink);display:grid;gap:6px}
+.kid svg{width:64px;height:64px;border-radius:14px}
+.kid[aria-pressed=true]{border-color:var(--shu);background:var(--shu-soft)}
+.kid b{font-family:var(--display);font-size:16px}
+.kid span{font-size:13px;color:var(--muted)}
+section{margin-top:34px}
+h2.sec{font-size:24px;margin-bottom:8px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:460px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left}
+th:nth-child(n+2),td:nth-child(n+2){text-align:right;white-space:nowrap}
+td.off{opacity:.4;text-decoration:line-through}
+tr.grand td{font-family:var(--display);font-weight:900;font-size:19px;color:var(--ai);border-bottom:none}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.tip{background:var(--sun-soft);border-radius:10px;padding:12px 14px;font-size:14px}
+.tip b{color:var(--sun)}
+.note{margin-top:34px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.dot{cursor:pointer}
+.banner{display:block;width:100%;height:auto;max-height:200px;border-radius:18px;margin-bottom:18px}
+.card{box-shadow:0 2px 10px rgba(30,30,50,.06)}
+.place{transition:transform .15s,box-shadow .15s}
+.place:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(30,30,50,.10)}
+.links a:hover{background:var(--ai-soft)}
+.hero{padding:22px 20px}
+.hero svg{filter:drop-shadow(0 4px 8px rgba(0,0,0,.2))}
+@media (prefers-reduced-motion:reduce){.place{transition:none}.place:hover{transform:none}}
+</style>
+
+<div class="wrap">
+  <svg class="banner" viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6b08a"/><stop offset=".6" stop-color="#f7d7b5"/><stop offset="1" stop-color="#fbeedd"/></linearGradient></defs>
+    <rect width="1000" height="220" fill="url(#sky)"/>
+    <circle cx="760" cy="95" r="52" fill="#e0533a"/>
+    <path d="M0 220 L0 175 Q120 150 230 170 T470 160 T720 172 T1000 158 L1000 220Z" fill="#c9a98c" opacity=".55"/>
+    <path d="M300 220 L470 70 Q500 48 530 70 L700 220Z" fill="#5a6a8c"/>
+    <path d="M440 98 L470 70 Q500 48 530 70 L560 98 L540 90 L522 104 L500 88 L478 104 L460 90Z" fill="#fff"/>
+    <g fill="#c8452c"><rect x="110" y="96" width="130" height="10" rx="3"/><rect x="100" y="84" width="150" height="9" rx="4"/><rect x="125" y="114" width="100" height="7"/><rect x="132" y="90" width="11" height="130"/><rect x="207" y="90" width="11" height="130"/></g>
+    <path d="M0 220 L0 200 Q250 186 500 198 T1000 196 L1000 220Z" fill="#7d8b6a"/>
+    <g fill="#ef9fb0" opacity=".9"><circle cx="880" cy="40" r="6"/><circle cx="905" cy="62" r="5"/><circle cx="930" cy="36" r="4"/><circle cx="62" cy="40" r="5"/><circle cx="40" cy="66" r="4"/></g>
+  </svg>
+  <div class="kicker">Viaje en familia · 10 – 23 de agosto de 2027</div>
+  <h1>Japón con los niños: <span>Tokio, Hakone, Kioto y Nara</span></h1>
+  <p class="sub">Elige un día en la línea de colores o un punto del mapa. Cada día tiene su horario, los sitios con fotos y mapa, la web para reservar, el precio en yenes y euros, y un botón <b>«Si llueve»</b> con el plan B. El día 21 lo eligen los niños.</p>
+
+  <div class="top">
+    <div class="card mapbox">
+      <svg id="map" viewBox="0 0 700 430" role="img" aria-label="Mapa de Japón central con la ruta del viaje"></svg>
+      <div class="small" style="margin-top:6px">Mapa de la isla de Honshu con la ruta. Pulsa un punto para ver ese día.</div>
+    </div>
+    <div class="side">
+      <div class="card">
+        <div class="small">Coste total estimado para 4 personas</div>
+        <div class="big" id="totEur">—</div>
+        <div class="small" id="totYen">—</div>
+      </div>
+      <div class="card">
+        <div class="fx"><label for="rate">Cambio: 1 € =</label><input type="number" id="rate" value="170" min="100" max="250" step="1"><span>¥</span></div>
+        <div class="fx" style="margin-top:10px"><input type="checkbox" id="junior"><label for="junior">El mayor ya tiene 12 años (precio de joven)</label></div>
+      </div>
+      <div class="card">
+        <div class="small">Vuelo elegido</div>
+        <b>Korean Air · 3.523 € los 4</b>
+        <div class="small"><b>Ida:</b> KE914 Madrid 10-ago 20:20 → Seúl 11-ago 16:00 · KE717 Seúl 18:30 → Narita 21:00<br><b>Vuelta:</b> KE714 Narita 23-ago 20:55 → Seúl 23:25 · KE913 Seúl → Madrid</div>
+        <div class="links"><a href="https://www.koreanair.com/es/es" target="_blank" rel="noopener">Web de Korean Air</a></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav" aria-label="Secciones"><a href="#dias">🗓 Días</a><a href="#reservas">✅ Reservas</a><a href="#hoteles">🏨 Hoteles</a><a href="#comida">🍣 Comida</a><a href="#equipaje">🧳 Equipaje</a><a href="#emergencias">🆘 Emergencias y frases</a><a href="#presupuesto">💶 Presupuesto</a></nav>
+  <div class="strip" id="dias">
+    <div class="bar" id="days" role="toolbar" aria-label="Días del viaje"></div>
+    <div class="citykey"><span style="--k:var(--c-tokio)">Tokio</span><span style="--k:var(--c-disney)">Disney</span><span style="--k:var(--c-hakone)">Hakone</span><span style="--k:var(--c-kioto)">Kioto</span><span style="--k:var(--c-nara)">Nara</span></div>
+  </div>
+
+  <div class="card daycard" id="day"></div>
+
+  <section id="reservas">
+    <h2 class="sec">Reservas pendientes</h2>
+    <div class="card">
+      <div class="count"><b id="cdDays">—</b><span>días para salir de Madrid (10-ago-2027, 20:20)</span></div>
+      <div class="bar2" aria-hidden="true"><i id="resBar" style="width:0"></i></div>
+      <div class="small" id="resTxt"></div>
+    </div>
+    <ul class="checks" id="resList" style="margin-top:10px"></ul>
+  </section>
+
+  <section id="hoteles">
+    <h2 class="sec">Hoteles propuestos</h2>
+    <p class="small" style="margin:0 0 10px">Precios vistos en búsquedas, sin fechas exactas: comprobadlos con vuestras fechas. Elegid siempre cancelación gratuita.</p>
+    <div id="hotelList" style="display:grid;gap:16px"></div>
+  </section>
+
+  <section id="comida">
+    <h2 class="sec">Dónde y qué comer</h2>
+    <div class="places" id="foodList"></div>
+  </section>
+
+  <section id="equipaje">
+    <h2 class="sec">Lista de equipaje</h2>
+    <div class="bar2" aria-hidden="true"><i id="packBar" style="width:0"></i></div>
+    <div class="grid2" id="packList"></div>
+  </section>
+
+  <section id="emergencias">
+    <h2 class="sec">Emergencias y frases útiles</h2>
+    <div class="emerg">
+      <div><b>110</b>Policía</div>
+      <div><b>119</b>Ambulancia y bomberos</div>
+      <div><b>050-3816-2787</b>Japan Visitor Hotline (24 h, en inglés)</div>
+      <div><b>+81 3-3583-8531</b>Embajada de España en Tokio</div>
+    </div>
+    <p class="small">Guardad estos números en el móvil. Si alguien se pierde: quedad siempre en un punto fijo (la puerta del hotel) y que los niños lleven una tarjeta con el nombre del hotel en japonés y vuestro teléfono.</p>
+    <div class="card" style="margin-top:12px"><h3 style="font-size:17px;margin-bottom:8px">10 frases en japonés</h3><div class="phr" id="phr"></div></div>
+  </section>
+
+  <section id="presupuesto">
+    <h2 class="sec">Presupuesto</h2>
+    <div class="card tablewrap"><table id="budget"><thead><tr><th>Concepto</th><th>Yenes</th><th>Euros</th></tr></thead><tbody></tbody></table></div>
+    <div class="small" style="margin-top:6px">Entradas y trenes calculados para 2 adultos y 2 niños. Hoteles y comida, precio aproximado. Los planes de lluvia no suman: solo cuentan si los usáis.</div>
+  </section>
+
+  <section>
+    <h2 class="sec">Consejos importantes</h2>
+    <div class="tips">
+      <div class="tip"><b>Calor (32–36 °C).</b> Caminar de 8:00 a 12:00 y desde las 17:00. De 13:00 a 16:00, hotel o sitios con aire acondicionado.</div>
+      <div class="tip"><b>Obon, 13–16 de agosto.</b> Vacaciones en Japón: trenes y Disney llenos. Reservad asientos con tiempo y mirad el «Premier Access» de Disney.</div>
+      <div class="tip"><b>Tifones.</b> Agosto es temporada. Si hay aviso, usad el plan «Si llueve» de cada día y un seguro que cubra cancelaciones.</div>
+      <div class="tip"><b>Maletas.</b> El 16, mandadlas por <i>takkyubin</i> (~2.000 ¥ cada una) al hotel de Kioto y avisad al hotel.</div>
+    </div>
+  </section>
+
+  <p class="note">Hecho el 16-nov-2026. Solo el vuelo es un precio comprobado (Google Vuelos y Korean Air). El resto son precios aproximados: confírmalos en cada web antes de reservar. Los dibujos son ilustraciones; las fotos reales se ven con el botón «Ver fotos». Tus elecciones se guardan solo en este navegador.</p>
+</div>
+
+<script>
+const G=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+const F=q=>'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(q);
+// ---------- ilustraciones a color (escenas de 64×64) ----------
+const BG=(c1,c2,h=40)=>`<rect width="64" height="64" rx="14" fill="${c1}"/><path d="M0 ${h}H64V50a14 14 0 0 1-14 14H14A14 14 0 0 1 0 50Z" fill="${c2}"/>`;
+const ICON={
+ plane:BG('#a9dcf5','#8fcbe9',64)+'<g fill="#fff"><ellipse cx="16" cy="18" rx="9" ry="4"/><ellipse cx="22" cy="15" rx="6" ry="4"/><ellipse cx="48" cy="48" rx="10" ry="4"/></g><g transform="rotate(-18 32 33)"><rect x="12" y="29" width="40" height="8" rx="4" fill="#fff"/><path d="M48 29 Q58 33 48 37Z" fill="#fff"/><path d="M26 33 L36 33 L28 18 L23 18Z" fill="#e8eef5"/><path d="M26 33 L36 33 L28 48 L23 48Z" fill="#d5dde8"/><path d="M13 31 L9 23 L14 23 L18 30Z" fill="#c8452c"/><rect x="18" y="32" width="28" height="2" fill="#24407a"/><g fill="#7ab4e0"><circle cx="40" cy="31.5" r="1"/><circle cx="36" cy="31.5" r="1"/><circle cx="32" cy="31.5" r="1"/></g></g>',
+ train:BG('#bfe6f7','#9cc883',44)+'<path d="M0 50H64" stroke="#7d6b5a" stroke-width="2"/><path d="M4 46 H44 Q60 46 60 40 Q58 30 44 28 H4Z" fill="#fff" stroke="#c9d2de"/><path d="M4 40 H58" stroke="#24407a" stroke-width="3"/><g fill="#5a7ea8"><rect x="8" y="31" width="6" height="5" rx="1"/><rect x="17" y="31" width="6" height="5" rx="1"/><rect x="26" y="31" width="6" height="5" rx="1"/><path d="M38 31 H46 Q52 31 54 36 H38Z"/></g><g fill="#3b3b46"><circle cx="12" cy="47" r="2.5"/><circle cx="36" cy="47" r="2.5"/></g>',
+ torii:BG('#ffe2c4','#e9b98a',46)+'<path d="M26 64 L30 46 H34 L38 64Z" fill="#d9a06c"/>'+[[0.55,32,40],[0.75,32,38],[1,32,36]].map(([s,x,y])=>`<g transform="translate(${x} ${y}) scale(${s}) translate(-32 -36)"><path d="M8 14 Q32 8 56 14 L56 19 Q32 14 8 19Z" fill="#2b2b2b"/><rect x="12" y="19" width="40" height="5" fill="#d8402a"/><rect x="11" y="27" width="42" height="4" fill="#d8402a"/><rect x="16" y="19" width="6" height="40" fill="#e04a30"/><rect x="42" y="19" width="6" height="40" fill="#e04a30"/></g>`).join(''),
+ temple:BG('#cde9f7','#9cc883',50)+'<g><rect x="27" y="40" width="10" height="12" fill="#c8452c"/><path d="M14 40 H50 L44 35 H20Z" fill="#3d3f52"/><rect x="25" y="29" width="14" height="6" fill="#d8573c"/><path d="M16 29 H48 L42 24 H22Z" fill="#3d3f52"/><rect x="26" y="18" width="12" height="6" fill="#d8573c"/><path d="M18 18 H46 L40 13 H24Z" fill="#3d3f52"/><rect x="31" y="5" width="2" height="8" fill="#b07a10"/></g><g fill="#7da35f"><circle cx="8" cy="48" r="6"/><circle cx="57" cy="47" r="7"/></g>',
+ castle:BG('#2d3466','#3f4a85',52)+'<g fill="#fff3b0"><circle cx="10" cy="10" r="1.2"/><circle cx="52" cy="8" r="1.2"/><circle cx="58" cy="20" r="1"/><circle cx="6" cy="24" r="1"/></g><g stroke-width="1.6" stroke-linecap="round"><path d="M50 14l0-5M50 14l4-3M50 14l4 2M50 14l-4 3M50 14l-4-2" stroke="#ff9fc0"/><path d="M14 16l0-4M14 16l3-2M14 16l-3-2M14 16l3 2M14 16l-3 2" stroke="#9fe0ff"/></g><rect x="18" y="32" width="28" height="22" fill="#f4eef8"/><rect x="24" y="22" width="16" height="12" fill="#fff"/><rect x="29" y="12" width="6" height="12" fill="#fff"/><g fill="#5b7fd6"><path d="M28 12 L32 3 L36 12Z"/><path d="M22 22 L25 14 L28 22Z"/><path d="M36 22 L39 14 L42 22Z"/><path d="M16 32 L19 24 L22 32Z"/><path d="M42 32 L45 24 L48 32Z"/></g><g fill="#f2c4d8"><rect x="16" y="32" width="6" height="22"/><rect x="42" y="32" width="6" height="22"/></g><path d="M28 54 V45 A4 4 0 0 1 36 45 V54Z" fill="#7a5aa8"/><g fill="#ffd36e"><rect x="30" y="26" width="4" height="4" rx="1"/><rect x="21" y="38" width="3" height="4"/><rect x="40" y="38" width="3" height="4"/></g>',
+ ship:BG('#ffd9a8','#3d8fc4',42)+'<path d="M0 46 Q8 43 16 46 T32 46 T48 46 T64 46" stroke="#9fd0ee" stroke-width="2" fill="none"/><path d="M10 40 H54 L48 50 H16Z" fill="#7a4a2a"/><rect x="10" y="38" width="44" height="3" fill="#c8452c"/><rect x="31" y="8" width="2.5" height="32" fill="#5a3a20"/><path d="M33.5 12 Q46 16 33.5 26Z" fill="#fff"/><path d="M31 12 Q18 18 31 30Z" fill="#fff7e8"/><path d="M33 8 L42 10 L33 13Z" fill="#2b2b2b"/><circle cx="37" cy="10.5" r="1" fill="#fff"/><g fill="#ffd36e"><circle cx="20" cy="44" r="1.5"/><circle cx="28" cy="44" r="1.5"/><circle cx="36" cy="44" r="1.5"/><circle cx="44" cy="44" r="1.5"/></g>',
+ fuji:BG('#ffc9a3','#5fa3cf',48)+'<circle cx="48" cy="16" r="7" fill="#e0533a"/><path d="M4 48 L26 18 Q32 12 38 18 L60 48Z" fill="#4a5f8c"/><path d="M21 25 L26 18 Q32 12 38 18 L43 25 L39 23 L35 27 L32 23 L29 27 L25 23Z" fill="#fff"/><path d="M10 54 Q20 52 30 54 M36 57 Q46 55 56 57" stroke="#b9dcf0" stroke-width="1.6" fill="none"/>',
+ deer:BG('#cfeccf','#8fc472',44)+'<g fill="#5f8f45"><circle cx="8" cy="20" r="9"/><circle cx="58" cy="16" r="10"/></g><path d="M22 22 Q20 12 14 8 M21 17 L16 14 M30 22 Q32 12 38 8 M31 17 L36 14" stroke="#7a5230" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M27 34 Q42 30 50 36 Q56 40 54 46 L53 56 H49 L48 48 H34 L33 56 H29 L28 46Z" fill="#b97a45"/><ellipse cx="26" cy="27" rx="7" ry="6" fill="#b97a45"/><ellipse cx="20" cy="22" rx="3" ry="2" fill="#b97a45" transform="rotate(-30 20 22)"/><circle cx="24" cy="26" r="1.2" fill="#2b2b2b"/><circle cx="20" cy="29" r="1.2" fill="#2b2b2b"/><g fill="#f3dfc4"><circle cx="38" cy="38" r="1.3"/><circle cx="44" cy="37" r="1.3"/><circle cx="41" cy="42" r="1.3"/></g><rect x="8" y="46" width="10" height="7" rx="1.5" fill="#f2e3b3" stroke="#c9a96a"/>',
+ bamboo:'<rect width="64" height="64" rx="14" fill="#e3f2d4"/>'+[[6,'#7fb35a'],[16,'#5f9a3e'],[27,'#8cc06a'],[38,'#4f8a34'],[49,'#76ad55']].map(([x,c])=>`<rect x="${x}" y="0" width="7" height="64" fill="${c}"/><g stroke="#3f6e2a" stroke-width="1.2"><path d="M${x} 14h7M${x} 32h7M${x} 50h7"/></g>`).join('')+'<g fill="#9fd07a"><path d="M13 20 q8-6 10-2 q-6 2-10 2Z"/><path d="M34 40 q8-6 10-2 q-6 2-10 2Z"/><path d="M45 10 q8-6 10-2 q-6 2-10 2Z"/></g><rect width="64" height="64" rx="14" fill="none" stroke="#cfe5bb"/>',
+ monkey:BG('#bfe6f7','#9cc883',48)+'<circle cx="32" cy="32" r="16" fill="#9a6a45"/><circle cx="15" cy="30" r="6" fill="#9a6a45"/><circle cx="49" cy="30" r="6" fill="#9a6a45"/><circle cx="15" cy="30" r="3" fill="#f2a9a0"/><circle cx="49" cy="30" r="3" fill="#f2a9a0"/><path d="M20 32 Q20 22 32 22 Q44 22 44 32 Q44 44 32 44 Q20 44 20 32Z" fill="#f4b3a8"/><circle cx="27" cy="31" r="2" fill="#2b2b2b"/><circle cx="37" cy="31" r="2" fill="#2b2b2b"/><path d="M28 38 Q32 41 36 38" stroke="#7a3f30" stroke-width="1.6" fill="none" stroke-linecap="round"/><g fill="#ffffff" opacity=".6"><circle cx="10" cy="54" r="2"/><circle cx="56" cy="56" r="2"/></g>',
+ tower:BG('#2d3466','#1f2550',54)+'<g fill="#fff3b0"><circle cx="10" cy="12" r="1"/><circle cx="54" cy="10" r="1.2"/><circle cx="48" cy="26" r="1"/></g><circle cx="14" cy="16" r="4" fill="#fff3b0"/><path d="M32 4 L35 22 L38 56 H26 L29 22Z" fill="#cfe0f5"/><rect x="27" y="20" width="10" height="4" rx="2" fill="#8eaaf0"/><rect x="28" y="31" width="8" height="3" rx="1.5" fill="#8eaaf0"/><path d="M32 4 V0" stroke="#e0533a" stroke-width="1.5"/><g fill="#5b6aa8"><rect x="4" y="44" width="8" height="12"/><rect x="12" y="48" width="9" height="8"/><rect x="42" y="46" width="9" height="10"/><rect x="51" y="42" width="9" height="14"/></g><g fill="#ffd36e"><rect x="6" y="47" width="2" height="2"/><rect x="53" y="45" width="2" height="2"/><rect x="44" y="49" width="2" height="2"/></g>',
+ panda:BG('#d7efd0','#9cc883',50)+'<g fill="#6aa04b"><path d="M54 0 V64" stroke="#6aa04b" stroke-width="3"/><path d="M54 18 q-8-4-10 0 q6 2 10 0Z"/></g><circle cx="17" cy="16" r="7" fill="#2b2b2b"/><circle cx="45" cy="16" r="7" fill="#2b2b2b"/><circle cx="31" cy="32" r="18" fill="#fff"/><ellipse cx="24" cy="30" rx="5" ry="6.5" fill="#2b2b2b" transform="rotate(-20 24 30)"/><ellipse cx="38" cy="30" rx="5" ry="6.5" fill="#2b2b2b" transform="rotate(20 38 30)"/><circle cx="25" cy="30" r="1.6" fill="#fff"/><circle cx="37" cy="30" r="1.6" fill="#fff"/><ellipse cx="31" cy="39" rx="3.5" ry="2.5" fill="#2b2b2b"/><path d="M28 43 Q31 45 34 43" stroke="#2b2b2b" stroke-width="1.4" fill="none"/><g fill="#f6a9b8" opacity=".7"><circle cx="20" cy="38" r="2.5"/><circle cx="42" cy="38" r="2.5"/></g>',
+ light:'<rect width="64" height="64" rx="14" fill="#151a3a"/>'+[[14,16,7,'#ff7ab8'],[44,12,5,'#7ad9ff'],[32,34,10,'#ffd36e'],[12,46,6,'#9cf09a'],[52,44,7,'#b48cff'],[26,54,3,'#7ad9ff'],[50,26,3,'#ff9b6a']].map(([x,y,r,c])=>`<circle cx="${x}" cy="${y}" r="${r+4}" fill="${c}" opacity=".18"/><circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join('')+'<path d="M0 58 Q16 54 32 58 T64 58 V50a14 14 0 0 1-14 14H14A14 14 0 0 1 0 50Z" fill="#2c4a8a" opacity=".6"/>',
+ game:'<rect width="64" height="64" rx="14" fill="#e4332e"/><rect x="8" y="20" width="48" height="26" rx="13" fill="#2b2b33"/><rect x="8" y="20" width="14" height="26" rx="7" fill="#29b6e8"/><rect x="42" y="20" width="14" height="26" rx="7" fill="#ff5a48"/><rect x="22" y="22" width="20" height="18" rx="2" fill="#8fd3f0"/><circle cx="15" cy="29" r="2.5" fill="#2b2b33"/><circle cx="49" cy="36" r="2" fill="#2b2b33"/><circle cx="49" cy="28" r="2" fill="#2b2b33"/><path d="M28 30 h8 M32 26 v8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>',
+ ball:'<rect width="64" height="64" rx="14" fill="#ffe27a"/><circle cx="32" cy="32" r="22" fill="#fff" stroke="#2b2b2b" stroke-width="3"/><path d="M10 32 A22 22 0 0 1 54 32Z" fill="#e4332e" stroke="#2b2b2b" stroke-width="3"/><circle cx="32" cy="32" r="7" fill="#fff" stroke="#2b2b2b" stroke-width="3"/><circle cx="32" cy="32" r="3" fill="#fff" stroke="#2b2b2b" stroke-width="1.5"/><ellipse cx="22" cy="20" rx="4" ry="2" fill="#ff8b85" transform="rotate(-30 22 20)"/>',
+ fish:'<rect width="64" height="64" rx="14" fill="#1f6fa8"/><path d="M0 50 Q16 46 32 50 T64 50 V50a14 14 0 0 1-14 14H14A14 14 0 0 1 0 50Z" fill="#e8d6a6"/><g fill="#5fb07a"><path d="M10 64 Q8 52 12 44 Q14 54 14 64Z"/><path d="M54 64 Q52 54 56 48 Q58 56 58 64Z"/></g><g fill="#bfe6ff" opacity=".7"><circle cx="46" cy="12" r="2"/><circle cx="50" cy="7" r="1.4"/><circle cx="14" cy="16" r="1.5"/></g><path d="M14 30 Q28 18 42 30 Q28 42 14 30Z" fill="#ff8a3d"/><path d="M42 30 L52 22 L52 38Z" fill="#ff8a3d"/><path d="M24 22 v16 M32 21 v18" stroke="#fff" stroke-width="2.5"/><circle cx="19" cy="28" r="2" fill="#2b2b2b"/>',
+ museum:BG('#f6ecd8','#e3d3b2',52)+'<path d="M8 22 L32 8 L56 22Z" fill="#c8452c"/><rect x="8" y="22" width="48" height="4" fill="#efe2c5" stroke="#c9b48a"/><g fill="#fff8ea" stroke="#c9b48a"><rect x="12" y="27" width="6" height="22"/><rect x="23" y="27" width="6" height="22"/><rect x="35" y="27" width="6" height="22"/><rect x="46" y="27" width="6" height="22"/></g><rect x="6" y="49" width="52" height="5" fill="#efe2c5" stroke="#c9b48a"/><circle cx="32" cy="16" r="3" fill="#ffd36e"/>',
+ kitty:'<rect width="64" height="64" rx="14" fill="#ffd3e2"/><g fill="#fff" stroke="#2b2b2b" stroke-width="2"><path d="M12 24 L14 10 L24 18 L40 18 L50 10 L52 24 Q56 50 32 50 Q8 50 12 24Z"/></g><g fill="#2b2b2b"><ellipse cx="24" cy="32" rx="2" ry="3"/><ellipse cx="40" cy="32" rx="2" ry="3"/></g><ellipse cx="32" cy="37" rx="2.5" ry="1.8" fill="#ffd36e" stroke="#2b2b2b"/><g stroke="#2b2b2b" stroke-width="1.6" stroke-linecap="round"><path d="M6 32h8M6 37h8M50 32h8M50 37h8"/></g><g fill="#f6a9b8"><circle cx="18" cy="42" r="3"/><circle cx="46" cy="42" r="3"/></g><path d="M28 42 Q32 45 36 42" stroke="#2b2b2b" stroke-width="1.6" fill="none"/>',
+ brick:'<rect width="64" height="64" rx="14" fill="#ffe27a"/><rect x="8" y="30" width="48" height="22" rx="3" fill="#e4332e"/><rect x="8" y="30" width="48" height="5" rx="2" fill="#ff5a48"/><g fill="#ff5a48" stroke="#b8261f"><rect x="12" y="23" width="10" height="8" rx="2"/><rect x="27" y="23" width="10" height="8" rx="2"/><rect x="42" y="23" width="10" height="8" rx="2"/></g><rect x="20" y="10" width="24" height="12" rx="2" fill="#29b6e8"/><g fill="#5ccaf0"><rect x="23" y="6" width="7" height="5" rx="1.5"/><rect x="34" y="6" width="7" height="5" rx="1.5"/></g>',
+ spa:BG('#ffe7cc','#c8a07a',44)+'<g stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".95"><path d="M20 30 Q15 22 20 14 Q24 8 20 2"/><path d="M32 30 Q27 22 32 14 Q36 8 32 4"/><path d="M44 30 Q39 22 44 14 Q48 8 44 2"/></g><ellipse cx="32" cy="38" rx="26" ry="7" fill="#8a5a35"/><ellipse cx="32" cy="38" rx="22" ry="5" fill="#7fd0e6"/><path d="M6 38 V50 Q32 62 58 50 V38 Q32 52 6 38Z" fill="#a8703f"/><path d="M14 44 V54 M24 47 V58 M40 47 V58 M50 44 V54" stroke="#7a4a25" stroke-width="1.4"/><circle cx="26" cy="36" r="3" fill="#f6d2b4"/><circle cx="38" cy="36" r="2.5" fill="#f6d2b4"/>',
+ food:'<rect width="64" height="64" rx="14" fill="#ffe8b8"/><path d="M40 4 L26 30 M48 6 L32 30" stroke="#a8703f" stroke-width="2.5" stroke-linecap="round"/><path d="M6 30 H58 Q56 54 32 54 Q8 54 6 30Z" fill="#c8452c"/><path d="M10 30 H54 Q53 36 48 38 H16 Q11 36 10 30Z" fill="#f2c27a"/><g stroke="#ffe39a" stroke-width="1.6" fill="none"><path d="M14 33 Q20 30 26 33 T38 33 T50 33"/></g><circle cx="22" cy="31" r="4.5" fill="#fff"/><circle cx="22" cy="31" r="2.2" fill="#ffb02e"/><rect x="34" y="27" width="10" height="5" rx="1" fill="#f6a9a0"/><path d="M44 28 l5-2 l1 4Z" fill="#3a7a3a"/><path d="M14 46 Q32 52 50 46" stroke="#fff" stroke-width="1.5" opacity=".5" fill="none"/>',
+ shop:BG('#cde9f7','#d9cdb6',50)+'<rect x="8" y="20" width="48" height="32" fill="#fff8ea" stroke="#c9b48a"/><path d="M4 20 L10 10 H54 L60 20Z" fill="#3d3f52"/><g fill="#24407a"><rect x="12" y="22" width="9" height="12"/><rect x="23" y="22" width="9" height="12"/><rect x="34" y="22" width="9" height="12"/><rect x="45" y="22" width="7" height="12"/></g><g fill="#fff" opacity=".9"><circle cx="16.5" cy="27" r="2"/><circle cx="38.5" cy="27" r="2"/></g><rect x="14" y="38" width="16" height="14" fill="#a8703f"/><rect x="36" y="38" width="16" height="9" fill="#bfe6f7" stroke="#c9b48a"/><circle cx="54" cy="16" r="3" fill="#e0533a"/><circle cx="10" cy="16" r="3" fill="#e0533a"/>',
+ rain:'<rect width="64" height="64" rx="14" fill="#cfdbe6"/><path d="M14 26 Q14 14 26 14 Q30 4 42 8 Q54 10 52 24 Q60 26 56 34 H16 Q8 32 14 26Z" fill="#8a9bb0"/><g stroke="#2f6f8f" stroke-width="2.4" stroke-linecap="round"><path d="M18 40l-3 6M30 40l-3 6M42 40l-3 6M24 50l-3 6M48 46l-3 6"/></g><path d="M34 48 A12 12 0 0 1 58 48Z" fill="#c8452c"/><path d="M46 48 V60 Q46 63 43 62" stroke="#3d3f52" stroke-width="2" fill="none"/>'
+};
+const svg=(k)=>`<svg viewBox="0 0 64 64" aria-hidden="true">${ICON[k]||ICON.temple}</svg>`;
+// ---------- mapa ----------
+const PX=(lon,lat)=>[(lon-131.2)*66,(38.4-lat)*100];
+const HONSHU=[[131.0,34.4],[131.8,34.7],[132.8,35.5],[133.6,35.55],[134.3,35.6],[135.2,35.75],[135.5,35.55],[135.9,35.7],[136.0,36.0],[136.7,36.9],[137.0,37.15],[137.3,36.75],[138.0,37.1],[138.6,37.6],[139.2,38.1],[139.5,38.45],[141.4,38.45],[141.3,38.3],[141.0,37.8],[141.0,37.0],[140.8,36.5],[140.6,36.0],[140.85,35.7],[140.4,35.2],[140.0,34.9],[139.8,35.0],[139.85,35.3],[139.75,35.5],[139.65,35.3],[139.6,35.2],[139.15,35.25],[138.85,34.65],[138.7,35.0],[138.2,34.6],[137.3,34.7],[137.0,34.6],[136.85,35.0],[136.6,34.5],[136.9,34.3],[136.3,34.2],[135.8,33.45],[135.3,33.8],[135.1,34.3],[135.3,34.65],[134.5,34.8],[133.5,34.45],[132.4,34.3],[131.5,33.95],[131.0,34.0]];
+const SHIKOKU=[[132.4,33.5],[133.0,34.0],[133.6,34.3],[134.2,34.35],[134.6,34.2],[134.7,33.85],[134.2,33.3],[133.6,33.45],[133.0,32.75],[132.5,33.0]];
+const CITIES={
+ narita:{n:'Narita ✈',ll:[140.39,35.77],c:'--c-tokio',dx:22,dy:4,anchor:'start'},
+ tokio:{n:'Tokio',ll:[139.77,35.69],c:'--c-tokio',dx:-6,dy:-16,anchor:'end'},
+ disney:{n:'Disney',ll:[139.88,35.63],c:'--c-disney',dx:14,dy:22,anchor:'start'},
+ hakone:{n:'Hakone',ll:[139.03,35.23],c:'--c-hakone',dx:-14,dy:20,anchor:'end'},
+ kioto:{n:'Kioto',ll:[135.77,35.01],c:'--c-kioto',dx:0,dy:-16,anchor:'middle'},
+ nara:{n:'Nara',ll:[135.83,34.68],c:'--c-nara',dx:14,dy:16,anchor:'start'}
+};
+// ---------- datos de los días ----------
+const DAYS=[
+ {d:11,w:'mié',city:'tokio',ic:'plane',t:'Llegada a Tokio',tag:'Viaje',stay:'Hotel en Asakusa',
+  sched:[['21:00','Aterrizaje en Narita, pasaporte y maletas'],['22:15','Tren Skyliner a Ueno (40 min)'],['23:15','Taxi corto al hotel y a dormir']],
+  places:[{ic:'train',n:'Keisei Skyliner (Narita → Ueno)',d:'Tren rápido del aeropuerto. Billete en máquina o en la web.',g:'Keisei Ueno Station',web:'https://www.keisei.co.jp/keisei/tetudou/skyliner/e/',a:2580,c:1290}]},
+ {d:12,w:'jue',city:'tokio',ic:'tower',t:'Asakusa, el Tokio antiguo',tag:'Suave',stay:'Hotel en Asakusa',
+  sched:[['8:30','Templo Senso-ji y la calle de tiendas Nakamise'],['11:00','Melon-pan y helado de matcha en Asakusa'],['13:00','Siesta en el hotel por el cambio de hora'],['17:30','Paseo por el río Sumida'],['18:30','Mirador del Tokyo Skytree al anochecer']],
+  places:[{ic:'temple',n:'Templo Senso-ji',d:'El templo más antiguo de Tokio. Gratis.',g:'Senso-ji Asakusa Tokyo',web:'https://www.senso-ji.jp/english/',a:0,c:0},
+          {id:'skytree',opt:true,ic:'tower',n:'Tokyo Skytree (mirador)',d:'Opcional. Comprar con hora en la web.',g:'Tokyo Skytree',web:'https://www.tokyo-skytree.jp/en/ticket/',a:3100,c:1550,j:2350}],
+  rain:{ic:'fish',n:'Acuario de Sumida',d:'En el mismo edificio del Skytree: pingüinos y medusas, todo bajo techo.',g:'Sumida Aquarium',web:'https://www.sumida-aquarium.com/en/',a:2500,c:1200,j:1800}},
+ {d:13,w:'vie',city:'disney',ic:'castle',t:'Tokyo Disneyland',tag:'Día intenso',stay:'Hotel en Asakusa',
+  sched:[['7:15','Tren a Maihama (unos 40 min)'],['8:00','Entrada al parque: primero las atracciones más populares'],['13:00','Comida y descanso a la sombra o en un espectáculo bajo techo'],['18:30','Desfile nocturno'],['20:30','Fuegos artificiales y vuelta al hotel']],
+  places:[{id:'tdl',ic:'castle',n:'Tokyo Disneyland',d:'El parque del castillo, ideal para el de 8 años. Entradas solo con fecha.',g:'Tokyo Disneyland',web:'https://www.tokyodisneyresort.jp/en/ticket/index',a:10900,c:5600,j:9000}],
+  rain:{ic:'castle',n:'Seguir en Disney con chubasquero',d:'Con lluvia hay menos colas. Muchas atracciones son bajo techo (Monsters Inc., La Bella y la Bestia, Pooh). Chubasqueros en las tiendas del parque.',g:'Tokyo Disneyland',web:'https://www.tokyodisneyresort.jp/en/tdl/',a:0,c:0}},
+ {d:14,w:'sáb',city:'tokio',ic:'panda',t:'Descanso y parque de Ueno',tag:'Descanso',stay:'Hotel en Asakusa',
+  sched:[['Mañana','Dormir, piscina o lavandería del hotel'],['15:00','Zoo de Ueno: pandas'],['17:30','Paseo por el estanque de Shinobazu'],['19:00','Cenar en el mercado Ameyoko']],
+  places:[{ic:'panda',n:'Zoo de Ueno',d:'Menores de 12 gratis. Cierra los lunes.',g:'Ueno Zoo',web:'https://www.tokyo-zoo.net/english/ueno/',a:600,c:0,j:200},
+          {ic:'shop',n:'Mercado Ameyoko',d:'Calle de puestos y comida barata.',g:'Ameyoko Shopping Street',web:'https://www.ameyoko.net/',a:0,c:0}],
+  rain:{ic:'museum',n:'Museo de Ciencia y Naturaleza',d:'Dinosaurios, cohetes y experimentos para niños, en el mismo parque de Ueno. Menores de 18 gratis.',g:'National Museum of Nature and Science Ueno',web:'https://www.kahaku.go.jp/english/',a:630,c:0,j:0}},
+ {d:15,w:'dom',city:'disney',ic:'ship',t:'Tokyo DisneySea',tag:'Día intenso',stay:'Hotel en Asakusa',
+  sched:[['7:15','Tren a Maihama'],['8:00','Zona nueva de Frozen y Peter Pan (Fantasy Springs) a primera hora'],['13:00','Comida y descanso'],['16:00','Volcán y el viaje al centro de la Tierra'],['20:00','Espectáculo nocturno en el puerto']],
+  places:[{id:'tds',ic:'ship',n:'Tokyo DisneySea',d:'El parque más especial. Muy bueno para el de 11 años. Entradas solo con fecha.',g:'Tokyo DisneySea',web:'https://www.tokyodisneyresort.jp/en/ticket/index',a:10900,c:5600,j:9000}],
+  rain:{ic:'ship',n:'DisneySea con lluvia',d:'Muchas zonas son cubiertas (Mermaid Lagoon entero está bajo techo). Llevad chubasquero.',g:'Tokyo DisneySea',web:'https://www.tokyodisneyresort.jp/en/tds/',a:0,c:0}},
+ {d:16,w:'lun',city:'hakone',ic:'fuji',t:'Hakone: volcán, barco pirata y ryokan',tag:'Medio',stay:'Ryokan con baño termal',
+  sched:[['8:00','Enviar las maletas a Kioto desde el hotel'],['9:00','Tren Romancecar desde Shinjuku (1 h 30)'],['11:00','Tren de montaña y funicular'],['12:30','Teleférico sobre el volcán de Owakudani y huevos negros'],['14:30','Barco pirata por el lago Ashi'],['17:00','Ryokan: kimono, baño termal y cena japonesa']],
+  places:[{id:'hfp',ic:'train',n:'Hakone Free Pass (desde Shinjuku)',d:'Incluye tren, teleférico, barco pirata y buses durante 2 días.',g:'Odakyu Shinjuku Station',web:'https://www.odakyu.jp/english/passes/hakone/',a:6100,c:1100,j:6100},
+          {id:'romance',ic:'train',n:'Suplemento Romancecar',d:'Asiento reservado en el tren panorámico.',g:'Shinjuku Station',web:'https://www.odakyu.jp/english/romancecar/',a:1200,c:600,j:1200},
+          {ic:'fuji',n:'Owakudani',d:'Valle volcánico humeante. Huevos negros: ~500 ¥ los 5.',g:'Owakudani Hakone',web:'https://www.hakoneropeway.co.jp/foreign/en/',a:0,c:0},
+          {ic:'ship',n:'Barco pirata del lago Ashi',d:'Incluido en el Free Pass. Con suerte se ve el Fuji.',g:'Hakone Sightseeing Cruise Togendai',web:'https://www.hakone-kankosen.co.jp/foreign/en/',a:0,c:0}],
+  rain:{ic:'spa',n:'Yunessun (parque de aguas termales)',d:'Si el teleférico cierra por viento o lluvia: piscinas termales en bañador, de vino, café o té. Les encanta a los niños.',g:'Hakone Kowakien Yunessun',web:'https://www.yunessun.com/en/',a:2500,c:1300,j:2500}},
+ {d:17,w:'mar',city:'kioto',ic:'train',t:'Tren bala a Kioto',tag:'Viaje',stay:'Hotel o apartamento en Kioto',
+  sched:[['9:30','Bus de Hakone a Odawara'],['11:00','Shinkansen a Kioto (unas 2 h)'],['14:00','Hotel, recoger maletas y descansar'],['17:30','Gion y las calles de madera de Ninenzaka']],
+  places:[{id:'shin1',ic:'train',n:'Shinkansen Odawara → Kioto',d:'Reserva en SmartEX con unas semanas de antelación.',g:'Odawara Station',web:'https://smart-ex.jp/en/',a:12000,c:6000,j:12000},
+          {ic:'temple',n:'Gion y Ninenzaka',d:'Barrio de las geishas. Gratis.',g:'Ninenzaka Kyoto',web:'https://kyoto.travel/en/',a:0,c:0}],
+  rain:{ic:'train',n:'Museo del Ferrocarril de Kioto',d:'Trenes bala y locomotoras de verdad, simuladores para conducir. Bajo techo.',g:'Kyoto Railway Museum',web:'https://www.kyotorailwaymuseum.jp/en/',a:1500,c:500,j:1300}},
+ {d:18,w:'mié',city:'kioto',ic:'torii',t:'Puertas rojas y templo dorado',tag:'Medio',stay:'Hotel o apartamento en Kioto',
+  sched:[['7:00','Fushimi Inari: subir entre las puertas torii'],['10:00','Desayuno tardío y vuelta al hotel'],['13:00','Siesta'],['16:00','Pabellón Dorado (Kinkaku-ji)'],['18:30','Cena en el mercado o en el centro']],
+  places:[{ic:'torii',n:'Fushimi Inari',d:'Miles de puertas rojas por la montaña. Gratis y abierto siempre.',g:'Fushimi Inari Taisha',web:'https://inari.jp/en/',a:0,c:0},
+          {ic:'temple',n:'Kinkaku-ji (Pabellón Dorado)',d:'Templo cubierto de oro junto a un estanque.',g:'Kinkaku-ji Kyoto',web:'https://www.shokoku-ji.jp/en/kinkakuji/',a:500,c:300,j:300}],
+  rain:{ic:'fish',n:'Acuario de Kioto y mercado Nishiki',d:'El acuario tiene salamandras gigantes y delfines. El mercado Nishiki es una calle cubierta con comida para probar.',g:'Kyoto Aquarium',web:'https://www.kyoto-aquarium.com/en/',a:2400,c:1200,j:1800}},
+ {d:19,w:'jue',city:'nara',ic:'deer',t:'Nara, los ciervos',tag:'Medio',stay:'Hotel o apartamento en Kioto',
+  sched:[['8:00','Tren a Nara (45 min)'],['9:00','Galletas para los ciervos en el parque'],['10:30','Gran Buda del templo Todai-ji'],['13:00','Comida y vuelta a Kioto'],['Tarde','Descanso']],
+  places:[{ic:'train',n:'Tren Kioto ↔ Nara (ida y vuelta)',d:'Línea Kintetsu. Se paga con Suica.',g:'Kintetsu Nara Station',web:'https://www.kintetsu.co.jp/foreign/english/',a:1520,c:760,j:1520},
+          {ic:'deer',n:'Parque de Nara y ciervos',d:'Galletas para ciervos: 200 ¥ el paquete (calculados 4).',g:'Nara Park',web:'https://www.visitnara.jp/',fam:800},
+          {ic:'temple',n:'Templo Todai-ji (Gran Buda)',d:'El Buda de bronce más grande de Japón, dentro de un edificio enorme de madera.',g:'Todai-ji Nara',web:'https://www.todaiji.or.jp/en/',a:800,c:400,j:600}],
+  rain:{ic:'museum',n:'Todai-ji y Museo Nacional de Nara',d:'El Gran Buda está bajo techo. El museo está al lado; menores de 18 gratis.',g:'Nara National Museum',web:'https://www.narahaku.go.jp/english/',a:700,c:0,j:0}},
+ {d:20,w:'vie',city:'kioto',ic:'bamboo',t:'Bambú y monos, y vuelta a Tokio',tag:'Viaje',stay:'Hotel en Asakusa',
+  sched:[['7:30','Bosque de bambú de Arashiyama'],['9:30','Subir al parque de los monos (20 min)'],['12:00','Comida y recoger maletas'],['15:00','Shinkansen a Tokio (2 h 15)'],['18:00','Hotel en Asakusa']],
+  places:[{ic:'bamboo',n:'Bosque de bambú de Arashiyama',d:'Gratis. Mejor antes de las 8:00.',g:'Arashiyama Bamboo Grove',web:'https://kyoto.travel/en/',a:0,c:0},
+          {ic:'monkey',n:'Monkey Park Iwatayama',d:'Monos en libertad en lo alto de la colina, con vistas de Kioto.',g:'Monkey Park Iwatayama',web:'https://www.monkeypark.jp/en/',a:800,c:400,j:800},
+          {id:'shin2',ic:'train',n:'Shinkansen Kioto → Tokio',d:'Reserva en SmartEX.',g:'Kyoto Station',web:'https://smart-ex.jp/en/',a:14170,c:7080,j:14170}],
+  rain:{ic:'museum',n:'Museo Internacional del Manga',d:'Miles de mangas para leer y talleres. Bajo techo, en el centro de Kioto, antes del tren.',g:'Kyoto International Manga Museum',web:'https://www.kyotomm.jp/en/',a:1200,c:300,j:400}},
+ {d:21,w:'sáb',city:'tokio',ic:'game',t:'El día de los niños',tag:'Lo eligen ellos',stay:'Hotel en Asakusa',kids:true,
+  sched:[['Mañana','Descansar y elegir el plan entre todos'],['Tarde','El plan que elijan los niños'],['19:00','Cena especial: sushi de cinta o ramen']]},
+ {d:22,w:'dom',city:'tokio',ic:'light',t:'Ghibli o teamLab, y maletas',tag:'Suave',stay:'Hotel en Asakusa',
+  sched:[['10:00','Museo Ghibli en Mitaka (o teamLab si no hay entradas)'],['14:00','Últimas compras y recuerdos'],['17:00','Hacer las maletas'],['19:00','Cena de despedida']],
+  places:[{id:'ghibli',opt:true,ic:'museum',n:'Museo Ghibli (Mitaka)',d:'Totoro y el gatobús. Entradas desde el 10 de julio; se agotan rápido.',g:'Ghibli Museum Mitaka',web:'https://www.ghibli-museum.jp/en/tickets/',a:1000,c:400,j:700},
+          {id:'teamlab',opt:true,ic:'light',n:'teamLab Planets (Toyosu)',d:'Museo de luces donde se camina descalzo por el agua. Comprar con hora.',g:'teamLab Planets Tokyo',web:'https://www.teamlab.art/e/planets/',a:3800,c:1500,j:2800}],
+  rain:{ic:'light',n:'Sin cambios',d:'Ghibli y teamLab son bajo techo: el plan sirve igual con lluvia.',g:'teamLab Planets Tokyo',web:'https://www.teamlab.art/e/planets/',a:0,c:0}},
+ {d:23,w:'lun',city:'narita',ic:'plane',t:'Vuelta a casa',tag:'Viaje',stay:'Avión',
+  sched:[['Mañana','Dejar las maletas en la consigna del hotel y último paseo por Asakusa'],['13:00','Comida tranquila y recoger maletas'],['16:30','Skyliner a Narita (40 min)'],['17:55','Facturar en la Terminal 1, 3 h antes'],['20:55','Vuelo KE714 Narita → Seúl (llega 23:25), luego KE913 Seúl → Madrid']],
+  places:[{ic:'food',n:'Kappabashi, la calle de la cocina',d:'A 10 min a pie de Asakusa. Tiendas de comida de plástico de mentira (sushi, ramen…) que parece real: el recuerdo perfecto para los niños.',g:'Kappabashi Dougu Street',web:'https://www.kappabashi.or.jp/en/',a:0,c:0},
+          {ic:'train',n:'Keisei Skyliner (Ueno → Narita)',d:'40 min.',g:'Narita International Airport',web:'https://www.keisei.co.jp/keisei/tetudou/skyliner/e/',a:2580,c:1290}],
+  rain:{ic:'shop',n:'Kappabashi y Asakusa bajo techo',d:'Las tiendas de Kappabashi y los soportales de Asakusa sirven igual con lluvia.',g:'Kappabashi Dougu Street',web:'https://www.kappabashi.or.jp/en/',a:0,c:0}},
+ {d:24,w:'mar',city:'madrid',ic:'plane',t:'Llegada a Madrid y vuelta a casa',tag:'Viaje',stay:'Casa (o una noche en Madrid)',
+  sched:[['?','KE913 llega a Madrid: mirar la hora exacta al reservar'],['+1 h','Pasaporte y maletas en Barajas T1'],['Opción A','Si llegáis temprano: AVE Madrid → Lleida (unas 2 h) y coche a La Seu (2 h)'],['Opción B','Si llegáis cansados o tarde: noche en un hotel del aeropuerto y viajar el 25']],
+  places:[{ic:'train',n:'AVE Madrid → Lleida',d:'Comprar en Renfe o Iryo cuando se sepa la hora de llegada. Dejar 3 h de margen tras aterrizar. Precio aproximado para los 4.',g:'Estación Madrid Puerta de Atocha',web:'https://www.renfe.com/es/es',fam:20400},
+          {id:'madhotel',opt:true,ic:'castle',n:'Noche en hotel junto a Barajas',d:'Opcional, para descansar antes de las 4 h de coche. Precio aproximado para los 4.',g:'hoteles aeropuerto Madrid Barajas',web:'https://www.booking.com/searchresults.es.html?ss=Aeropuerto+Madrid+Barajas',fam:17000}]}
+];
+// Disney seguido: DisneySea pasa al 14 y el descanso de Ueno al 15
+{const a=DAYS[3],b=DAYS[4];[a.d,b.d]=[b.d,a.d];[a.w,b.w]=[b.w,a.w];DAYS[3]=b;DAYS[4]=a;}
+const HOTELS=[
+ {c:'Tokio',when:'11–16 y 20–23 ago · 8 noches',list:[
+  {n:'hotel MONday Asakusa',d:'Habitación familiar para 4. La opción más barata vista.',p:'~17.700 ¥ · ~105 €/noche',g:'hotel MONday Asakusa',web:'https://reserve.489ban.net/client/hm-asakusa/4/detail/1048261'},
+  {n:'mimaru Tokyo Asakusa Station',d:'Apartamento familiar con cocina, pensado para familias.',p:'~45.000 ¥ · ~265 €/noche',g:'mimaru Tokyo Asakusa Station',web:'https://www.booking.com/hotel/jp/mimaru-tokyo-asakusa-station.html'},
+  {n:'MONday Apart Premium Ueno',d:'Apartamento amplio a 5 min del tren Skyliner.',p:'~33.000 ¥ · ~195 €/noche',g:'MONday Apart Premium Ueno',web:'https://reserve.489ban.net/client/ma-ueno/4/detail/1052795'}]},
+ {c:'Hakone',when:'16 ago · 1 noche',list:[
+  {n:'Ryokan con onsen y cena',d:'Buscad «habitación japonesa para 4» con cena kaiseki y baño termal. Mejor cerca de Hakone-Yumoto o Gora.',p:'~54.000 ¥ · ~320 €/noche',g:'ryokan Hakone Gora',web:'https://www.booking.com/searchresults.es.html?ss=Hakone'}]},
+ {c:'Kioto',when:'17–20 ago · 3 noches',list:[
+  {n:'mimaru Kyoto Station',d:'Apartamento familiar con cocina, a pocos minutos de la estación.',p:'~35.000 ¥ · ~205 €/noche',g:'mimaru Kyoto Station',web:'https://www.booking.com/searchresults.es.html?ss=mimaru+Kyoto+Station'},
+  {n:'Habitación familiar cerca de la estación de Kioto',d:'Filtrad «habitación para 4» y menos de 500 m de la estación: lo más cómodo para trenes y Nara.',p:'~22.000–30.000 ¥ · ~130–175 €/noche',g:'Kyoto Station',web:'https://www.booking.com/searchresults.es.html?ss=Kyoto+Station'}]}
+];
+const RES=[
+ {k:'vuelo',n:'Vuelos Korean Air (mejor tarifa con cambios o reembolso, por el visado)',when:'Cuanto antes',date:'2026-12-15',web:'https://www.koreanair.com/es/es'},
+ {k:'pasap',n:'Pasaportes de los 4',when:'Antes de marzo de 2027',date:'2027-03-01',web:'https://www.citapreviadnie.es/'},
+ {k:'htok',n:'Hoteles de Tokio (8 noches)',when:'Diciembre–enero, con cancelación gratis',date:'2027-01-31',web:'https://www.booking.com/searchresults.es.html?ss=Asakusa'},
+ {k:'ryokan',n:'Ryokan en Hakone',when:'Diciembre–enero (se llenan antes)',date:'2027-01-31',web:'https://www.booking.com/searchresults.es.html?ss=Hakone'},
+ {k:'hkyo',n:'Hotel de Kioto (3 noches)',when:'Diciembre–enero',date:'2027-01-31',web:'https://www.booking.com/searchresults.es.html?ss=Kyoto+Station'},
+ {k:'seguro',n:'Seguro de viaje con cancelación',when:'Justo después de pagar los vuelos',date:'2027-01-15',web:''},
+ {k:'visado',n:'VISADOS de Japón para los 4 (pasaportes de Venezuela y Colombia)',when:'Pedir cita en la Embajada de Japón unos 3 meses antes; preguntar primero si atienden a residentes de Andorra',date:'2027-05-01',web:'https://www.es.emb-japan.go.jp/itpr_es/visados.html'},
+ {k:'disney',n:'Entradas Disney (13 y 14 de agosto)',when:'En cuanto salgan a la venta (unos 2 meses antes)',date:'2027-06-13',web:'https://www.tokyodisneyresort.jp/en/ticket/index'},
+ {k:'ghibli',n:'Museo Ghibli (22 de agosto)',when:'10 de julio de 2027, a las 3:00 hora de España',date:'2027-07-10',web:'https://www.ghibli-museum.jp/en/tickets/'},
+ {k:'pcafe',n:'Pokémon Café (si lo eligen los niños)',when:'31 días antes a las 11:00 hora de España',date:'2027-07-21',web:'https://www.pokemoncenter-online.com/cafe/'},
+ {k:'teamlab',n:'teamLab Planets (si hace falta)',when:'Julio de 2027',date:'2027-07-20',web:'https://www.teamlab.art/e/planets/'},
+ {k:'shink',n:'Shinkansen y Romancecar',when:'Unas semanas antes',date:'2027-07-25',web:'https://smart-ex.jp/en/'},
+ {k:'ave',n:'AVE Lleida ↔ Madrid',when:'Cuando salgan los billetes (unos 3 meses antes)',date:'2027-05-15',web:'https://www.renfe.com/es/es'},
+ {k:'esim',n:'eSIM de datos y Suica en el móvil',when:'La semana antes',date:'2027-08-03',web:''}
+];
+const PACK=[
+ ['Papeles','Pasaportes (y fotocopia en el móvil)','Billetes de avión y reservas guardados sin conexión','Tarjeta de crédito sin comisión en el extranjero','Algo de efectivo en yenes (unos 30.000 ¥)','Tarjeta del seguro de viaje'],
+ ['Calor','Gorras o sombreros para los 4','Crema solar alta','Botellas reutilizables','Abanicos o ventiladores pequeños de mano','Toallitas refrescantes','Ropa ligera de algodón o técnica'],
+ ['Lluvia','Chubasqueros plegables','Paraguas pequeño','Bolsas para mojarse'],
+ ['Caminar','Zapatillas cómodas y ya usadas','Calcetines de sobra (en templos y ryokan os quitáis el calzado)','Tiritas para rozaduras','Mochila pequeña para cada niño'],
+ ['Salud','Medicinas habituales con receta','Paracetamol o ibuprofeno infantil','Pastillas para el mareo (barco y tren)','Repelente de mosquitos'],
+ ['Tecnología','Cargadores y batería externa','Adaptador de enchufe tipo A (dos clavijas planas), uno por persona','Auriculares para el avión','Tablets con pelis descargadas para el vuelo'],
+ ['Maletas','Dejar sitio para los recuerdos','Bolsa plegable extra para la vuelta']
+];
+const FOOD=[
+ {ic:'fish',n:'Sushi de cinta (kaiten-zushi)',d:'Los platos pasan por una cinta y cada uno coge lo que quiere. A los niños les encanta. Cadenas: Sushiro, Kura Sushi.',p:'~1.000–2.000 ¥ por persona'},
+ {ic:'food',n:'Ramen',d:'Ichiran tiene cabinas individuales y menú en español. Hay platos sin picante para niños.',p:'~1.000–1.500 ¥ por persona'},
+ {ic:'shop',n:'Konbini (7-Eleven, Lawson, FamilyMart)',d:'Desayunos y meriendas baratas y buenas: onigiri, sándwiches, yogures, helados. Abiertas 24 h.',p:'~500–800 ¥ por persona'},
+ {ic:'food',n:'Tonkatsu y curry japonés',d:'Cerdo empanado o arroz con curry suave: platos que gustan a casi todos los niños.',p:'~1.000–1.800 ¥ por persona'},
+ {ic:'food',n:'Okonomiyaki',d:'Tortilla de col a la plancha que cocináis vosotros en la mesa. Muy típico en Kioto y Osaka.',p:'~1.200–1.800 ¥ por persona'},
+ {ic:'shop',n:'Plantas de comida de los grandes almacenes',d:'En el sótano (depachika) hay de todo para llevar. Al final del día rebajan los precios.',p:'~1.000–2.000 ¥ por persona'}
+];
+const PHRASES=[['Hola','Konnichiwa'],['Gracias','Arigatō'],['Perdón / Disculpe','Sumimasen'],['¿Cuánto cuesta?','Ikura desu ka?'],['La cuenta, por favor','Okaikei onegaishimasu'],['¿Dónde está el baño?','Toire wa doko desu ka?'],['Sin picante, por favor','Karakunai no onegaishimasu'],['Alergia','Arerugī'],['Ayuda','Tasukete'],['No entiendo','Wakarimasen']];
+const KIDS=[
+ {k:'nin',ic:'game',n:'Nintendo Tokyo y Pokémon Center',d:'Las dos tiendas están en el mismo edificio (Shibuya Parco). Luego, el gran cruce de Shibuya y crepes en Harajuku.',g:'Shibuya Parco Nintendo Tokyo',web:'https://www.nintendo.co.jp/officialstore/en/',a:0,c:0},
+ {k:'poke',ic:'ball',n:'Pokémon Café',d:'Comida con forma de Pokémon y visita de Pikachu. Se reserva 31 días antes a las 18:00 (hora de Japón). Precio aproximado de la comida.',g:'Pokemon Cafe Nihonbashi',web:'https://www.pokemoncenter-online.com/cafe/',fam:12000},
+ {k:'sanrio',ic:'kitty',n:'Sanrio Puroland (Hello Kitty)',d:'Parque cubierto de Hello Kitty, con aire acondicionado y espectáculos.',g:'Sanrio Puroland',web:'https://en.puroland.jp/',a:4900,c:3900,j:4900},
+ {k:'lego',ic:'brick',n:'Legoland Discovery Center (Odaiba)',d:'Construir con Lego, atracciones pequeñas y cine 4D. Mejor para el de 8 años.',g:'LEGOLAND Discovery Center Tokyo',web:'https://www.legolanddiscoverycenter.com/tokyo/en/',a:2800,c:2800,j:2800},
+ {k:'joy',ic:'game',n:'Tokyo Joypolis (Sega)',d:'Parque de atracciones cubierto con montañas rusas y realidad virtual. Mejor para el de 11.',g:'Tokyo Joypolis',web:'https://tokyo-joypolis.com/language/english/',a:5000,c:4000,j:5000},
+ {k:'ueno',ic:'museum',n:'Ciencia y dinosaurios',d:'Museo de Ciencia de Ueno (menores gratis) y Miraikan en Odaiba, con robots.',g:'Miraikan Tokyo',web:'https://www.miraikan.jst.go.jp/en/',a:1260,c:0,j:200}
+];
+const FIXED=[
+ {n:'Vuelos Korean Air (ya mirado)',eur:3523},
+ {n:'La Seu ↔ Madrid (coche + AVE, aprox.)',eur:450},
+ {n:'Hoteles Tokio, 8 noches (~110–180 €/noche)',eur:1150,web:'https://www.booking.com/searchresults.es.html?ss=Asakusa'},
+ {id:'ryokan',opt:true,n:'Ryokan en Hakone, 1 noche con cena',eur:320,web:'https://www.booking.com/searchresults.es.html?ss=Hakone'},
+ {n:'Hotel Kioto, 3 noches (~130–200 €/noche)',eur:480,web:'https://www.booking.com/searchresults.es.html?ss=Kyoto+Station'},
+ {n:'Metro y buses (Suica)',eur:150},
+ {n:'Mensajería de maletas',eur:50},
+ {n:'Comida, 12 días (~100 €/día)',eur:1200},
+ {n:'Seguro de viaje familiar',eur:180},
+ {n:'Datos móviles (eSIM) y recuerdos',eur:330},
+ {id:'premier',opt:true,n:'Disney Premier Access (saltar colas, 2 días)',eur:150,web:'https://www.tokyodisneyresort.jp/en/ticket/index'}
+];
+const CITYCOL={tokio:'--c-tokio',disney:'--c-disney',hakone:'--c-hakone',kioto:'--c-kioto',nara:'--c-nara',narita:'--c-tokio',madrid:'--c-kioto'};
+let st={day:0,off:{},kid:'nin',rain:false};
+try{const s=JSON.parse(localStorage.getItem('jp27')||'{}');Object.assign(st,s);st.rain=false}catch(e){}
+const save=()=>{try{localStorage.setItem('jp27',JSON.stringify({off:st.off,day:st.day,kid:st.kid}))}catch(e){}};
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const rate=()=>Math.max(1,+$('rate').value||170);
+const fmtY=v=>v.toLocaleString('es-ES')+' ¥';
+const fmtE=v=>Math.round(v).toLocaleString('es-ES')+' €';
+function famYen(p){if(p.fam!=null)return p.fam;const kid1=$('junior').checked?(p.j??p.a):p.c;return 2*(p.a||0)+(kid1||0)+(p.c||0)}
+const isOn=id=>!id||!st.off[id];
+function priceHtml(p){
+  const y=famYen(p);
+  if(!y)return '<b>Gratis</b>';
+  let s=`<b>${fmtY(y)}</b>${fmtE(y/rate())} los 4`;
+  if(p.fam==null)s+=`<br><span class="small">Adulto ${fmtY(p.a)} · ${fmtE(p.a/rate())}<br>Niño ${p.c?fmtY(p.c)+' · '+fmtE(p.c/rate()):'gratis'}</span>`;
+  return s;
+}
+function placeHtml(p,col){
+  return `<div class="place"><div class="ic">${svg(p.ic,col)}</div><div style="min-width:0"><h3>${p.n}</h3><p>${p.d}</p>
+  <div class="links"><a href="${G(p.g)}" target="_blank" rel="noopener">📍 Google Maps</a><a href="${F(p.g)}" target="_blank" rel="noopener">📷 Ver fotos</a>${p.web?`<a href="${p.web}" target="_blank" rel="noopener">🌐 Web / reservar</a>`:''}</div></div>
+  <div class="price" style="${isOn(p.id)?'':'opacity:.45'}">${priceHtml(p)}${p.opt?`<label class="opt"><input type="checkbox" data-opt="${p.id}" ${isOn(p.id)?'checked':''}> Lo incluimos</label>`:''}</div></div>`;
+}
+function renderDays(){
+  $('days').innerHTML=DAYS.map((d,i)=>`<button type="button" aria-pressed="${i===st.day}" data-i="${i}" style="background:var(${CITYCOL[d.city]})" aria-label="${d.d} de agosto, ${d.t}"><small>${d.w}</small><b>${d.d}</b><i>${d.kids?'🎮':d.rain?'☔':''}${{plane:'✈',castle:'🏰',ship:'⛵',fuji:'🗻',torii:'⛩',deer:'🦌',bamboo:'🎋',panda:'🐼',tower:'🗼',train:'🚄',game:'🎮',light:'✨'}[d.ic]||''}</i></button>`).join('');
+  $('days').querySelectorAll('button').forEach(b=>b.onclick=()=>{st.day=+b.dataset.i;st.rain=false;save();renderAll()});
+}
+function renderDay(){
+  const d=DAYS[st.day];const col=`var(${CITYCOL[d.city]})`;
+  const card=$('day');card.style.setProperty('--hc',col);
+  let body='';
+  if(d.kids){
+    const k=KIDS.find(x=>x.k===st.kid)||KIDS[0];
+    body=`<div><h3 style="font-size:19px">Que elijan los niños 👇</h3><p class="small" style="margin:4px 0 10px">Pulsad una opción. El precio se suma al presupuesto.</p>
+    <div class="kids">${KIDS.map(x=>`<button type="button" class="kid" aria-pressed="${x.k===st.kid}" data-k="${x.k}">${svg(x.ic,col)}<b>${x.n}</b><span>${famYen(x)?fmtY(famYen(x))+' · '+fmtE(famYen(x)/rate())+' los 4':'Gratis'}</span></button>`).join('')}</div></div>
+    <div class="places">${placeHtml(k,col)}</div>`;
+  } else if(st.rain && d.rain){
+    body=`<div class="rainbox"><h3>☔ Plan B si llueve</h3><p class="small" style="margin:4px 0 0">Si hay lluvia fuerte o aviso de tifón, cambiad la parte al aire libre por esto. Su precio no se suma al presupuesto.</p></div><div class="places">${placeHtml(d.rain,'var(--rain)')}</div>`;
+  } else {
+    body=`<div class="places">${d.places.map(p=>placeHtml(p,col)).join('')}</div>`;
+  }
+  card.innerHTML=`<div class="hero" style="--hc:${col}">${svg(d.ic,'#fff')}<div><div style="font-weight:700;opacity:.9">${d.w} ${d.d} de agosto</div><h2>${d.t}</h2>
+    <div class="meta"><span>${d.tag}</span><span>🛏 ${d.stay}</span><span>📍 ${(CITIES[d.city]||{n:'Madrid'}).n}</span></div></div></div>
+   <div class="inner">
+    ${d.rain?`<div class="tabs" role="group" aria-label="Plan del día"><button type="button" data-r="0" aria-pressed="${!st.rain}">☀ Plan normal</button><button type="button" class="rainbtn" data-r="1" aria-pressed="${st.rain}">☔ Si llueve</button></div>`:''}
+    <div><h3 style="font-size:17px;margin-bottom:6px">Horario del día</h3><ul class="timeline">${d.sched.map(([h,t])=>`<li><span class="h">${h}</span><span>${t}</span></li>`).join('')}</ul></div>
+    ${body}
+    <div class="notebox"><label for="note" class="small"><b>📝 Notas de la familia para este día</b> <span id="noteState"></span></label>
+     <textarea id="note" rows="3" placeholder="Por ejemplo: reservar mesa, llevar bañador, qué queremos ver…">${esc(notes['d'+d.d]||'')}</textarea></div>
+   </div>`;
+  const ta=$('note');ta.oninput=()=>{notes['d'+d.d]=ta.value;queueNote('d'+d.d,ta.value)};
+  $('noteState').textContent=dbRef?'· se comparte con quien tenga acceso a la guía':'· se guarda solo en este navegador';
+  card.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{st.rain=b.dataset.r==='1';renderDay()});
+  card.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{st.kid=b.dataset.k;save();renderAll()});
+  card.querySelectorAll('[data-opt]').forEach(c=>c.onchange=()=>{const id=c.dataset.opt;if(c.checked)delete st.off[id];else st.off[id]=1;save();renderAll()});
+}
+function renderBudget(){
+  const r=rate();let rows=[],totE=0;
+  DAYS.forEach(d=>{
+    const list=d.kids?[KIDS.find(x=>x.k===st.kid)||KIDS[0]]:d.places;
+    list.forEach(p=>{const y=famYen(p);if(!y)return;const on=isOn(p.id);rows.push({n:`${d.d}-ago · ${p.n}`,y,e:y/r,on});if(on)totE+=y/r});
+  });
+  FIXED.forEach(f=>{const on=isOn(f.id);rows.push({n:f.n,y:Math.round(f.eur*r),e:f.eur,on,web:f.web,opt:f.opt,id:f.id});if(on)totE+=f.eur});
+  $('budget').querySelector('tbody').innerHTML=rows.map(x=>`<tr><td class="${x.on?'':'off'}">${x.opt?`<input type="checkbox" data-fopt="${x.id}" ${x.on?'checked':''} aria-label="Incluir ${x.n}"> `:''}${x.web?`<a href="${x.web}" target="_blank" rel="noopener">${x.n}</a>`:x.n}</td><td class="${x.on?'':'off'}">${fmtY(x.y)}</td><td class="${x.on?'':'off'}">${fmtE(x.e)}</td></tr>`).join('')
+   +`<tr class="grand"><td>Total</td><td>${fmtY(Math.round(totE*r))}</td><td>${fmtE(totE)}</td></tr>`;
+  $('budget').querySelectorAll('[data-fopt]').forEach(c=>c.onchange=()=>{const id=c.dataset.fopt;if(c.checked)delete st.off[id];else st.off[id]=1;save();renderAll()});
+  $('totEur').textContent='≈ '+fmtE(totE);
+  $('totYen').textContent=fmtY(Math.round(totE*r))+' · vuelos, hoteles, trenes, entradas y comida';
+}
+function renderMap(){
+  const cur=DAYS[st.day].city;
+  const poly=a=>a.map(([lo,la])=>PX(lo,la).map(n=>n.toFixed(1)).join(',')).join(' ');
+  const route=['narita','tokio','hakone','kioto','nara'];
+  const P=k=>PX(...CITIES[k].ll);
+  const [fx,fy]=PX(138.73,35.36);
+  const [ox,oy]=PX(135.5,34.69);
+  let s=`<rect width="700" height="430" fill="var(--sea)"/>
+   <polygon points="${poly(HONSHU)}" fill="var(--land)" stroke="var(--landline)" stroke-width="2" stroke-linejoin="round"/>
+   <polygon points="${poly(SHIKOKU)}" fill="var(--land)" stroke="var(--landline)" stroke-width="2" stroke-linejoin="round"/>
+   <text x="140" y="70" font-size="14" fill="var(--muted)" font-family="var(--body)" font-style="italic">Mar de Japón</text>
+   <text x="470" y="380" font-size="14" fill="var(--muted)" font-family="var(--body)" font-style="italic">Océano Pacífico</text>
+   <path d="M${fx-14},${fy+10} L${fx},${fy-12} L${fx+14},${fy+10}Z" fill="var(--muted)" opacity=".7"/><path d="M${fx-5},${fy-4} L${fx},${fy-12} L${fx+5},${fy-4}Z" fill="var(--paper)"/>
+   <text x="${fx}" y="${fy+26}" text-anchor="middle" font-size="12" fill="var(--muted)" font-family="var(--body)">Monte Fuji</text>
+   <circle cx="${ox}" cy="${oy}" r="4" fill="var(--muted)"/><text x="${ox-8}" y="${oy+4}" text-anchor="end" font-size="12" fill="var(--muted)" font-family="var(--body)">Osaka</text>
+   <polyline points="${route.map(k=>P(k).join(',')).join(' ')}" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="9 6" stroke-linecap="round" opacity=".55"/>
+   <line x1="${P('tokio')[0]}" y1="${P('tokio')[1]}" x2="${P('disney')[0]}" y2="${P('disney')[1]}" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 4" opacity=".55"/>`;
+  // escala aproximada: 1° lon ≈ 91 km a 35°N → 66 px
+  s+=`<g font-family="var(--body)" font-size="11" fill="var(--muted)"><line x1="40" y1="400" x2="113" y2="400" stroke="var(--muted)" stroke-width="2"/><text x="40" y="392">100 km</text></g>`;
+  for(const [k,c] of Object.entries(CITIES)){
+    const [x,y]=PX(...c.ll);const active=k===cur;const idx=DAYS.findIndex(d=>d.city===k);
+    const days=DAYS.filter(d=>d.city===k).map(d=>d.d).join(', ');
+    s+=`<g class="dot" tabindex="0" role="button" aria-label="${c.n}, días ${days}" data-i="${idx}">
+     <circle cx="${x}" cy="${y}" r="${active?13:8}" fill="var(${c.c})" stroke="var(--paper)" stroke-width="3"/>
+     <text x="${x+c.dx}" y="${y+c.dy}" text-anchor="${c.anchor}" font-family="var(--display)" font-weight="900" font-size="${active?18:15}" fill="var(--ink)">${c.n}</text>
+     <text x="${x+c.dx}" y="${y+c.dy+15}" text-anchor="${c.anchor}" font-family="var(--body)" font-size="11" fill="var(--muted)">${days} ago</text></g>`;
+  }
+  $('map').innerHTML=s;
+  $('map').querySelectorAll('.dot').forEach(g=>{const go=()=>{st.day=+g.dataset.i;st.rain=false;save();renderAll()};g.onclick=go;g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}}});
+}
+// ---------- datos compartidos (db) con respaldo local ----------
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let notes={},checks={res:{},pack:{}},dbRef=null;
+try{const l=JSON.parse(localStorage.getItem('jp27data')||'{}');notes=l.notes||{};checks=l.checks||checks}catch(e){}
+const saveLocal=()=>{try{localStorage.setItem('jp27data',JSON.stringify({notes,checks}))}catch(e){}};
+const timers={};
+function queueNote(id,text){saveLocal();if(!dbRef)return;clearTimeout(timers[id]);timers[id]=setTimeout(()=>{dbRef.doc('notas/'+id).set({text}).catch(()=>{})},900)}
+let writing={};
+async function writeChecks(which){saveLocal();if(!dbRef||writing[which])return;writing[which]=true;try{await dbRef.doc('marcas/'+which).set({...checks[which]})}catch(e){}writing[which]=false}
+function renderRes(){
+  const today=new Date();const dep=new Date('2027-08-10T20:20:00+02:00');
+  $('cdDays').textContent=Math.max(0,Math.ceil((dep-today)/864e5)).toLocaleString('es-ES');
+  const done=RES.filter(r=>checks.res[r.k]).length;
+  $('resBar').style.width=(done/RES.length*100)+'%';
+  $('resTxt').textContent=`${done} de ${RES.length} reservas hechas. Están ordenadas por fecha límite aproximada.`;
+  const list=[...RES].sort((a,b)=>a.date.localeCompare(b.date));
+  $('resList').innerHTML=list.map(r=>{const ok=!!checks.res[r.k];const late=!ok&&new Date(r.date)<today;
+   return `<li class="${ok?'done':''}"><input type="checkbox" id="r-${r.k}" data-res="${r.k}" ${ok?'checked':''}><label for="r-${r.k}"><span class="t"><b>${r.n}</b></span><br><span class="w ${late?'late':''}">${late?'⚠ ':''}${r.when} · antes del ${new Date(r.date).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'})}</span></label>${r.web?`<a href="${r.web}" target="_blank" rel="noopener" class="small">Abrir web</a>`:'<span></span>'}</li>`}).join('');
+  $('resList').querySelectorAll('[data-res]').forEach(c=>c.onchange=()=>{checks.res[c.dataset.res]=c.checked;renderRes();writeChecks('res')});
+}
+function renderPack(){
+  let all=0,done=0;
+  $('packList').innerHTML=PACK.map(([g,...items],gi)=>`<div class="card packgrp"><h3>${g}</h3><ul class="checks">${items.map((t,ii)=>{const k=gi+'-'+ii;all++;const ok=!!checks.pack[k];if(ok)done++;return `<li class="${ok?'done':''}" style="grid-template-columns:auto 1fr"><input type="checkbox" id="p-${k}" data-pack="${k}" ${ok?'checked':''}><label for="p-${k}" class="t">${t}</label></li>`}).join('')}</ul></div>`).join('');
+  $('packBar').style.width=(all?done/all*100:0)+'%';
+  $('packList').querySelectorAll('[data-pack]').forEach(c=>c.onchange=()=>{checks.pack[c.dataset.pack]=c.checked;renderPack();writeChecks('pack')});
+}
+function renderStatic(){
+  $('hotelList').innerHTML=HOTELS.map(h=>`<div><h3 style="font-size:19px">${h.c} <span class="small">· ${h.when}</span></h3><div class="grid2" style="margin-top:8px">${h.list.map(x=>`<div class="card hotel"><h3>${x.n}</h3><p class="small" style="margin:4px 0 0">${x.d}</p><div class="pp">${x.p}</div><div class="links"><a href="${G(x.g)}" target="_blank" rel="noopener">📍 Google Maps</a><a href="${F(x.g)}" target="_blank" rel="noopener">📷 Fotos</a><a href="${x.web}" target="_blank" rel="noopener">🌐 Ver y reservar</a></div></div>`).join('')}</div></div>`).join('');
+  $('foodList').innerHTML=FOOD.map(f=>`<div class="place" style="--hc:var(--shu)"><div class="ic">${svg(f.ic,'var(--shu)')}</div><div style="min-width:0"><h3>${f.n}</h3><p>${f.d}</p><div class="links"><a href="${F(f.n+' Japón')}" target="_blank" rel="noopener">📷 Ver fotos</a></div></div><div class="price"><b>${f.p}</b></div></div>`).join('');
+  $('phr').innerHTML=PHRASES.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+}
+(async()=>{
+  try{
+    const db=await window.claude?.use?.('db');
+    if(!db)return;
+    dbRef=db;
+    db.collection('notas').onSnapshot(s=>{s.docs.forEach(d=>{const t=d.data()?.text;if(typeof t==='string')notes[d.id]=t});saveLocal();const ta=$('note');if(ta&&document.activeElement!==ta){ta.value=notes['d'+DAYS[st.day].d]||''}const ns=$('noteState');if(ns)ns.textContent='· se comparte con quien tenga acceso a la guía'},()=>{});
+    ['res','pack'].forEach(w=>db.doc('marcas/'+w).onSnapshot(s=>{if(s.exists){checks[w]={...s.data()};saveLocal();w==='res'?renderRes():renderPack()}},()=>{}));
+  }catch(e){}
+})();
+function renderAll(){renderDays();renderDay();renderBudget();renderMap();renderRes();renderPack()}
+renderStatic();
+$('rate').oninput=renderAll;$('junior').onchange=renderAll;
+if(st.day<0||st.day>=DAYS.length)st.day=0;
+renderAll();
+</script>
+</body></html>
