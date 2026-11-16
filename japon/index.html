@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Japón en familia 2027</title>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Japón 2027"><meta name="theme-color" content="#ffffff"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Japón en familia 2027</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Nunito+Sans:wght@400;600;700&display=swap">
 <style>
@@ -133,9 +133,39 @@ tr.grand td{font-family:var(--display);font-weight:900;font-size:19px;color:var(
 .hero{padding:22px 20px}
 .hero svg{filter:drop-shadow(0 4px 8px rgba(0,0,0,.2))}
 @media (prefers-reduced-motion:reduce){.place{transition:none}.place:hover{transform:none}}
+html{-webkit-text-size-adjust:100%}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+.wrap{padding-block:16px 30px}
+.appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--paper)}
+.appbar-in{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:10px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.apptitle{font-family:var(--display);font-weight:900;font-size:20px}
+.totchip{border:0;background:var(--ai);color:var(--paper);font:700 15px var(--body);border-radius:999px;padding:10px 14px;min-height:44px;cursor:pointer}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);background:var(--paper);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.tabbar button{border:0;background:none;color:var(--muted);font:700 12px var(--body);padding:8px 0 10px;min-height:58px;display:grid;justify-items:center;gap:2px;cursor:pointer}
+.tabbar button span{font-size:22px;line-height:1}
+.tabbar button[aria-pressed=true]{color:var(--shu)}
+.mapbox{margin-top:14px}
+.mapbox summary{font-weight:700;cursor:pointer;min-height:44px;display:flex;align-items:center}
+.mapbox svg{margin-top:8px}
+.links a{min-height:36px;display:inline-flex;align-items:center}
+.tabs button{min-height:44px}
+.checks input{width:24px;height:24px}
+input,textarea,select{font-size:16px}
+.strip .bar{scroll-snap-type:x mandatory}
+.strip button{scroll-snap-align:start;min-height:64px}
+@media (max-width:600px){h1{font-size:28px}.hero{grid-template-columns:76px 1fr}.hero h2{font-size:21px}.banner{max-height:120px}}
 </style>
 
-<div class="wrap">
+<header class="appbar">
+  <div class="appbar-in">
+    <div><div class="kicker">10 – 23 ago 2027 · 4 personas</div><div class="apptitle">Japón en familia</div></div>
+    <button type="button" class="totchip" data-go="dinero" aria-label="Ver presupuesto"><span id="totEur">—</span></button>
+  </div>
+</header>
+<main class="wrap">
+
+<div class="view" id="v-viaje">
   <svg class="banner" viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6b08a"/><stop offset=".6" stop-color="#f7d7b5"/><stop offset="1" stop-color="#fbeedd"/></linearGradient></defs>
     <rect width="1000" height="220" fill="url(#sky)"/>
@@ -145,102 +175,89 @@ tr.grand td{font-family:var(--display);font-weight:900;font-size:19px;color:var(
     <path d="M440 98 L470 70 Q500 48 530 70 L560 98 L540 90 L522 104 L500 88 L478 104 L460 90Z" fill="#fff"/>
     <g fill="#c8452c"><rect x="110" y="96" width="130" height="10" rx="3"/><rect x="100" y="84" width="150" height="9" rx="4"/><rect x="125" y="114" width="100" height="7"/><rect x="132" y="90" width="11" height="130"/><rect x="207" y="90" width="11" height="130"/></g>
     <path d="M0 220 L0 200 Q250 186 500 198 T1000 196 L1000 220Z" fill="#7d8b6a"/>
-    <g fill="#ef9fb0" opacity=".9"><circle cx="880" cy="40" r="6"/><circle cx="905" cy="62" r="5"/><circle cx="930" cy="36" r="4"/><circle cx="62" cy="40" r="5"/><circle cx="40" cy="66" r="4"/></g>
   </svg>
-  <div class="kicker">Viaje en familia · 10 – 23 de agosto de 2027</div>
-  <h1>Japón con los niños: <span>Tokio, Hakone, Kioto y Nara</span></h1>
-  <p class="sub">Elige un día en la línea de colores o un punto del mapa. Cada día tiene su horario, los sitios con fotos y mapa, la web para reservar, el precio en yenes y euros, y un botón <b>«Si llueve»</b> con el plan B. El día 21 lo eligen los niños.</p>
+  <h1>Tokio, Hakone, <span>Kioto y Nara</span></h1>
+  <p class="sub">Toca un día para ver qué hacemos, dónde está y cuánto cuesta.</p>
 
-  <div class="top">
-    <div class="card mapbox">
-      <svg id="map" viewBox="0 0 700 430" role="img" aria-label="Mapa de Japón central con la ruta del viaje"></svg>
-      <div class="small" style="margin-top:6px">Mapa de la isla de Honshu con la ruta. Pulsa un punto para ver ese día.</div>
-    </div>
-    <div class="side">
-      <div class="card">
-        <div class="small">Coste total estimado para 4 personas</div>
-        <div class="big" id="totEur">—</div>
-        <div class="small" id="totYen">—</div>
-      </div>
-      <div class="card">
-        <div class="fx"><label for="rate">Cambio: 1 € =</label><input type="number" id="rate" value="170" min="100" max="250" step="1"><span>¥</span></div>
-        <div class="fx" style="margin-top:10px"><input type="checkbox" id="junior"><label for="junior">El mayor ya tiene 12 años (precio de joven)</label></div>
-      </div>
-      <div class="card">
-        <div class="small">Vuelo elegido</div>
-        <b>Korean Air · 3.523 € los 4</b>
-        <div class="small"><b>Ida:</b> KE914 Madrid 10-ago 20:20 → Seúl 11-ago 16:00 · KE717 Seúl 18:30 → Narita 21:00<br><b>Vuelta:</b> KE714 Narita 23-ago 20:55 → Seúl 23:25 · KE913 Seúl → Madrid</div>
-        <div class="links"><a href="https://www.koreanair.com/es/es" target="_blank" rel="noopener">Web de Korean Air</a></div>
-      </div>
-    </div>
-  </div>
-
-  <nav class="nav" aria-label="Secciones"><a href="#dias">🗓 Días</a><a href="#reservas">✅ Reservas</a><a href="#hoteles">🏨 Hoteles</a><a href="#comida">🍣 Comida</a><a href="#equipaje">🧳 Equipaje</a><a href="#emergencias">🆘 Emergencias y frases</a><a href="#presupuesto">💶 Presupuesto</a></nav>
-  <div class="strip" id="dias">
+  <div class="strip">
     <div class="bar" id="days" role="toolbar" aria-label="Días del viaje"></div>
     <div class="citykey"><span style="--k:var(--c-tokio)">Tokio</span><span style="--k:var(--c-disney)">Disney</span><span style="--k:var(--c-hakone)">Hakone</span><span style="--k:var(--c-kioto)">Kioto</span><span style="--k:var(--c-nara)">Nara</span></div>
   </div>
 
   <div class="card daycard" id="day"></div>
 
-  <section id="reservas">
-    <h2 class="sec">Reservas pendientes</h2>
-    <div class="card">
-      <div class="count"><b id="cdDays">—</b><span>días para salir de Madrid (10-ago-2027, 20:20)</span></div>
-      <div class="bar2" aria-hidden="true"><i id="resBar" style="width:0"></i></div>
-      <div class="small" id="resTxt"></div>
-    </div>
-    <ul class="checks" id="resList" style="margin-top:10px"></ul>
-  </section>
-
-  <section id="hoteles">
-    <h2 class="sec">Hoteles propuestos</h2>
-    <p class="small" style="margin:0 0 10px">Precios vistos en búsquedas, sin fechas exactas: comprobadlos con vuestras fechas. Elegid siempre cancelación gratuita.</p>
-    <div id="hotelList" style="display:grid;gap:16px"></div>
-  </section>
-
-  <section id="comida">
-    <h2 class="sec">Dónde y qué comer</h2>
-    <div class="places" id="foodList"></div>
-  </section>
-
-  <section id="equipaje">
-    <h2 class="sec">Lista de equipaje</h2>
-    <div class="bar2" aria-hidden="true"><i id="packBar" style="width:0"></i></div>
-    <div class="grid2" id="packList"></div>
-  </section>
-
-  <section id="emergencias">
-    <h2 class="sec">Emergencias y frases útiles</h2>
-    <div class="emerg">
-      <div><b>110</b>Policía</div>
-      <div><b>119</b>Ambulancia y bomberos</div>
-      <div><b>050-3816-2787</b>Japan Visitor Hotline (24 h, en inglés)</div>
-      <div><b>+81 3-3583-8531</b>Embajada de España en Tokio</div>
-    </div>
-    <p class="small">Guardad estos números en el móvil. Si alguien se pierde: quedad siempre en un punto fijo (la puerta del hotel) y que los niños lleven una tarjeta con el nombre del hotel en japonés y vuestro teléfono.</p>
-    <div class="card" style="margin-top:12px"><h3 style="font-size:17px;margin-bottom:8px">10 frases en japonés</h3><div class="phr" id="phr"></div></div>
-  </section>
-
-  <section id="presupuesto">
-    <h2 class="sec">Presupuesto</h2>
-    <div class="card tablewrap"><table id="budget"><thead><tr><th>Concepto</th><th>Yenes</th><th>Euros</th></tr></thead><tbody></tbody></table></div>
-    <div class="small" style="margin-top:6px">Entradas y trenes calculados para 2 adultos y 2 niños. Hoteles y comida, precio aproximado. Los planes de lluvia no suman: solo cuentan si los usáis.</div>
-  </section>
-
-  <section>
-    <h2 class="sec">Consejos importantes</h2>
-    <div class="tips">
-      <div class="tip"><b>Calor (32–36 °C).</b> Caminar de 8:00 a 12:00 y desde las 17:00. De 13:00 a 16:00, hotel o sitios con aire acondicionado.</div>
-      <div class="tip"><b>Obon, 13–16 de agosto.</b> Vacaciones en Japón: trenes y Disney llenos. Reservad asientos con tiempo y mirad el «Premier Access» de Disney.</div>
-      <div class="tip"><b>Tifones.</b> Agosto es temporada. Si hay aviso, usad el plan «Si llueve» de cada día y un seguro que cubra cancelaciones.</div>
-      <div class="tip"><b>Maletas.</b> El 16, mandadlas por <i>takkyubin</i> (~2.000 ¥ cada una) al hotel de Kioto y avisad al hotel.</div>
-    </div>
-  </section>
-
-  <p class="note">Hecho el 16-nov-2026. Solo el vuelo es un precio comprobado (Google Vuelos y Korean Air). El resto son precios aproximados: confírmalos en cada web antes de reservar. Los dibujos son ilustraciones; las fotos reales se ven con el botón «Ver fotos». Tus elecciones se guardan solo en este navegador.</p>
+  <details class="card mapbox">
+    <summary>🗺 Ver el mapa de la ruta</summary>
+    <svg id="map" viewBox="0 0 700 430" role="img" aria-label="Mapa de Japón con la ruta del viaje"></svg>
+  </details>
 </div>
 
+<div class="view" id="v-reservas" hidden>
+  <h2 class="sec">Reservas</h2>
+  <div class="card">
+    <div class="count"><b id="cdDays">—</b><span>días para el viaje</span></div>
+    <div class="bar2" aria-hidden="true"><i id="resBar" style="width:0"></i></div>
+    <div class="small" id="resTxt"></div>
+  </div>
+  <ul class="checks" id="resList" style="margin-top:10px"></ul>
+
+  <h2 class="sec" style="margin-top:28px">Vuelo</h2>
+  <div class="card">
+    <b>Korean Air · 3.523 € los 4</b>
+    <div class="small" style="margin-top:4px"><b>Ida:</b> Madrid 10-ago 20:20 → Seúl → Narita 11-ago 21:00<br><b>Vuelta:</b> Narita 23-ago 20:55 → Seúl → Madrid 24-ago</div>
+    <div class="links"><a href="https://www.koreanair.com/es/es" target="_blank" rel="noopener">🌐 Korean Air</a></div>
+  </div>
+
+  <h2 class="sec" style="margin-top:28px">Hoteles</h2>
+  <div id="hotelList" style="display:grid;gap:16px"></div>
+</div>
+
+<div class="view" id="v-preparar" hidden>
+  <h2 class="sec">Antes de ir</h2>
+  <div class="tips">
+    <div class="tip"><b>☀ Calor:</b> pasear por la mañana y al atardecer; de 13:00 a 16:00, descanso.</div>
+    <div class="tip"><b>🎌 13–16 ago:</b> vacaciones en Japón, todo lleno. Reservad con tiempo.</div>
+    <div class="tip"><b>☔ Tifones:</b> cada día tiene botón «Si llueve».</div>
+  </div>
+
+  <h2 class="sec" style="margin-top:28px">Maleta</h2>
+  <div class="bar2" aria-hidden="true"><i id="packBar" style="width:0"></i></div>
+  <div class="grid2" id="packList"></div>
+
+  <h2 class="sec" style="margin-top:28px">Qué comer</h2>
+  <div class="places" id="foodList"></div>
+
+  <h2 class="sec" style="margin-top:28px">Emergencias</h2>
+  <div class="emerg">
+    <div><b>110</b>Policía</div>
+    <div><b>119</b>Ambulancia</div>
+    <div><b>050-3816-2787</b>Ayuda turistas (inglés)</div>
+    <div><b>+81 3-3583-8531</b>Embajada de España</div>
+  </div>
+  <p class="small">Si alguien se pierde: quedad en la puerta del hotel. Los niños llevan una tarjeta con el hotel y vuestro teléfono.</p>
+  <div class="card" style="margin-top:12px"><h3 style="font-size:17px;margin-bottom:8px">Frases en japonés</h3><div class="phr" id="phr"></div></div>
+</div>
+
+<div class="view" id="v-dinero" hidden>
+  <h2 class="sec">Presupuesto</h2>
+  <div class="card">
+    <div class="big" id="totEur2">—</div>
+    <div class="small" id="totYen">—</div>
+    <div class="fx" style="margin-top:12px"><label for="rate">1 € =</label><input type="number" inputmode="numeric" id="rate" value="170" min="100" max="250" step="1"><span>¥</span></div>
+    <label class="fx" style="margin-top:10px"><input type="checkbox" id="junior"> El mayor ya tiene 12 años</label>
+  </div>
+  <div class="card tablewrap" style="margin-top:12px"><table id="budget"><thead><tr><th>Qué</th><th>Yenes</th><th>Euros</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Solo el vuelo es precio comprobado. Lo demás es aproximado (16-nov-2026).</p>
+</div>
+
+</main>
+
+<nav class="tabbar" aria-label="Secciones">
+  <button type="button" data-go="viaje" aria-pressed="true"><span>🗓</span>Viaje</button>
+  <button type="button" data-go="reservas" aria-pressed="false"><span>✅</span>Reservas</button>
+  <button type="button" data-go="preparar" aria-pressed="false"><span>🎒</span>Preparar</button>
+  <button type="button" data-go="dinero" aria-pressed="false"><span>💶</span>Dinero</button>
+</nav>
 <script>
 const G=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
 const F=q=>'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(q);
@@ -447,7 +464,7 @@ function placeHtml(p,col){
 }
 function renderDays(){
   $('days').innerHTML=DAYS.map((d,i)=>`<button type="button" aria-pressed="${i===st.day}" data-i="${i}" style="background:var(${CITYCOL[d.city]})" aria-label="${d.d} de agosto, ${d.t}"><small>${d.w}</small><b>${d.d}</b><i>${d.kids?'🎮':d.rain?'☔':''}${{plane:'✈',castle:'🏰',ship:'⛵',fuji:'🗻',torii:'⛩',deer:'🦌',bamboo:'🎋',panda:'🐼',tower:'🗼',train:'🚄',game:'🎮',light:'✨'}[d.ic]||''}</i></button>`).join('');
-  $('days').querySelectorAll('button').forEach(b=>b.onclick=()=>{st.day=+b.dataset.i;st.rain=false;save();renderAll()});
+  $('days').querySelectorAll('button').forEach(b=>b.onclick=()=>{st.day=+b.dataset.i;st.rain=false;save();renderAll();$('day').scrollIntoView({behavior:'smooth',block:'start'})});
 }
 function renderDay(){
   const d=DAYS[st.day];const col=`var(${CITYCOL[d.city]})`;
@@ -488,7 +505,7 @@ function renderBudget(){
   $('budget').querySelector('tbody').innerHTML=rows.map(x=>`<tr><td class="${x.on?'':'off'}">${x.opt?`<input type="checkbox" data-fopt="${x.id}" ${x.on?'checked':''} aria-label="Incluir ${x.n}"> `:''}${x.web?`<a href="${x.web}" target="_blank" rel="noopener">${x.n}</a>`:x.n}</td><td class="${x.on?'':'off'}">${fmtY(x.y)}</td><td class="${x.on?'':'off'}">${fmtE(x.e)}</td></tr>`).join('')
    +`<tr class="grand"><td>Total</td><td>${fmtY(Math.round(totE*r))}</td><td>${fmtE(totE)}</td></tr>`;
   $('budget').querySelectorAll('[data-fopt]').forEach(c=>c.onchange=()=>{const id=c.dataset.fopt;if(c.checked)delete st.off[id];else st.off[id]=1;save();renderAll()});
-  $('totEur').textContent='≈ '+fmtE(totE);
+  $('totEur').textContent='≈ '+fmtE(totE);$('totEur2').textContent='≈ '+fmtE(totE);
   $('totYen').textContent=fmtY(Math.round(totE*r))+' · vuelos, hoteles, trenes, entradas y comida';
 }
 function renderMap(){
@@ -563,6 +580,25 @@ function renderStatic(){
 })();
 function renderAll(){renderDays();renderDay();renderBudget();renderMap();renderRes();renderPack()}
 renderStatic();
+// icono para la pantalla de inicio del iPhone (se dibuja a partir del Monte Fuji)
+(async()=>{try{
+  const s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="180" height="180">'+ICON.fuji.replace('rx="14"','rx="0"').replace('a14 14 0 0 1-14 14H14A14 14 0 0 1 0 50','V64H0V50')+'</svg>';
+  const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s);await img.decode();
+  const c=document.createElement('canvas');c.width=c.height=180;c.getContext('2d').drawImage(img,0,0,180,180);
+  const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL('image/png');document.head.appendChild(l);
+}catch(e){}})();
+
+function go(v){
+  if(!['viaje','reservas','preparar','dinero'].includes(v))v='viaje';
+  document.querySelectorAll('.view').forEach(x=>x.hidden=x.id!=='v-'+v);
+  document.querySelectorAll('.tabbar button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.go===v)));
+  if(location.hash!=='#'+v){try{history.replaceState(null,'','#'+v)}catch(e){}}
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
+go(location.hash.slice(1));
+
 $('rate').oninput=renderAll;$('junior').onchange=renderAll;
 if(st.day<0||st.day>=DAYS.length)st.day=0;
 renderAll();
