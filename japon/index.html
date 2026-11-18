@@ -219,6 +219,11 @@ input,textarea,select{font-size:16px}
     <div class="tip"><b>☀ Calor:</b> pasear por la mañana y al atardecer; de 13:00 a 16:00, descanso.</div>
     <div class="tip"><b>🎌 13–16 ago:</b> vacaciones en Japón, todo lleno. Reservad con tiempo.</div>
     <div class="tip"><b>☔ Tifones:</b> cada día tiene botón «Si llueve».</div>
+    <div class="tip"><b>🛂 Visit Japan Web:</b> rellenadlo por internet antes de volar; da un código QR para pasar inmigración.</div>
+    <div class="tip"><b>💴 Dinero:</b> casi todo con tarjeta, pero llevad efectivo para mercados y tiendas pequeñas. Se saca en los cajeros de 7-Eleven.</div>
+    <div class="tip"><b>🙇 Costumbres:</b> no se deja propina, no se habla alto en el tren, se respetan las colas y no se fuma por la calle (hay multa).</div>
+    <div class="tip"><b>↔ Escaleras mecánicas:</b> en Tokio uno se para a la izquierda; en Kioto, a la derecha.</div>
+    <div class="tip"><b>📓 Sellos gratis:</b> casi todas las estaciones y sitios turísticos tienen un sello de tinta (eki stamp). Buscadlos en <a href="https://hankore.jp/" target="_blank" rel="noopener">hankore.jp</a> o la app Stamp Quest.</div>
   </div>
 
   <h2 class="sec" style="margin-top:28px">Maleta</h2>
@@ -310,7 +315,7 @@ const DAYS=[
   places:[{ic:'train',n:'Keisei Skyliner (Narita → Ueno)',d:'Tren rápido del aeropuerto. Billete en máquina o en la web.',g:'Keisei Ueno Station',web:'https://www.keisei.co.jp/keisei/tetudou/skyliner/e/',a:2580,c:1290}]},
  {d:12,w:'jue',city:'tokio',ic:'tower',t:'Asakusa, el Tokio antiguo',tag:'Suave',stay:'Hotel en Asakusa',
   sched:[['8:30','Templo Senso-ji y la calle de tiendas Nakamise'],['11:00','Melon-pan y helado de matcha en Asakusa'],['13:00','Siesta en el hotel por el cambio de hora'],['17:30','Paseo por el río Sumida'],['18:30','Mirador del Tokyo Skytree al anochecer']],
-  places:[{ic:'temple',n:'Templo Senso-ji',d:'El templo más antiguo de Tokio. Gratis.',g:'Senso-ji Asakusa Tokyo',web:'https://www.senso-ji.jp/english/',a:0,c:0},
+  places:[{ic:'temple',n:'Templo Senso-ji',d:'El templo más antiguo de Tokio. Gratis. Sacad la suerte en papelito (omikuji, 100 ¥): si sale mala, se ata en el templo y se queda allí.',g:'Senso-ji Asakusa Tokyo',web:'https://www.senso-ji.jp/english/',a:0,c:0},
           {id:'skytree',opt:true,ic:'tower',n:'Tokyo Skytree (mirador)',d:'Opcional. Comprar con hora en la web.',g:'Tokyo Skytree',web:'https://www.tokyo-skytree.jp/en/ticket/',a:3100,c:1550,j:2350}],
   rain:{ic:'fish',n:'Acuario de Sumida',d:'En el mismo edificio del Skytree: pingüinos y medusas, todo bajo techo.',g:'Sumida Aquarium',web:'https://www.sumida-aquarium.com/en/',a:2500,c:1200,j:1800}},
  {d:13,w:'vie',city:'disney',ic:'castle',t:'Tokyo Disneyland',tag:'Día intenso',stay:'Hotel en Asakusa',
@@ -320,6 +325,7 @@ const DAYS=[
  {d:14,w:'sáb',city:'tokio',ic:'panda',t:'Descanso y parque de Ueno',tag:'Descanso',stay:'Hotel en Asakusa',
   sched:[['Mañana','Dormir, piscina o lavandería del hotel'],['15:00','Zoo de Ueno: pandas'],['17:30','Paseo por el estanque de Shinobazu'],['19:00','Cenar en el mercado Ameyoko']],
   places:[{ic:'panda',n:'Zoo de Ueno',d:'Menores de 12 gratis. Cierra los lunes.',g:'Ueno Zoo',web:'https://www.tokyo-zoo.net/english/ueno/',a:600,c:0,j:200},
+          {ic:'shop',n:'Mercadillo Tokyo City Flea Market (opcional, por la mañana)',d:'Mercadillo de fin de semana en el hipódromo de Oi: camisetas de fútbol desde 3.000 ¥, cartas Pokémon, ropa. Se puede regatear. Solo efectivo. Mirad si hay mercadillo ese domingo.',g:'Oi Racecourse Flea Market',web:'https://www.tokyocity-fleamarket.com/',a:0,c:0},
           {ic:'shop',n:'Mercado Ameyoko',d:'Calle de puestos y comida barata.',g:'Ameyoko Shopping Street',web:'https://www.ameyoko.net/',a:0,c:0}],
   rain:{ic:'museum',n:'Museo de Ciencia y Naturaleza',d:'Dinosaurios, cohetes y experimentos para niños, en el mismo parque de Ueno. Menores de 18 gratis.',g:'National Museum of Nature and Science Ueno',web:'https://www.kahaku.go.jp/english/',a:630,c:0,j:0}},
  {d:15,w:'dom',city:'disney',ic:'ship',t:'Tokyo DisneySea',tag:'Día intenso',stay:'Hotel en Asakusa',
@@ -335,7 +341,7 @@ const DAYS=[
   rain:{ic:'spa',n:'Yunessun (parque de aguas termales)',d:'Si el teleférico cierra por viento o lluvia: piscinas termales en bañador, de vino, café o té. Les encanta a los niños.',g:'Hakone Kowakien Yunessun',web:'https://www.yunessun.com/en/',a:2500,c:1300,j:2500}},
  {d:17,w:'mar',city:'kioto',ic:'train',t:'Tren bala a Kioto',tag:'Viaje',stay:'Hotel o apartamento en Kioto',
   sched:[['9:30','Bus de Hakone a Odawara'],['11:00','Shinkansen a Kioto (unas 2 h)'],['14:00','Hotel, recoger maletas y descansar'],['17:30','Gion y las calles de madera de Ninenzaka']],
-  places:[{id:'shin1',ic:'train',n:'Shinkansen Odawara → Kioto',d:'Reserva en SmartEX con unas semanas de antelación.',g:'Odawara Station',web:'https://smart-ex.jp/en/',a:12000,c:6000,j:12000},
+  places:[{id:'shin1',ic:'train',n:'Shinkansen Odawara → Kioto',d:'Coged el Nozomi (el más rápido). Sentaos a la derecha, asiento E, para ver el monte Fuji. Con maleta grande, reservad el asiento con sitio para equipaje o cobran 1.000 ¥. Reserva en SmartEX con unas semanas de antelación.',g:'Odawara Station',web:'https://smart-ex.jp/en/',a:12000,c:6000,j:12000},
           {ic:'temple',n:'Gion y Ninenzaka',d:'Barrio de las geishas. Gratis.',g:'Ninenzaka Kyoto',web:'https://kyoto.travel/en/',a:0,c:0}],
   rain:{ic:'train',n:'Museo del Ferrocarril de Kioto',d:'Trenes bala y locomotoras de verdad, simuladores para conducir. Bajo techo.',g:'Kyoto Railway Museum',web:'https://www.kyotorailwaymuseum.jp/en/',a:1500,c:500,j:1300}},
  {d:18,w:'mié',city:'kioto',ic:'torii',t:'Puertas rojas y templo dorado',tag:'Medio',stay:'Hotel o apartamento en Kioto',
@@ -353,7 +359,7 @@ const DAYS=[
   sched:[['7:30','Bosque de bambú de Arashiyama'],['9:30','Subir al parque de los monos (20 min)'],['12:00','Comida y recoger maletas'],['15:00','Shinkansen a Tokio (2 h 15)'],['18:00','Hotel en Asakusa']],
   places:[{ic:'bamboo',n:'Bosque de bambú de Arashiyama',d:'Gratis. Mejor antes de las 8:00.',g:'Arashiyama Bamboo Grove',web:'https://kyoto.travel/en/',a:0,c:0},
           {ic:'monkey',n:'Monkey Park Iwatayama',d:'Monos en libertad en lo alto de la colina, con vistas de Kioto.',g:'Monkey Park Iwatayama',web:'https://www.monkeypark.jp/en/',a:800,c:400,j:800},
-          {id:'shin2',ic:'train',n:'Shinkansen Kioto → Tokio',d:'Reserva en SmartEX.',g:'Kyoto Station',web:'https://smart-ex.jp/en/',a:14170,c:7080,j:14170}],
+          {id:'shin2',ic:'train',n:'Shinkansen Kioto → Tokio',d:'Nozomi, 2 h 15. Hacia Tokio el Fuji se ve a la izquierda (asiento A). Con maleta grande, asiento con sitio para equipaje (si no, 1.000 ¥). Reserva en SmartEX.',g:'Kyoto Station',web:'https://smart-ex.jp/en/',a:14170,c:7080,j:14170}],
   rain:{ic:'museum',n:'Museo Internacional del Manga',d:'Miles de mangas para leer y talleres. Bajo techo, en el centro de Kioto, antes del tren.',g:'Kyoto International Manga Museum',web:'https://www.kyotomm.jp/en/',a:1200,c:300,j:400}},
  {d:21,w:'sáb',city:'tokio',ic:'game',t:'El día de los niños',tag:'Lo eligen ellos',stay:'Hotel en Asakusa',kids:true,
   sched:[['Mañana','Descansar y elegir el plan entre todos'],['Tarde','El plan que elijan los niños'],['19:00','Cena especial: sushi de cinta o ramen']]},
@@ -403,13 +409,16 @@ const RES=[
  {k:'disney',n:'Entradas Disney (13 y 14 de agosto)',when:'En cuanto salgan a la venta (unos 2 meses antes)',date:'2027-06-13',web:'https://www.tokyodisneyresort.jp/en/ticket/index'},
  {k:'ghibli',n:'Museo Ghibli (22 de agosto)',when:'10 de julio de 2027, a las 3:00 hora de España',date:'2027-07-10',web:'https://www.ghibli-museum.jp/en/tickets/'},
  {k:'pcafe',n:'Pokémon Café (si lo eligen los niños)',when:'31 días antes a las 11:00 hora de España',date:'2027-07-21',web:'https://www.pokemoncenter-online.com/cafe/'},
+ {k:'shibsky',n:'Shibuya Sky (si lo eligen los niños)',when:'Salen unas 4 semanas antes; el atardecer se agota',date:'2027-07-24',web:'https://www.shibuya-scramble-square.com/sky/'},
+ {k:'beis',n:'Béisbol en el Tokyo Dome (si lo eligen los niños)',when:'Mirar el calendario de los Giants en primavera; comprar el día que salen',date:'2027-04-01',web:'https://www.giants.jp/en/'},
+ {k:'vjw',n:'Visit Japan Web (formulario de entrada, código QR)',when:'La semana antes',date:'2027-08-03',web:'https://www.vjw.digital.go.jp/'},
  {k:'teamlab',n:'teamLab Planets (si hace falta)',when:'Julio de 2027',date:'2027-07-20',web:'https://www.teamlab.art/e/planets/'},
  {k:'shink',n:'Shinkansen y Romancecar',when:'Unas semanas antes',date:'2027-07-25',web:'https://smart-ex.jp/en/'},
  {k:'parking',n:'Parking de Barajas (10–24 ago) y hotel en Madrid del 24',when:'1–2 meses antes, por internet',date:'2027-06-30',web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html'},
  {k:'esim',n:'eSIM de datos y Suica en el móvil',when:'La semana antes',date:'2027-08-03',web:''}
 ];
 const PACK=[
- ['Papeles','Pasaportes (y fotocopia en el móvil)','Billetes de avión y reservas guardados sin conexión','Tarjeta de crédito sin comisión en el extranjero','Algo de efectivo en yenes (unos 30.000 ¥)','Tarjeta del seguro de viaje'],
+ ['Papeles','Pasaportes (y fotocopia en el móvil)','Billetes de avión y reservas guardados sin conexión','Tarjeta de crédito sin comisión en el extranjero','Algo de efectivo en yenes (unos 30.000 ¥)','Tarjeta del seguro de viaje','Una libreta pequeña por niño para los sellos de las estaciones'],
  ['Calor','Gorras o sombreros para los 4','Crema solar alta','Botellas reutilizables','Abanicos o ventiladores pequeños de mano','Toallitas refrescantes','Ropa ligera de algodón o técnica'],
  ['Lluvia','Chubasqueros plegables','Paraguas pequeño','Bolsas para mojarse'],
  ['Caminar','Zapatillas cómodas y ya usadas','Calcetines de sobra (en templos y ryokan os quitáis el calzado)','Tiritas para rozaduras','Mochila pequeña para cada niño'],
@@ -437,8 +446,11 @@ const EVENTS={
 const KIDS=[
  {k:'nin',ic:'game',n:'Nintendo Tokyo y Pokémon Center',d:'Las dos tiendas están en el mismo edificio (Shibuya Parco). Luego, el gran cruce de Shibuya y crepes en Harajuku.',g:'Shibuya Parco Nintendo Tokyo',web:'https://www.nintendo.co.jp/officialstore/en/',a:0,c:0},
  {k:'poke',ic:'ball',n:'Pokémon Café',d:'Comida con forma de Pokémon y visita de Pikachu. Se reserva 31 días antes a las 18:00 (hora de Japón). Precio aproximado de la comida.',g:'Pokemon Cafe Nihonbashi',web:'https://www.pokemoncenter-online.com/cafe/',fam:12000},
+ {k:'beis',ic:'ball',n:'Béisbol en el Tokyo Dome',d:'Partido de los Yomiuri Giants: el estadio entero canta, hay música todo el rato y comida con el nombre de los jugadores. No hace falta entender el béisbol. Mirad antes que los Giants jueguen en casa ese día. Precio aproximado de 4 entradas baratas.',g:'Tokyo Dome',web:'https://www.giants.jp/en/',fam:16000},
+ {k:'akiba',ic:'game',n:'Akihabara',d:'El barrio de los videojuegos, el anime y las máquinas de gancho. Gratis entrar; ojo con el gasto en las máquinas.',g:'Akihabara Tokyo',web:'https://www.gotokyo.org/en/destinations/central-tokyo/akihabara/',a:0,c:0},
+ {k:'shibsky',ic:'tower',n:'Shibuya Sky y Shinjuku',d:'Mirador al aire libre en lo alto de Shibuya, con el gran cruce debajo. Luego el gato gigante en 3D de la estación de Shinjuku (gratis). Reservad el mirador para el atardecer.',g:'Shibuya Sky',web:'https://www.shibuya-scramble-square.com/sky/',a:2700,c:1500,j:2100},
  {k:'sanrio',ic:'kitty',n:'Sanrio Puroland (Hello Kitty)',d:'Parque cubierto de Hello Kitty, con aire acondicionado y espectáculos.',g:'Sanrio Puroland',web:'https://en.puroland.jp/',a:4900,c:3900,j:4900},
- {k:'lego',ic:'brick',n:'Legoland Discovery Center (Odaiba)',d:'Construir con Lego, atracciones pequeñas y cine 4D. Mejor para el de 8 años.',g:'LEGOLAND Discovery Center Tokyo',web:'https://www.legolanddiscoverycenter.com/tokyo/en/',a:2800,c:2800,j:2800},
+ {k:'lego',ic:'brick',n:'Legoland Discovery Center (Odaiba)',d:'Construir con Lego, atracciones pequeñas y cine 4D. Mejor para el de 8 años. En Odaiba también está la ruta de los sitios de Digimon.',g:'LEGOLAND Discovery Center Tokyo',web:'https://www.legolanddiscoverycenter.com/tokyo/en/',a:2800,c:2800,j:2800},
  {k:'joy',ic:'game',n:'Tokyo Joypolis (Sega)',d:'Parque de atracciones cubierto con montañas rusas y realidad virtual. Mejor para el de 11.',g:'Tokyo Joypolis',web:'https://tokyo-joypolis.com/language/english/',a:5000,c:4000,j:5000},
  {k:'ueno',ic:'museum',n:'Ciencia y dinosaurios',d:'Museo de Ciencia de Ueno (menores gratis) y Miraikan en Odaiba, con robots.',g:'Miraikan Tokyo',web:'https://www.miraikan.jst.go.jp/en/',a:1260,c:0,j:200}
 ];
