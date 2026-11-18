@@ -168,7 +168,7 @@ details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', CACHE_PRE='mi-trabajo-', VERSION='24';
+const CLAVE='miTrabajo.v2', CACHE_PRE='mi-trabajo-', VERSION='25';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -222,7 +222,7 @@ function normalizar(d){
   if(!Array.isArray(a.tarifas)||!a.tarifas.length) a.tarifas=[{desde:'2026-11-01',normal:+a.precioNormal||0}];
   return d;
 }
-function guardar(){ try{localStorage.setItem(CLAVE,JSON.stringify(S));}catch(e){alert('No se pudo guardar en este dispositivo.');} }
+function guardar(){ try{localStorage.setItem(CLAVE,JSON.stringify(S));}catch(e){alert('No se pudo guardar en este dispositivo.');} if(window.nubeSubir) window.nubeSubir(); }
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -712,6 +712,58 @@ $('#fichero').addEventListener('change',e=>{
   r.readAsText(f);
 });
 
+// ▼ NUBE · copia automática en Firebase con la clave familiar (18-nov-2026, solo la app de Emmanuel;
+// el generador de la versión de compañeros quita este bloque entero). Documento: familias/<id>/appdata/mi-trabajo
+(function(){
+  if(!window.DATOS_INICIALES||!location.protocol.startsWith('http')) return;
+  const URL0='https://firestore.googleapis.com/v1/projects/familia-diaz-gonzalez/databases/(default)/documents/familias/',
+        KEY='AIzaSyCi0cdF5VqJjcsHibnLg6kvPGVN-f2b_DY', LS='familiadiaz_fam';   // misma clave guardada que el calendario
+  let FAM=null, t=null, pendiente=true; try{ FAM=localStorage.getItem(LS); }catch(e){}
+  const url=(id,doc)=>URL0+id+'/appdata/'+doc+'?key='+KEY;
+  const existe=id=>fetch(url(id,'calendario-eventos')).then(r=>{ if(r.status===404) return false; if(!r.ok) throw 0; return true; });
+  async function derivar(c){
+    const x=c.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' '), en=new TextEncoder();
+    const k=await crypto.subtle.importKey('raw',en.encode(x),'PBKDF2',false,['deriveBits']);
+    const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:en.encode('familia-diaz-gonzalez'),iterations:210000},k,256);
+    return [...new Uint8Array(b)].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
+  function pedir(){
+    const ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.92);display:flex;align-items:center;justify-content:center;padding:16px';
+    ov.innerHTML='<form style="background:#fff;color:#0f172a;border-radius:16px;padding:22px;max-width:340px;width:100%;font-family:inherit">'
+      +'<div style="font-size:20px;font-weight:700;margin-bottom:6px">☁️ Copia en la nube</div>'
+      +'<div style="font-size:14px;color:#475569;margin-bottom:14px">Escribe la clave familiar una sola vez. Así tus horas se guardan solas y no se pierden.</div>'
+      +'<input type="password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Clave familiar" style="width:100%;box-sizing:border-box;font-size:17px;padding:12px;border:1px solid #cbd5e1;border-radius:10px">'
+      +'<div class="e" style="color:#dc2626;font-size:13px;min-height:18px;margin:8px 0"></div>'
+      +'<button style="width:100%;font-size:17px;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:600">Guardar</button>'
+      +'<button type="button" class="l" style="width:100%;font-size:15px;padding:10px;border:0;background:none;color:#64748b;margin-top:4px">Ahora no</button></form>';
+    document.body.appendChild(ov);
+    const f=ov.querySelector('form'), inp=f.querySelector('input'), er=f.querySelector('.e'), bt=f.querySelector('button');
+    f.querySelector('.l').onclick=()=>ov.remove();
+    f.onsubmit=async e=>{ e.preventDefault(); if(!inp.value.trim()) return; bt.disabled=true; er.style.color='#475569'; er.textContent='Comprobando…';
+      try{ const id=await derivar(inp.value);
+        if(await existe(id)){ FAM=id; try{localStorage.setItem(LS,id);}catch(x){} ov.remove(); pendiente=true; subir(); return; }
+        er.style.color='#dc2626'; er.textContent='Clave incorrecta';
+      }catch(x){ er.style.color='#dc2626'; er.textContent='Sin conexión. Prueba otra vez.'; }
+      bt.disabled=false; };
+    setTimeout(()=>inp.focus(),50);
+  }
+  async function subir(){
+    if(!FAM||!pendiente||!navigator.onLine) return;
+    pendiente=false;
+    try{
+      const r=await fetch(url(FAM,'mi-trabajo'),{method:'PATCH',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({fields:{datos:{stringValue:JSON.stringify(S)},actualizado:{timestampValue:new Date().toISOString()},version:{stringValue:VERSION}}})});
+      if(!r.ok) throw r.status;
+    }catch(e){ pendiente=true; }
+  }
+  window.nubeSubir=()=>{ pendiente=true; clearTimeout(t); t=setTimeout(subir,2000); };
+  addEventListener('online',subir);
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden) subir(); });
+  if(FAM) existe(FAM).then(ok=>{ if(ok) subir(); else { FAM=null; try{localStorage.removeItem(LS);}catch(e){} pedir(); } },()=>{});
+  else setTimeout(pedir,800);
+})();
+// ▲ NUBE
 guardar(); pinta();
 if(!window.DATOS_INICIALES&&!S.ajustes.listo&&!(tarifa(hoyK()).n>0)) bienvenida();
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
