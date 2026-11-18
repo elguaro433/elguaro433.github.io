@@ -168,7 +168,7 @@ details.mas summary{font-weight:700;font-size:16px;cursor:pointer}
 <script src="mis-datos.js" onerror="void 0"></script>
 <script>
 'use strict';
-const CLAVE='miTrabajo.v2', CACHE_PRE='mi-trabajo-', VERSION='25';
+const CLAVE='miTrabajo.v2', CACHE_PRE='mi-trabajo-', VERSION='26';
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DOW=['L','M','X','J','V','S','D'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -733,7 +733,7 @@ $('#fichero').addEventListener('change',e=>{
     ov.innerHTML='<form style="background:#fff;color:#0f172a;border-radius:16px;padding:22px;max-width:340px;width:100%;font-family:inherit">'
       +'<div style="font-size:20px;font-weight:700;margin-bottom:6px">☁️ Copia en la nube</div>'
       +'<div style="font-size:14px;color:#475569;margin-bottom:14px">Escribe la clave familiar una sola vez. Así tus horas se guardan solas y no se pierden.</div>'
-      +'<input type="password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Clave familiar" style="width:100%;box-sizing:border-box;font-size:17px;padding:12px;border:1px solid #cbd5e1;border-radius:10px">'
+      +'<input type="password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Clave familiar o código" style="width:100%;box-sizing:border-box;font-size:17px;padding:12px;border:1px solid #cbd5e1;border-radius:10px">'
       +'<div class="e" style="color:#dc2626;font-size:13px;min-height:18px;margin:8px 0"></div>'
       +'<button style="width:100%;font-size:17px;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:600">Guardar</button>'
       +'<button type="button" class="l" style="width:100%;font-size:15px;padding:10px;border:0;background:none;color:#64748b;margin-top:4px">Ahora no</button></form>';
@@ -741,7 +741,7 @@ $('#fichero').addEventListener('change',e=>{
     const f=ov.querySelector('form'), inp=f.querySelector('input'), er=f.querySelector('.e'), bt=f.querySelector('button');
     f.querySelector('.l').onclick=()=>ov.remove();
     f.onsubmit=async e=>{ e.preventDefault(); if(!inp.value.trim()) return; bt.disabled=true; er.style.color='#475569'; er.textContent='Comprobando…';
-      try{ const id=await derivar(inp.value);
+      try{ const v=inp.value.trim().toLowerCase(), id=/^[0-9a-f]{64}$/.test(v)?v:await derivar(inp.value);   // también vale pegar el código familiar
         if(await existe(id)){ FAM=id; try{localStorage.setItem(LS,id);}catch(x){} ov.remove(); pendiente=true; subir(); return; }
         er.style.color='#dc2626'; er.textContent='Clave incorrecta';
       }catch(x){ er.style.color='#dc2626'; er.textContent='Sin conexión. Prueba otra vez.'; }
