@@ -628,44 +628,16 @@ if(st.day<0||st.day>=DAYS.length)st.day=0;
 renderAll();
 
 // ▼ NUBE · lo marcado (reservas, maleta, notas, opciones del presupuesto y plan de los niños) se comparte
-// entre los móviles de la familia con la misma clave familiar que el calendario y Mi Trabajo.
+// entre todos los móviles que abren la app, sin pedir clave. Usa un código propio del viaje (no la clave familiar).
 // Documento: familias/<id>/appdata/japon-2027 · gana el cambio más reciente.
 (function(){
   if(!location.protocol.startsWith('http')) return;
   const URL0='https://firestore.googleapis.com/v1/projects/familia-diaz-gonzalez/databases/(default)/documents/familias/',
-        KEY='AIzaSyCi0cdF5VqJjcsHibnLg6kvPGVN-f2b_DY', LS='familiadiaz_fam', TS='jp27nube';
-  let FAM=null, t=null, pendiente=false, cargado=false, local=0;
-  try{ FAM=localStorage.getItem(LS); local=+localStorage.getItem(TS)||0; }catch(e){}
+        KEY='AIzaSyCi0cdF5VqJjcsHibnLg6kvPGVN-f2b_DY', TS='jp27nube';
+  let FAM='2e04477f335c29540e8a1b739749c91dd9fb790d3e6d8b1b23e49a2146941427', t=null, pendiente=false, cargado=false, local=0;
+  try{ local=+localStorage.getItem(TS)||0; }catch(e){}
   const url=(id,doc)=>URL0+id+'/appdata/'+doc+'?key='+KEY;
-  const existe=id=>fetch(url(id,'calendario-eventos')).then(r=>{ if(r.status===404) return false; if(!r.ok) throw 0; return true; });
   const marca=x=>{ local=x; try{localStorage.setItem(TS,String(x));}catch(e){} };
-  async function derivar(c){
-    const x=c.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' '), en=new TextEncoder();
-    const k=await crypto.subtle.importKey('raw',en.encode(x),'PBKDF2',false,['deriveBits']);
-    const b=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:en.encode('familia-diaz-gonzalez'),iterations:210000},k,256);
-    return [...new Uint8Array(b)].map(v=>v.toString(16).padStart(2,'0')).join('');
-  }
-  function pedir(){
-    const ov=document.createElement('div');
-    ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.92);display:flex;align-items:center;justify-content:center;padding:16px';
-    ov.innerHTML='<form style="background:#fff;color:#0f172a;border-radius:16px;padding:22px;max-width:340px;width:100%;font-family:inherit">'
-      +'<div style="font-size:20px;font-weight:700;margin-bottom:6px">☁️ Compartir con la familia</div>'
-      +'<div style="font-size:14px;color:#475569;margin-bottom:14px">Escribe la clave familiar una vez. Así lo que marquéis se ve igual en todos los móviles.</div>'
-      +'<input type="password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Clave familiar o código" style="width:100%;box-sizing:border-box;font-size:17px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#0f172a">'
-      +'<div class="e" style="color:#dc2626;font-size:13px;min-height:18px;margin:8px 0"></div>'
-      +'<button style="width:100%;font-size:17px;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:600">Guardar</button>'
-      +'<button type="button" class="l" style="width:100%;font-size:15px;padding:10px;border:0;background:none;color:#64748b;margin-top:4px">Ahora no</button></form>';
-    document.body.appendChild(ov);
-    const f=ov.querySelector('form'), inp=f.querySelector('input'), er=f.querySelector('.e'), bt=f.querySelector('button');
-    f.querySelector('.l').onclick=()=>{ ov.remove(); try{sessionStorage.setItem('jp27noNube','1');}catch(x){} };
-    f.onsubmit=async e=>{ e.preventDefault(); if(!inp.value.trim()) return; bt.disabled=true; er.style.color='#475569'; er.textContent='Comprobando…';
-      try{ const v=inp.value.trim().toLowerCase(), id=/^[0-9a-f]{64}$/.test(v)?v:await derivar(inp.value);
-        if(await existe(id)){ FAM=id; try{localStorage.setItem(LS,id);}catch(x){} ov.remove(); bajar(); return; }
-        er.style.color='#dc2626'; er.textContent='Clave incorrecta';
-      }catch(x){ er.style.color='#dc2626'; er.textContent='Sin conexión. Prueba otra vez.'; }
-      bt.disabled=false; };
-    setTimeout(()=>inp.focus(),50);
-  }
   async function bajar(){
     if(!FAM||!navigator.onLine) return;
     try{
@@ -697,9 +669,7 @@ renderAll();
   addEventListener('online',()=>{ subir(); bajar(); });
   document.addEventListener('visibilitychange',()=>{ if(document.hidden) subir(); else bajar(); });
   setInterval(()=>{ if(!document.hidden&&!pendiente) bajar(); },30000);
-  let no=false; try{ no=!!sessionStorage.getItem('jp27noNube'); }catch(e){}
-  if(FAM) existe(FAM).then(ok=>{ if(ok) bajar(); else { FAM=null; try{localStorage.removeItem(LS);}catch(e){} if(!no) pedir(); } },()=>{});
-  else if(!no) setTimeout(pedir,800);
+  bajar();
 })();
 // ▲ NUBE
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
