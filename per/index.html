@@ -1,0 +1,507 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#123b5c"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Simulador PER Catalunya</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: una columna tipo "cuaderno de bitácora": cabecera fija, contenido en tarjetas sobrias, barra de modos abajo en móvil */
+:root{
+  --bg:#eef3f6; --surface:#ffffff; --ink:#10263a; --muted:#5b7286; --line:#d4dfe7;
+  --navy:#123b5c; --sea:#0f7c8c; --flag:#f2b705; --ok:#1d8a4e; --bad:#c2362d; --okbg:#e3f4ea; --badbg:#fbe7e5;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif; --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1824;--surface:#12253a;--ink:#e6eef4;--muted:#93a9bb;--line:#24405a;--navy:#7fb6e0;--sea:#3cc0cf;--flag:#f5c536;--ok:#4cc985;--bad:#ff7a6e;--okbg:#123a28;--badbg:#3d1d1b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1824;--surface:#12253a;--ink:#e6eef4;--muted:#93a9bb;--line:#24405a;--navy:#7fb6e0;--sea:#3cc0cf;--flag:#f5c536;--ok:#4cc985;--bad:#ff7a6e;--okbg:#123a28;--badbg:#3d1d1b;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 96px}
+header.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.burgee{width:34px;height:24px;flex:none;background:linear-gradient(135deg,var(--flag) 50%,var(--navy) 50%);clip-path:polygon(0 0,100% 50%,0 100%)}
+h1{font-family:var(--display);font-size:30px;letter-spacing:.02em;margin:0;line-height:1}
+.sub{color:var(--muted);font-size:13px;margin:2px 0 0}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 16px}
+nav.tabs button{font:600 14px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+nav.tabs button[aria-current="true"]{background:var(--navy);color:var(--bg);border-color:var(--navy)}
+button:focus-visible{outline:3px solid var(--flag);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.eyebrow{font:600 11px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--sea)}
+h2{font-family:var(--display);font-size:24px;margin:0;text-wrap:balance}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.rule{border-left:4px solid var(--flag);padding:6px 10px;background:color-mix(in srgb,var(--flag) 10%,transparent);border-radius:0 8px 8px 0}
+.rule b{font-family:var(--display);font-size:22px;display:block;line-height:1.1}
+.rule span{font-size:12.5px;color:var(--muted)}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.unit{display:flex;flex-direction:column;gap:6px;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;min-width:0}
+.unit:hover{border-color:var(--sea)}
+.unit .name{font-weight:600}
+.unit .meta{font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--sea)}
+.must{font:600 10.5px var(--body);color:var(--bad);letter-spacing:.06em;text-transform:uppercase}
+.btn{font:600 15px var(--body);border:none;border-radius:10px;padding:12px 18px;cursor:pointer;background:var(--navy);color:var(--bg)}
+.btn.alt{background:transparent;color:var(--navy);border:1px solid var(--line)}
+.btn.flag{background:var(--flag);color:#10263a}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.qhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.qtext{font-size:17px;font-weight:600;line-height:1.4;margin:6px 0 4px;text-wrap:pretty}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;font:inherit;color:inherit;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;cursor:pointer}
+.opt .k{font-family:var(--mono);font-size:13px;width:22px;height:22px;flex:none;display:grid;place-items:center;border-radius:6px;background:var(--surface);border:1px solid var(--line)}
+.opt.sel{border-color:var(--navy)}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}
+.explain{border-left:4px solid var(--sea);padding:8px 12px;background:color-mix(in srgb,var(--sea) 9%,transparent);border-radius:0 8px 8px 0;font-size:14px}
+.timer{font-family:var(--mono);font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-variant-numeric:tabular-nums}
+.grid45{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px}
+.grid45 button{font:500 12px var(--mono);height:30px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.grid45 button.done{background:var(--navy);color:var(--bg);border-color:var(--navy)}
+.grid45 button.cur{outline:2px solid var(--flag)}
+.grid45 button.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.grid45 button.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+.result{font-family:var(--display);font-size:46px;line-height:1}
+.pill{display:inline-block;font:600 12px var(--body);padding:3px 10px;border-radius:999px}
+.pill.ok{background:var(--okbg);color:var(--ok)} .pill.bad{background:var(--badbg);color:var(--bad)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600}
+.tw{overflow-x:auto}
+.mono{font-family:var(--mono);font-size:13px}
+.muted{color:var(--muted);font-size:13px}
+.note{font-size:13px;color:var(--muted)}
+.ready{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.gauge{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--sea) calc(var(--p)*1%),var(--line) 0)}
+.gauge span{width:74px;height:74px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-family:var(--display);font-size:26px}
+.checks{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px;font-size:14px}
+.checks li::before{content:"○ ";color:var(--muted)} .checks li.y::before{content:"● ";color:var(--ok)}
+.lesson ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.sync{font-size:12px;color:var(--muted)}
+input[type=date]{font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){.opt{transition:border-color .15s,background .15s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="burgee" aria-hidden="true"></div>
+    <div>
+      <h1>Simulador PER Catalunya</h1>
+      <p class="sub">Patrón de Embarcaciones de Recreo · 45 preguntas · 90 min · aprobado con 32</p>
+    </div>
+  </header>
+  <nav class="tabs" aria-label="Secciones">
+    <button id="tab-inicio" data-v="inicio">Inicio</button>
+    <button id="tab-hoy" data-v="hoy">Sesión de hoy</button>
+    <button id="tab-examen" data-v="examen">Simulacro</button>
+    <button id="tab-fallos" data-v="fallos">Mis fallos</button>
+    <button id="tab-chuleta" data-v="chuleta">Chuleta</button>
+  </nav>
+  <main id="app"></main>
+</div>
+
+<script>
+const UNITS=[
+ {id:"nom",n:"Nomenclatura náutica",q:4},
+ {id:"ama",n:"Amarre y fondeo",q:2},
+ {id:"seg",n:"Seguridad",q:4},
+ {id:"leg",n:"Legislación",q:2},
+ {id:"bal",n:"Balizamiento",q:5,min:3},
+ {id:"ripa",n:"Reglamento (RIPA)",q:10,min:5},
+ {id:"man",n:"Maniobra",q:2},
+ {id:"eme",n:"Emergencias",q:3},
+ {id:"met",n:"Meteorología",q:4},
+ {id:"nav",n:"Teoría de navegación",q:5},
+ {id:"car",n:"Carta de navegación",q:4,min:2},
+];
+// Banco propio (redactado para estudiar; no copia los exámenes oficiales). a = índice de la correcta.
+const Q=[
+// ---- Nomenclatura
+["nom","¿Por dónde atraviesa el casco el eje (mecha) del timón?",["Limera","Imbornal","Escobén","Bocina"],0,"La limera es el orificio de la mecha del timón. La bocina es la del eje de la hélice."],
+["nom","¿Cómo se llaman los orificios por los que sale al mar el agua que cae en cubierta?",["Imbornales","Portillos","Escobenes","Lumbreras"],0,"Los imbornales desaguan la cubierta. El escobén es por donde sale la cadena del ancla."],
+["nom","La pieza que prolonga la quilla hacia arriba por la proa es…",["La roda","El codaste","La varenga","El trancanil"],0,"Roda = proa. Codaste = continuación de la quilla por popa."],
+["nom","La pieza que prolonga la quilla por la popa es…",["El codaste","La roda","El bao","La regala"],0,"Codaste por popa, roda por proa."],
+["nom","Los puntales de cubierta que sujetan el pasamanos (guardamancebos) se llaman…",["Candeleros","Baos","Varengas","Cuadernas"],0,"Candeleros + guardamancebos forman la barandilla de cubierta."],
+["nom","Si el calado de popa es mayor que el de proa, el barco está…",["Apopante","Aproante","Sin asiento","En aguas iguales"],0,"Asiento = calado popa − calado proa. Positivo (popa más hundida) = apopante."],
+["nom","Calado proa 1,2 m y calado popa 1,8 m. ¿Asiento?",["0,60 m apopante","0,60 m aproante","1,50 m apopante","0,30 m apopante"],0,"1,8 − 1,2 = 0,60 m; como la popa cala más, es apopante."],
+["nom","Con calado proa 1,4 m y popa 1,8 m, el calado medio es…",["1,6 m","0,4 m","3,2 m","1,8 m"],0,"Calado medio = (popa + proa) / 2 = (1,8 + 1,4) / 2 = 1,6 m."],
+["nom","Mirando hacia proa, la parte del costado más cercana a la popa en el lado izquierdo es…",["Aleta de babor","Amura de babor","Aleta de estribor","Amura de estribor"],0,"Amuras: zona de proa. Aletas: zona de popa. Babor: izquierda mirando a proa."],
+["nom","¿Para qué sirve el embrague del molinete?",["Acoplar o desacoplar el barbotén del motor","Frenar el ancla","Bloquear la cadena para siempre","Medir la cadena filada"],0,"Con el embrague suelto la cadena cae libre; embragado, el motor recoge (vira)."],
+["nom","Las piezas transversales que sostienen la cubierta de banda a banda son…",["Baos","Cuadernas","Varengas","Mamparos"],0,"Baos: de babor a estribor bajo la cubierta. Cuadernas: las 'costillas' del casco."],
+["nom","El manguerote (cuello de cisne) de cubierta sirve para…",["Ventilar los compartimentos interiores","Dar luz al camarote","Desaguar la cubierta","Pasar la cadena"],0,"Es una toma de ventilación."],
+["nom","La parte del casco que queda sumergida se llama…",["Obra viva","Obra muerta","Francobordo","Puntal"],0,"Obra viva = sumergida (carena). Obra muerta = por encima de la flotación."],
+["nom","Recoger cadena del ancla con el molinete se dice…",["Virar","Filar","Lascar","Arriar"],0,"Virar = recoger. Filar = ir soltando."],
+// ---- Amarre y fondeo
+["ama","El orinque sirve principalmente para…",["Balizar el ancla con un boyarín","Mantener el barco adrizado","Ayudar al atraque","Medir la sonda"],0,"El orinque une la cruz del ancla con un boyarín: sabes dónde está y ayuda a desenrocarla."],
+["ama","Nudo que forma una gaza fija que no se corre:",["As de guía","Ballestrinque","Nudo llano","Vuelta de rezón"],0,"El as de guía es el rey de las gazas: no se corre y se deshace fácil."],
+["ama","El círculo que describe un barco fondeado alrededor del ancla se llama…",["Círculo de borneo","Círculo de garreo","Círculo de seguridad","Círculo de fondeo"],0,"El barco 'bornea' con el viento y la corriente."],
+["ama","Cuando el ancla se arrastra por el fondo sin agarrar se dice que…",["Garrea","Bornea","Está a pique","Está a la pendura"],0,"Garrear = el ancla no agarra y el barco se desplaza."],
+["ama","El ancla está 'a pique' cuando…",["La cadena está vertical, justo antes de desprenderse","Cuelga sin tocar fondo","Está estibada","Ha garreado"],0,"A pique: cadena vertical sobre el ancla. A la pendura: colgando sin tocar fondo."],
+["ama","Dar a un cabo la tensión justa, ni flojo ni a punto de romper, es…",["Templar","Adujar","Lascar","Tesar a muerte"],0,"Templar = tensión justa. Lascar = aflojar poco a poco. Adujar = recoger en vueltas."],
+["ama","Como regla práctica, ¿cuánta cadena se fila con buen tiempo?",["Unas 3 veces la sonda","Igual que la sonda","10 veces la sonda","La mitad de la sonda"],0,"Con buen tiempo, unas 3 veces la profundidad; con mal tiempo, más (5 o más)."],
+// ---- Seguridad
+["seg","El dispositivo que suelta sola la balsa salvavidas si el barco se hunde es…",["La zafa hidrostática","El cabo disparador","El gancho automático","La boza"],0,"Actúa por la presión del agua a unos metros de profundidad."],
+["seg","El reflector de radar sirve para…",["Que el radar de otros barcos nos detecte","Enviar mensajes","Pedir socorro","Medir distancias"],0,"Aumenta nuestro eco en las pantallas de radar ajenas."],
+["seg","¿Qué es 'correr el temporal'?",["Navegar con la popa a la mar","Poner proa a la mar","Ponerse de través","Fondear"],0,"Correr = popa (o aleta) a la mar. Capear = proa (o amura) a la mar."],
+["seg","Para reducir los balances, lo más adecuado es…",["Cambiar el rumbo","Aumentar la velocidad","Trasladar pesos a una banda","Tirar pesos por la borda"],0,"Cambiando el rumbo cambiamos cómo nos llega la ola."],
+["seg","Los extintores portátiles deben ir…",["En lugares de fácil acceso","Dentro de la cámara de motores","Cerrados con llave","Junto al foco de fuego"],0,"Tienen que poder cogerse rápido."],
+["seg","Antes de salir a navegar hay que comprobar, entre otras cosas…",["El nivel de combustible","La temperatura del mar","Cerrar los grifos de fondo","La temperatura del aceite en frío"],0,"Combustible, previsión, equipo de seguridad… Los grifos de fondo deben estar ABIERTOS para refrigerar."],
+["seg","Al ver caer a una persona al agua, el timón se mete…",["A la misma banda de la caída","A la banda contraria","A la vía","No se toca"],0,"Así la popa y la hélice se apartan de la persona. Gritar, lanzar aro y no perderla de vista."],
+["seg","Navegando por aguas someras hay que extremar precauciones por…",["Riesgo de embarrancar","Más tráfico","Corrientes fuertes","Poca visibilidad"],0,"Somero = poca profundidad."],
+["seg","Las bengalas de mano se encienden…",["Por sotavento","Por barlovento","Por la proa","Siempre por babor"],0,"Por sotavento el humo y las chispas no vuelven al barco."],
+// ---- Legislación
+["leg","Ante un grupo de cetáceos (RD 1727/2007), a menos de 500 m…",["Máximo 4 nudos, sin ruido y nunca a menos de 60 m","Acercarse para observarlos","Hacer ruido para apartarlos","Acelerar para alejarlos"],0,"Nada de perseguirlos ni cortarles el paso."],
+["leg","Ante la bandera Alfa (buceo), las demás embarcaciones se mantendrán al menos a…",["50 metros","25 metros","15 metros","100 metros"],0,"Salvo la embarcación de apoyo. (Solución oficial Girona mayo 2026)."],
+["leg","¿Se pueden verter al mar aceites, combustibles u otros hidrocarburos?",["No, está prohibido","Sí, a más de 3 millas","Sí, a más de 12 millas","Sí, tratados"],0,"Prohibido siempre."],
+["leg","Si ves un vertido de hidrocarburos en el mar, avisas a…",["Salvamento Marítimo","El club náutico","El ayuntamiento","La policía local"],0,"Salvamento Marítimo (SASEMAR), por VHF canal 16 o teléfono 900 202 202."],
+["leg","Aguas sucias desmenuzadas y desinfectadas a bordo se pueden descargar a partir de…",["3 millas de tierra","4 millas","12 millas","Cualquier distancia a más de 4 nudos"],0,"Sin tratar, a partir de 12 millas."],
+["leg","Para acercarte a una playa NO balizada…",["Máximo 3 nudos y extremando precauciones","Por el centro y rápido","Libremente","Avisando con bocina"],0,"Velocidad muy reducida y cuidado con los bañistas."],
+// ---- Balizamiento
+["bal","Región A: entrando a puerto, la marca lateral de babor es…",["Roja, con marca de tope cilíndrica","Verde, con cono","Roja, con cono","Amarilla"],0,"Región A (Europa): roja a babor, verde a estribor al entrar."],
+["bal","¿De qué color es la luz de una marca lateral de babor en la región A?",["Roja","Verde","Blanca","Amarilla"],0,"La luz es del color de la marca."],
+["bal","Entrando a puerto ves por la proa una baliza roja con cilindro. Debes…",["Caer a estribor, dejándola por babor","Caer a babor","Dejarla por estribor","Da igual"],0,"La roja se deja por babor al entrar."],
+["bal","¿De qué color es la luz de TODAS las marcas cardinales?",["Blanca","Amarilla","Roja","Verde"],0,"Cardinales siempre luz blanca (centelleante)."],
+["bal","Cardinal NORTE: marca de tope…",["Dos conos con los vértices hacia arriba","Dos conos hacia abajo","Opuestos por las bases","Opuestos por los vértices"],0,"Las puntas 'señalan' el Norte (arriba)."],
+["bal","Cardinal SUR: marca de tope…",["Dos conos con los vértices hacia abajo","Dos conos hacia arriba","Opuestos por las bases","Opuestos por los vértices"],0,"Puntas hacia abajo = Sur."],
+["bal","Cardinal ESTE: marca de tope…",["Dos conos opuestos por las bases (rombo)","Opuestos por los vértices","Hacia arriba","Hacia abajo"],0,"Truco: el Este parece un huevo (E de 'egg')."],
+["bal","Cardinal OESTE: marca de tope…",["Dos conos opuestos por los vértices (reloj de arena)","Opuestos por las bases","Hacia arriba","Hacia abajo"],0,"Parece una W tumbada / copa de vino."],
+["bal","Una cardinal con 3 centelleos es la…",["Este","Oeste","Sur","Norte"],0,"Como un reloj: Este = 3, Sur = 6 (+1 largo), Oeste = 9, Norte = continuo."],
+["bal","6 centelleos + 1 destello largo indican cardinal…",["Sur","Norte","Este","Oeste"],0,"Sur = 6 de las 6 en punto + destello largo."],
+["bal","Una cardinal Norte indica que las aguas navegables están…",["Al Norte de la marca","Al Sur","Al Este","Por cualquier lado"],0,"Hay que pasar por el lado que dice su nombre."],
+["bal","Rumbo Este, ves por la proa una cardinal Sur. Lo correcto es…",["Caer a estribor y pasar por su Sur","Caer a babor y pasar por el Norte","Dejarla por babor sin más","Pararse"],0,"Rumbo 090: el Sur queda a estribor."],
+["bal","Rumbo Oeste, ves por la proa una cardinal Norte. Lo correcto es…",["Caer a estribor y pasar por su Norte","Caer a babor y pasar por el Sur","Es un peligro aislado","Dejarla por estribor"],0,"Rumbo 270: el Norte queda a estribor."],
+["bal","Marca de peligro aislado: marca de tope…",["Dos esferas negras","Una esfera roja","Aspa amarilla","Dos conos"],0,"Peligro aislado: negra con franja roja, 2 esferas negras, luz blanca Fl(2)."],
+["bal","Marca de aguas navegables: marca de tope…",["Una esfera roja","Dos esferas negras","Aspa amarilla","Cilindro rojo"],0,"Franjas verticales rojas y blancas; luz blanca isofase, ocultación, destello largo o Morse 'A'."],
+["bal","Una luz que hace la letra Morse 'A' (· –) es una marca de…",["Aguas navegables","Peligro aislado","Canal principal a babor","Especial"],0,"Morse A = aguas navegables (aguas seguras)."],
+["bal","Una zona de acuicultura o de ejercicios militares se señaliza con…",["Marca especial: amarilla con aspa","Cardinal","Lateral","Peligro aislado"],0,"Especiales: amarillas, aspa amarilla, luz amarilla."],
+["bal","¿Qué marca indica por qué lado se debe pasar un peligro?",["La cardinal","La lateral","La especial","La de aguas navegables"],0,"Cardinal: te dice el cuadrante navegable respecto al peligro."],
+["bal","Nuevo peligro (aún sin publicar en cartas): ¿colores?",["Franjas verticales azules y amarillas","Rojo y blanco","Negro y amarillo","Verde"],0,"Azul y amarillo, con luz que alterna azul y amarillo."],
+// ---- RIPA
+["ripa","Marca de día de un buque sin gobierno:",["Dos bolas negras en vertical","Una bola","Tres bolas","Bola-rombo-bola"],0,"De noche: dos luces rojas todo horizonte en vertical."],
+["ripa","Marca de día de un buque varado:",["Tres bolas negras en vertical","Dos bolas","Una bola","Un cilindro"],0,"De noche: luces de fondeo + dos rojas en vertical."],
+["ripa","Marca de día de un buque fondeado:",["Una bola negra a proa","Dos bolas","Un cono","Un cilindro"],0,"De noche (<50 m): una luz blanca todo horizonte."],
+["ripa","Dos conos unidos por los vértices (reloj de arena) indican…",["Buque dedicado a la pesca","Restringido por su calado","Remolque de más de 200 m","Sin gobierno"],0,"Pesca faenando."],
+["ripa","Un cilindro negro izado indica…",["Restringido por su calado","Pesca","Sin gobierno","Fondeado"],0,"De noche: tres rojas en vertical."],
+["ripa","Bola-rombo-bola en vertical indica…",["Capacidad de maniobra restringida","Sin gobierno","Pesca","Varado"],0,"De noche: roja-blanca-roja."],
+["ripa","Un velero que lleva un cono con el vértice hacia abajo…",["Navega a vela y a motor: cuenta como buque de motor","Está fondeado","Es un remolcado","Está pescando"],0,"Pierde la preferencia de los veleros."],
+["ripa","Vas a motor y un velero con cono (vértice abajo) se acerca por tu babor con riesgo. Maniobra…",["El velero, porque cuenta como de motor y nos tiene por su estribor","Nosotros, porque va a vela","Nadie","Ambos a babor"],0,"Dos 'motores' en cruce: maniobra el que tiene al otro por su estribor."],
+["ripa","En un cruce entre dos buques de motor, maniobra…",["El que tiene al otro por su estribor","El que tiene al otro por su babor","El más pequeño","Ninguno"],0,"El otro mantiene rumbo y velocidad."],
+["ripa","El buque que tiene preferencia debe…",["Mantener rumbo y velocidad","Caer a babor","Parar","Cambiar a popa del otro"],0,"Si ve que el otro no maniobra, puede actuar para evitar el abordaje."],
+["ripa","Dos buques de motor de vuelta encontrada (proa con proa):",["Los dos caen a estribor","Los dos a babor","El más rápido","Ninguno"],0,"Pasan babor con babor."],
+["ripa","El buque que alcanza a otro…",["Debe apartarse del alcanzado","Tiene preferencia","Mantiene rumbo","Da 2 pitadas y pasa"],0,"Siempre maniobra el que alcanza, aunque sea un velero."],
+["ripa","Encuentro entre un velero y un buque de motor (sin otras circunstancias):",["Maniobra el de motor","Maniobra el velero","Los dos a estribor","El que tenga viento por babor"],0,"Motor cede a vela (salvo que el velero alcance)."],
+["ripa","Cruce entre un velero y un pesquero faenando:",["Maniobra el velero","Maniobra el pesquero","El que cruza por babor","Ninguno"],0,"Pesca faenando tiene preferencia sobre vela."],
+["ripa","Dos veleros con el viento por bandas distintas: maniobra…",["El que recibe el viento por babor","El de estribor","El de sotavento","El más grande"],0,"Viento por babor = cede."],
+["ripa","Dos veleros con el viento por la misma banda: maniobra…",["El que está a barlovento","El de sotavento","El más rápido","Ninguno"],0,"Barlovento cede a sotavento."],
+["ripa","La maniobra más eficaz para evitar un abordaje, si hay espacio, suele ser…",["Un cambio de rumbo amplio y a tiempo","Aumentar la velocidad","Dar atrás","Mantenerse"],0,"Cambio claro y con antelación, que el otro lo vea."],
+["ripa","La luz de tope tiene un arco de visibilidad de…",["225º","112,5º","135º","360º"],0,"Tope 225º · costados 112,5º cada uno · alcance 135º · todo horizonte 360º."],
+["ripa","La luz de alcance (popa) tiene un arco de…",["135º","225º","112,5º","360º"],0,"Blanca, hacia popa."],
+["ripa","La luz de remolque es…",["Amarilla, 135º, sobre la de alcance","Roja","Blanca de tope","Verde"],0,"Amarilla con el mismo arco que la de alcance."],
+["ripa","Ves de frente dos blancas en vertical, verde y roja. Es…",["Un remolcador (remolque ≤ 200 m) visto de proa","Un práctico","Un pesquero","Un sin gobierno"],0,"Dos luces de tope en vertical = remolcando."],
+["ripa","Blanca sobre roja (todo horizonte) indican…",["Práctico en servicio","Pesquero no de arrastre","Sin gobierno","Fondeado"],0,"'Blanca sobre roja, práctico a bordo'. Pesca no arrastre es roja sobre blanca."],
+["ripa","Verde sobre blanca (todo horizonte) indican…",["Pesquero de arrastre","Práctico","Pesquero no de arrastre","Restringido"],0,"Arrastre: verde sobre blanca."],
+["ripa","Dos rojas en vertical + luz roja de costado más abajo: es…",["Sin gobierno con arrancada, visto por babor","Restringido por calado","Pesca","Maniobra restringida"],0,"Las dos rojas = sin gobierno; el costado rojo = lo ves por babor (lleva arrancada)."],
+["ripa","Un buque fondeado de más de 100 m de eslora muestra…",["Dos blancas (proa y popa) y luces de cubierta","Una blanca","Dos rojas","Una intermitente"],0,"Las luces de cubierta son obligatorias desde 100 m."],
+["ripa","Una pitada corta dura aproximadamente…",["1 segundo","3 segundos","4 a 6 segundos","10 segundos"],0,"La larga dura de 4 a 6 segundos."],
+["ripa","Una pitada corta significa…",["Caigo a estribor","Caigo a babor","Doy atrás","No entiendo"],0,"1 estribor · 2 babor · 3 atrás · 5 o más = duda/peligro."],
+["ripa","Cinco o más pitadas cortas y rápidas significan…",["No entiendo sus intenciones / duda","Doy atrás","Caigo a babor","Voy a adelantar"],0,"Señal de duda o peligro."],
+["ripa","Con niebla, una pitada larga cada 2 minutos es…",["Buque de motor con arrancada","Sin arrancada","Velero","Fondeado"],0,"Sin arrancada: dos largas cada 2 min."],
+["ripa","Con niebla, dos pitadas largas cada 2 minutos es…",["Buque de motor parado y sin arrancada","Con arrancada","Velero","Remolcador"],0,"Separadas unos 2 segundos."],
+["ripa","Con niebla, una larga seguida de dos cortas puede ser…",["Un velero","Un motor con arrancada","Un fondeado","Un práctico"],0,"También sin gobierno, maniobra restringida, calado, pesca y remolcador."],
+["ripa","Con niebla, un repique rápido de campana de unos 5 segundos cada minuto indica…",["Buque fondeado","Pesquero","Velero navegando","Práctico navegando"],0,"Si mide más de 100 m, además gong a popa."],
+["ripa","Fondeado con niebla, la vigilancia debe ser…",["Visual y auditiva","Solo radar","Solo auditiva","Ninguna"],0,"La vigilancia se mantiene siempre, también fondeado."],
+["ripa","Banderas N C (November-Charlie) o bandera cuadrada con una bola significan…",["Peligro y necesidad de ayuda","Regata","Aviso de temporal","Llamar la atención"],0,"Son señales de socorro."],
+["ripa","Para la velocidad de seguridad se tiene en cuenta, entre otros…",["El calado en relación con la profundidad","La eslora","La potencia","La obra muerta"],0,"También visibilidad, tráfico, maniobrabilidad, estado de la mar…"],
+["ripa","Un buque de motor que se queda sin motor y va a la deriva pasa a ser…",["Buque sin gobierno","Sigue siendo de motor","Maniobra restringida","Fondeado"],0,"No puede maniobrar como exige el reglamento."],
+// ---- Maniobra
+["man","Yendo marcha atrás, para que la proa caiga a estribor el timón se pone a…",["Babor","Estribor","Barlovento","A la vía"],0,"Atrás la popa va hacia donde metes el timón; la proa cae al lado contrario."],
+["man","Hélice dextrógira dando marcha atrás con el timón a la vía: la popa cae a…",["Babor","Estribor","No cae","Depende del viento"],0,"Dextrógira: avante popa a estribor; atrás popa a babor."],
+["man","'Ciabogar' es…",["Girar en el menor espacio posible","Mantener el rumbo","Cambiar 360º","Proa al viento"],0,"Combinando avante, atrás y timón."],
+["man","El desplazamiento que provoca la CORRIENTE se llama…",["Deriva","Abatimiento","Arrastre","Desvío"],0,"El del VIENTO es abatimiento."],
+["man","Atracados de costado con viento de popa, para abrir la popa usamos…",["El esprín de proa","El largo de popa","El través de proa","El esprín de popa"],0,"Trabajando avante sobre el esprín de proa, la popa se separa."],
+["man","Para fondear, lo normal es aproar el barco a…",["El viento o la corriente","Favor del viento","Través","Popa a la mar"],0,"Así controlas el barco y el ancla agarra mejor."],
+// ---- Emergencias
+["eme","La orden de abandonar el barco se da cuando…",["El barco ofrece menos protección que la balsa","Ya estamos todos en la balsa","No arranca el motor","Nadie está herido"],0,"El barco es la mejor balsa mientras flote."],
+["eme","Apagar un fuego por sofocación es…",["Quitarle el oxígeno","Quitar el combustible","Enfriar","Romper la reacción en cadena"],0,"Tapar, CO2, espuma…"],
+["eme","Fuego de clase F:",["Aceites y grasas de cocina","Sólidos","Líquidos","Metales"],0,"A sólidos · B líquidos · C gases · D metales · F cocina."],
+["eme","Fuego de clase B:",["Líquidos","Sólidos","Gases","Metales"],0,"Gasolina, gasoil, pintura…"],
+["eme","Fuego por escape de gas butano en la cocina: lo primero es…",["Cerrar la llave de paso","Echar agua a chorro","Abrir la escotilla","Usar solo espuma"],0,"Sin gas, el fuego se apaga o se controla."],
+["eme","Fuego en el motor:",["Parar motor, cerrar combustible y contacto","Abrir el compartimento para mirarlo","Echar agua","Acelerar"],0,"Abrir la tapa le da oxígeno."],
+["eme","Tras atracar, para garantizar la estanqueidad cerramos…",["Los grifos de fondo","Los de combustible","Los de aceite","Ninguno"],0,"Evitan entradas de agua estando sin vigilancia."],
+["eme","Tras una varada involuntaria, lo primero es…",["Analizar el fondo y las averías del casco","Dar atrás a toda máquina","Fondear","Preparar el ancla de capa"],0,"Si das atrás sin mirar puedes agravar la vía de agua."],
+["eme","Antes de una consulta radio-médica hay que…",["Tener anotados los síntomas y datos del enfermo","Esperar a que pregunte el médico","Dar un número de abonado","Nada"],0,"El servicio es gratuito y 24 h."],
+// ---- Meteorología
+["met","La altura de las olas (estado de la mar) se consulta en la escala…",["Douglas","Beaufort","Richter","Celsius"],0,"Beaufort mide el viento."],
+["met","En el hemisferio norte, el viento gira alrededor de un anticiclón en sentido…",["Horario","Antihorario","Norte-sur","Oeste-este"],0,"En las borrascas, antihorario."],
+["met","Una borrasca es…",["Un área de bajas presiones","De altas presiones","Un anticiclón","Isobaras muy separadas"],0,"Suele traer mal tiempo."],
+["met","Isobaras muy juntas en un mapa indican…",["Viento fuerte","Calma","Calor","Mejora del tiempo"],0,"Gran diferencia de presión en poca distancia."],
+["met","Presión atmosférica normal a nivel del mar:",["1013 mb","760 mb","670 mb","1033 mb"],0,"760 son mm de mercurio, no milibares."],
+["met","Brisa de día, del mar hacia tierra:",["Virazón (marinada)","Terral","Viento aparente","Levante"],0,"De noche sopla de tierra al mar: terral."],
+["met","Cuando el viento cambia de dirección se dice que…",["Rola","Refresca","Cae","Calma"],0,"Refrescar = aumentar de fuerza."],
+["met","Horas que ha soplado el viento con la misma dirección e intensidad:",["Persistencia","Fetch","Duración","Racha"],0,"El fetch es la distancia (en millas) sobre la que sopla."],
+["met","El fetch se mide en…",["Millas","Horas","Nudos","km²"],0,"Es una distancia."],
+["met","El instrumento que mide la presión atmosférica es…",["El barómetro","El anemómetro","El higrómetro","El termómetro"],0,"Anemómetro = viento."],
+// ---- Teoría de navegación
+["nav","El círculo máximo perpendicular al eje de la Tierra es…",["El ecuador","Un meridiano","Un trópico","Un paralelo"],0,"Los paralelos también son perpendiculares, pero son círculos menores."],
+["nav","Las circunferencias menores paralelas al ecuador son…",["Paralelos","Meridianos","Ejes","Polos"],0,"Los meridianos van de polo a polo."],
+["nav","La longitud de un punto sobre el meridiano de Greenwich es…",["0º","90º","180º","45º"],0,"Greenwich es el meridiano cero."],
+["nav","La longitud es el arco de…",["Ecuador entre Greenwich y el meridiano del lugar","Meridiano entre el ecuador y el lugar","Paralelo entre polos","Meridiano entre el polo y el lugar"],0,"La latitud es el arco de meridiano desde el ecuador."],
+["nav","Ángulo entre la línea proa-popa y la visual a un objeto:",["Marcación","Demora","Rumbo","Enfilación"],0,"Demora = desde el Norte. Marcación = desde la proa."],
+["nav","Navegando proa a un faro, la marcación del faro es…",["0º","90º","180º","270º"],0,"Lo tienes justo delante."],
+["nav","Ángulo entre el Norte magnético y el Norte verdadero:",["Declinación magnética","Desvío","Corrección total","Marcación"],0,"Desvío = Norte de aguja respecto al magnético. Ct = dm + desvío."],
+["nav","Corrección total =",["Declinación magnética + desvío","Declinación − rumbo","Desvío − abatimiento","Rumbo verdadero + desvío"],0,"Este (+), Oeste (−)."],
+["nav","Rumbo cuadrantal S24W en circular es…",["204º","24º","336º","276º"],0,"S = 180; hacia el W se suma: 180 + 24."],
+["nav","Rumbo cuadrantal N30W en circular es…",["330º","030º","210º","150º"],0,"N hacia W: 360 − 30."],
+["nav","Declinación 3º20'W en 2015, variación anual 10'E. En 2026 será…",["1º30'W","3º20'W","5º10'W","1º50'E"],0,"11 años × 10'E = 1º50'E; 3º20'W − 1º50' = 1º30'W."],
+["nav","Declinación 2º05'W en 2016, variación 6'E. En 2026 será…",["1º05'W","3º05'W","1º55'W","60'E"],0,"10 × 6' = 60' = 1º; 2º05'W − 1º = 1º05'W."],
+["nav","Luz isofase (Iso) es la que…",["Tiene luz y oscuridad de igual duración","Da destellos cortos","Está siempre encendida","Hace grupos"],0,"Fl = destello · Oc = ocultación · Q = centelleante."],
+["nav","Una milla náutica equivale a…",["1852 metros","1000 metros","1609 metros","1 km"],0,"Y un nudo es una milla por hora."],
+["nav","La amplitud de la marea es…",["La diferencia de altura entre bajamar y pleamar","El tiempo entre ellas","El fetch","La persistencia"],0,"Pleamar = marea alta, bajamar = marea baja."],
+// ---- Carta
+["car","En la carta, las distancias en millas se miden en…",["La escala de latitudes (lateral)","La escala de longitudes","La rosa","Cualquier lado"],0,"1 minuto de latitud = 1 milla. A la misma altura del punto."],
+["car","Estando en la oposición o enfilación de dos faros, la corrección total es…",["Ct = Dv (medida en la carta) − Da","Ct = Da − Dv","Ct = Rv + Da","Ct = dm"],0,"La Dv la sacas de la línea que une los faros."],
+["car","Para pasar de rumbo de aguja a rumbo verdadero…",["Rv = Ra + Ct","Rv = Ra − Ct","Rv = Ra + dm − desvío","Rv = Ct − Ra"],0,"Al revés: Ra = Rv − Ct."],
+["car","Para trazar la demora de un faro en la carta, desde el faro se traza…",["La demora + 180º (la opuesta)","La demora tal cual","La marcación","El rumbo"],0,"Dv 120º → desde el faro trazas 300º hacia tu barco."],
+["car","Navegas 9 millas a 6 nudos. ¿Cuánto tardas?",["1 h 30 min","1 h 15 min","54 min","2 h"],0,"Tiempo = distancia / velocidad = 9/6 = 1,5 h."],
+["car","Sonda en un momento dado =",["Sonda en carta + altura de la marea (± presión)","Sonda carta − marea","Solo la sonda carta","Altura de pleamar"],0,"La altura se saca del anuario para ese puerto y hora."],
+["car","Presión de 1028 mb (alta) respecto a 1013: la sonda real…",["Baja unos 15 cm","Sube 15 cm","No cambia","Sube 1,5 m"],0,"Cada mb por encima de 1013 baja ~1 cm el nivel del mar."],
+["car","Con marcación 35º a babor y Rv 046º, la demora verdadera es…",["011º","081º","035º","226º"],0,"Babor se resta: Dv = Rv − marcación = 046 − 35."],
+// ---- Añadidas a partir del examen oficial de febrero 2023 (con su solución)
+["nom","Navegas al Este con viento del Sur. ¿Cuál es tu banda de sotavento?",["Babor, la contraria a la que recibe el viento","Estribor, la que recibe el viento","Babor, la que recibe el viento","Estribor, la contraria"],0,"Rumbo E: el Sur queda a estribor (barlovento). Sotavento es el lado contrario: babor."],
+["nom","El torno horizontal en la proa, de babor a estribor, que sirve para levar el ancla es…",["El molinete","El escobén","El cabirón","Un Danforth"],0,"El Danforth es un tipo de ancla."],
+["seg","La tendencia de un barco a recuperar su posición tras una perturbación es…",["La estabilidad","La flotabilidad","La estanqueidad","La navegabilidad"],0,"Estabilidad = volver a adrizarse."],
+["leg","En las playas, la franja reservada solo a bañistas es de…",["200 metros","150 metros","250 metros","300 metros"],0,"En playas no balizadas, 200 m desde la orilla."],
+["leg","Según MARPOL, las aguas del inodoro se llaman…",["Aguas sucias","Aguas residuales","Aguas tóxicas","Aguas contaminantes"],0,"Aguas sucias = las de los inodoros."],
+["bal","El cuadrante Sur de una marca cardinal está limitado por las demoras…",["SE y SW","NW y NE","NE y SE","SW y NW"],0,"Norte NW-NE · Este NE-SE · Sur SE-SW · Oeste SW-NW."],
+["bal","Baliza verde con una franja roja horizontal y cono verde (región A) indica…",["Canal principal a babor","Canal principal a estribor","Aguas navegables","Prohibido navegar"],0,"Marca de canal preferido: el color principal (verde) dice que el canal principal sigue a babor."],
+["bal","¿De qué color es la luz de las marcas de aguas navegables?",["Blanca","Roja","Amarilla","Blanca y roja"],0,"Como cardinales y peligro aislado: blanca."],
+["ripa","Con niebla, campana unos 5 s seguida de cuatro pitadas cortas indica…",["Un práctico en servicio fondeado","Un varado de más de 100 m","Un velero fondeado","Un fondeado de más de 100 m"],0,"Las 4 cortas son la señal de identificación del práctico."],
+["ripa","Los buques de menos de 20 m respecto a los que solo pueden navegar dentro de un canal angosto deben…",["No estorbar su tránsito","Alcanzarlos siempre por babor","Alcanzarlos por estribor","Ir por aguas menos profundas"],0,"Regla 9 del RIPA."],
+["ripa","Un barco fondeado de 12 m de eslora muestra como mínimo…",["Una luz blanca todo horizonte","Ninguna luz","Una roja","Tres rojas"],0,"Solo los menores de 7 m fuera de canales pueden no llevarla."],
+["ripa","Según el RIPA, un barco está 'en navegación' cuando…",["No está fondeado, ni amarrado a tierra, ni varado","No está fondeado","Lleva el motor encendido","No está varado"],0,"Puede estar parado y seguir 'en navegación'."],
+["man","Atracados por estribor y viene viento de popa: ¿qué cabos reforzamos?",["Largo de popa y esprín de proa","Largo de proa y esprín de popa","Largos de proa y popa","Través de proa"],0,"Son los que trabajan para que el barco no avance empujado por el viento."],
+["eme","Fuego de clase C:",["Gases","Líquidos","Sólidos","Metales"],0,"A sólidos · B líquidos · C gases · D metales · F cocina."],
+["eme","Apagar con agua un fuego de clase A en un pañol actúa por…",["Enfriamiento y sofocación","Romper la reacción en cadena","Aislar el combustible","Dilución"],0,"El agua enfría y el vapor desplaza el oxígeno."],
+["eme","El bote de humo es la señal de socorro indicada…",["De día","De noche","Con niebla","Siempre"],0,"De noche, bengalas rojas y cohetes."],
+["met","El terral sopla…",["De noche, de tierra hacia el mar","De día, del mar a tierra","De noche, del mar a tierra","De día, de tierra al mar"],0,"La virazón es la de día, del mar a tierra."],
+["nav","La latitud de cualquier punto del ecuador es…",["0º","90º","180º","45º"],0,"La latitud se cuenta desde el ecuador."],
+["nav","Los distintos aspectos que toma una luz durante su periodo se llaman…",["Fases","Alcances","Sectores","Frecuencias"],0,"Ej.: destello, eclipse, destello…"],
+["nav","Declinación 2º50'W en 2014, variación 5'E anual. En 2023 será…",["2º05'W","3º35'W","2º00'W","2º05'E"],0,"9 años × 5' = 45'E; 2º50'W − 45' = 2º05'W."],
+];
+
+const KEY="per_sim_v1";
+let S={}; try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){S={}}
+S.seen=S.seen||{}; S.wrong=S.wrong||{}; S.exams=S.exams||[];
+const BANK=Q.map((x,i)=>({id:i,u:x[0],q:x[1],o:x[2],a:x[3],e:x[4]}));
+const byU=u=>BANK.filter(b=>b.u===u);
+const uName=u=>UNITS.find(x=>x.id===u).n;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function prep(b){const idx=shuffle([0,1,2,3]);return {...b,opts:idx.map(i=>b.o[i]),ans:idx.indexOf(b.a)}}
+// ---- Repetición espaciada (cajas de Leitner): caja 0..4. Dominada = caja >= 3 (acertada 3 veces seguidas con días por medio).
+const DAY=864e5, GAP=[0,1,3,7,16];
+S.m=S.m||{}; S.days=S.days||[]; S.t=S.t||0;
+const today=()=>new Date().toISOString().slice(0,10);
+function box(id){return (S.m[id]||{}).b||0}
+function mastered(id){return box(id)>=3}
+function due(id){const m=S.m[id]; return m && Date.now()>=m.d}
+function mark(b,ok){
+  S.seen[b.id]=(S.seen[b.id]||0)+1;
+  const m=S.m[b.id]||{b:0,d:0};
+  if(ok){ m.b=Math.min(4,m.b+1); if(S.wrong[b.id]){S.wrong[b.id]--; if(S.wrong[b.id]<=0)delete S.wrong[b.id]} }
+  else { m.b=0; S.wrong[b.id]=(S.wrong[b.id]||0)+1 }
+  m.d=Date.now()+GAP[m.b]*DAY - 3600e3; S.m[b.id]=m;
+  if(!S.days.includes(today())){S.days.push(today()); S.days=S.days.slice(-60)}
+  save();
+}
+function uMastery(u){const all=byU(u);return all.filter(b=>mastered(b.id)).length/all.length}
+function streak(){let n=0,d=new Date();for(;;){const k=d.toISOString().slice(0,10); if(S.days.includes(k)){n++;d=new Date(d-DAY)} else if(n===0&&k===today()){d=new Date(d-DAY)} else break} return n}
+function readiness(){
+  const est=Math.floor(UNITS.reduce((a,u)=>a+u.q*uMastery(u.id),0)); // solo lo que dominas de verdad
+  const mins=UNITS.filter(u=>u.min).every(u=>Math.floor(u.q*uMastery(u.id))>=u.min);
+  const last3=S.exams.slice(-3); const sims=last3.length===3&&last3.every(e=>e.ok&&e.s>=36);
+  const dom=BANK.filter(b=>mastered(b.id)).length/BANK.length;
+  return {est:Math.round(est),mins,sims,dom,ready:dom>=0.85&&mins&&sims};
+}
+// ---- Guardado en la cuenta (db privado por persona); si no hay, se queda en este navegador.
+let DBREF=null, syncTimer=null, syncMsg="Guardado en este dispositivo";
+function save(){S.t=Date.now(); try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} if(DBREF){clearTimeout(syncTimer); syncTimer=setTimeout(()=>{DBREF.set({json:JSON.stringify(S),t:S.t}).then(()=>setSync("Guardado en tu cuenta")).catch(()=>setSync("No se pudo guardar en la cuenta; queda en este dispositivo"))},1500)}}
+function setSync(t){syncMsg=t; const el=document.getElementById("sync"); if(el)el.textContent=t}
+(async()=>{try{
+  if(!window.claude||!claude.use)return;
+  const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]); if(!db||!user)return;
+  const id=await user.id(); if(!id)return;
+  DBREF=db.collection("data/users/"+id).doc("progreso");
+  const snap=await DBREF.get();
+  if(snap.exists){const r=snap.data(); if(r&&r.t>(S.t||0)){try{const R=JSON.parse(r.json); Object.assign(S,R); try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} setSync("Progreso cargado de tu cuenta"); go(CUR)}catch(e){}} else if((S.t||0)>(r?r.t:0)){save()} else setSync("Guardado en tu cuenta")}
+  else if(S.t){save()} else setSync("Se guardará en tu cuenta");
+}catch(e){}})();
+
+const LESSON={
+ nom:["Proa delante, popa detrás; babor izquierda y estribor derecha mirando a proa.","Amuras = costados de proa; aletas = costados de popa.","Quilla (espina), roda (sigue la quilla por proa), codaste (por popa), cuadernas (costillas), baos (de banda a banda bajo la cubierta).","Limera = agujero de la mecha del timón; bocina = del eje de la hélice; imbornales = desagüe de cubierta; escobén = salida de la cadena.","Asiento = calado popa − calado proa. Popa más hundida = apopante; proa más hundida = aproante. Calado medio = (popa + proa) / 2.","Obra viva = parte sumergida; obra muerta = por encima del agua.","Molinete: virar = recoger cadena, filar = soltar. El embrague acopla el barbotén al motor."],
+ ama:["As de guía = gaza fija que no se corre. Ballestrinque = amarrar a un poste o aro, fácil de soltar. Llano = unir dos cabos iguales.","Orinque + boyarín: marcan dónde está el ancla y ayudan a desenrocarla.","Borneo = círculo que describe el barco fondeado. Garrear = el ancla no agarra.","A pique = cadena vertical justo antes de soltar. A la pendura = colgando sin tocar fondo.","Cadena: unas 3 veces la sonda con buen tiempo, más con mal tiempo.","Templar = tensión justa; lascar = aflojar poco a poco; adujar = recoger en vueltas."],
+ seg:["Antes de salir: previsión, combustible, equipo de seguridad, grifos de fondo abiertos para refrigerar.","Correr el temporal = popa a la mar. Capear = proa (amura) a la mar.","Para reducir balances, cambia el rumbo.","Hombre al agua: gritar, timón a la MISMA banda de la caída (aparta la hélice), lanzar aro y no perderlo de vista.","Zafa hidrostática: suelta la balsa sola si el barco se hunde. Reflector de radar: que otros te vean en su radar.","Bengalas por sotavento. Extintores en lugares de fácil acceso."],
+ leg:["Prohibido verter aceites e hidrocarburos. Si ves un vertido: Salvamento Marítimo.","Aguas sucias: tratadas a partir de 3 millas; sin tratar a partir de 12.","Cetáceos: a menos de 500 m, máximo 4 nudos, sin ruido y nunca a menos de 60 m.","Bandera Alfa (buceo): mantenerse al menos a 50 m, salvo la embarcación de apoyo.","Playa no balizada: máximo 3 nudos y extremando precauciones."],
+ bal:["Región A (Europa), entrando a puerto: ROJA (cilindro) a babor, VERDE (cono) a estribor.","Cardinales: amarillas y negras, luz BLANCA. Se pasa por el lado que dice su nombre.","Conos: Norte ▲▲ arriba · Sur ▼▼ abajo · Este ▲▼ (huevo) · Oeste ▼▲ (reloj de arena).","Luces como un reloj: Norte continua · Este 3 · Sur 6 + 1 larga · Oeste 9.","Peligro aislado: 2 esferas negras, luz blanca Fl(2). Aguas navegables: esfera roja, Iso/Oc/Morse A.","Especial: amarilla con aspa (acuicultura, militares…). Nuevo peligro: azul y amarillo."],
+ ripa:["Preferencia: sin gobierno › maniobra restringida › calado › pesca › vela › motor.","Cruce motor-motor: maniobra quien tiene al otro por ESTRIBOR. Vuelta encontrada: los dos a estribor. Alcance: siempre el que alcanza.","Veleros: viento por bandas distintas, cede el que lo recibe por babor; misma banda, cede el de barlovento.","Cono con vértice abajo en un velero = va a motor: es buque de motor.","Marcas: 1 bola fondeado · 2 bolas sin gobierno · 3 bolas varado · bola-rombo-bola restringida · cilindro calado · 2 conos unidos pesca.","Luces: tope 225º · costados 112,5º · alcance 135º · remolque amarilla 135º. Práctico blanca/roja; arrastre verde/blanca; otra pesca roja/blanca.","Pitadas: corta 1 s, larga 4-6 s. 1 estribor · 2 babor · 3 atrás · 5+ duda.","Niebla: motor con arrancada 1 larga/2 min · sin arrancada 2 largas · vela/pesca/sin gobierno 1 larga + 2 cortas · fondeado campana 5 s/min."],
+ man:["Hélice dextrógira: avante la popa cae a estribor; atrás, a babor.","Marcha atrás, el timón 'al revés': timón a babor = proa cae a estribor.","Ciabogar = girar en el menor espacio posible.","Abatimiento = por el viento; deriva = por la corriente.","Desatracar con viento de popa: esprín de proa para abrir la popa."],
+ eme:["Abandonar el barco solo cuando ofrezca menos protección que la balsa.","Fuego: A sólidos · B líquidos · C gases · D metales · F aceite de cocina.","Sofocar = quitar oxígeno. Gas butano: primero cerrar la llave. Motor: parar, cortar combustible y corriente; no abrir la tapa.","Al atracar: cerrar grifos de fondo. Varada: primero revisar fondo y averías.","Radio-médico: gratuito, 24 h; ten anotados síntomas y datos antes de llamar."],
+ met:["Anticiclón = altas presiones, giro horario (hemisferio norte), buen tiempo. Borrasca = bajas, antihorario.","Isobaras juntas = viento fuerte. Presión normal 1013 mb.","Beaufort = viento; Douglas = estado de la mar (olas).","Virazón (de día, mar → tierra); terral (de noche, tierra → mar).","Rolar = cambiar de dirección; refrescar = aumentar de fuerza.","Persistencia = horas que sopla; fetch = distancia (millas) sobre la que sopla."],
+ nav:["Ecuador = círculo máximo; paralelos = círculos menores paralelos a él; meridianos de polo a polo.","Latitud: desde el ecuador (N/S). Longitud: desde Greenwich, 0º (E/W).","Demora = ángulo desde el Norte; marcación = desde la proa (proa al faro = 0º).","Ct = declinación + desvío. Este +, Oeste −.","Declinación de otro año: años × variación anual; suma si va al mismo lado, resta si al contrario.","Cuadrantales: N30E=030 · S24W=204 · N30W=330 · S20E=160.","Luces: Fl destello · Oc ocultación · Iso igual luz y sombra · Q centelleante. 1 milla = 1852 m."],
+ car:["Primero todo a verdadero: Rv = Ra + Ct; Dv = Da + Ct.","Enfilación u oposición de dos faros: Ct = Dv (medida en la carta) − Da.","Demora de un faro: desde el faro traza la opuesta (Dv + 180º).","Marcación a estribor se suma al rumbo; a babor se resta.","Distancias en la escala lateral de latitudes: 1' = 1 milla. Tiempo = distancia / velocidad.","Mareas: sonda momento = sonda carta + altura de marea (anuario) − (presión − 1013) cm."],
+};
+const app=document.getElementById("app");
+let timerId=null, CUR="inicio";
+function setTab(v){document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===v))}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+function go(v){clearInterval(timerId); CUR=v; setTab(v); ({inicio,hoy,examen:examIntro,fallos,chuleta})[v]();window.scrollTo(0,0)}
+
+function inicio(){
+  const R=readiness(), dleft=S.exam?Math.ceil((new Date(S.exam)-new Date(today()))/DAY):null, dueN=BANK.filter(b=>due(b.id)).length;
+  app.innerHTML=`<div class="stack">
+  <section class="card stack">
+    <div class="eyebrow">¿Estás listo para el examen?</div>
+    <div class="ready"><div class="gauge" style="--p:${Math.round(R.dom*100)}"><span>${Math.round(R.dom*100)}%</span></div>
+    <div class="stack" style="gap:8px;min-width:0"><b>${R.ready?"Listo: vas a aprobar si mantienes el ritmo.":"Aún no. Sigue la sesión de hoy."}</b>
+    <ul class="checks">
+      <li class="${R.dom>=0.85?"y":""}">Dominar el 85 % de las preguntas (llevas ${Math.round(R.dom*100)} %)</li>
+      <li class="${R.est>=34?"y":""}">Nota estimada de 34 o más (ahora ~${R.est}/45)</li>
+      <li class="${R.mins?"y":""}">Mínimos de balizamiento, RIPA y carta asegurados</li>
+      <li class="${R.sims?"y":""}">3 últimos simulacros aptos con 36 o más</li>
+    </ul></div></div>
+    <div class="row"><label for="exd" class="muted">Fecha de mi examen:</label><input type="date" id="exd" value="${S.exam||""}">${dleft!==null?`<b>${dleft>0?`Faltan ${dleft} días`:dleft===0?"¡Es hoy!":"Ya pasó"}</b>`:""}</div>
+  </section>
+  <section class="card stack">
+    <div class="eyebrow">Sesión de hoy · racha ${streak()} ${streak()===1?"día":"días"}</div>
+    <h2>${dueN?`Tienes ${dueN} preguntas para repasar hoy`:"Aprende preguntas nuevas hoy"}</h2>
+    <p class="muted">20 preguntas: primero las que toca repasar, luego tus fallos y después nuevas de los temas más flojos. Una pregunta cuenta como dominada cuando la aciertas 3 veces seguidas en días distintos.</p>
+    <div class="row"><button class="btn flag" id="b-hoy">Empezar sesión de hoy</button><button class="btn alt" id="b-sim">Simulacro (45 · 90 min)</button></div>
+    <div class="eyebrow" style="color:var(--muted)">Tu nota según lo que ya dominas · lo que necesitas para aprobar</div>
+    <div class="rules">${[["Total",null,45,32],["Balizamiento","bal",5,3],["RIPA","ripa",10,5],["Carta","car",4,2]].map(([n,u,q,need])=>{const v=u?Math.floor(q*uMastery(u)):Math.floor(UNITS.reduce((a,x)=>a+x.q*uMastery(x.id),0));return `<div class="rule" style="border-left-color:${v>=need?"var(--ok)":"var(--bad)"}"><b>${v}/${q}</b><span>${n} · necesitas ${need}</span></div>`}).join("")}</div>
+  </section>
+  <section class="stack">
+    <div class="eyebrow">Temas · aprende y practica</div>
+    <div class="units">${UNITS.map(u=>{const all=byU(u.id),m=all.filter(b=>mastered(b.id)).length,w=all.filter(b=>S.wrong[b.id]).length;return `<button class="unit" data-u="${u.id}"><span class="name">${u.n}</span>${u.min?`<span class="must">Mínimo ${u.min} de ${u.q}</span>`:''}<span class="bar"><i style="width:${Math.round(m/all.length*100)}%"></i></span><span class="meta"><span>${u.q} en examen</span><span>${m}/${all.length} dominadas${w?` · ${w} fallos`:''}</span></span></button>`}).join("")}</div>
+    <p class="note">Preguntas redactadas para estudiar a partir del temario oficial y de lo que más se repite en los exámenes de 2026. La carta real (Estrecho) y el anuario hay que practicarlos en papel.</p>
+    <p class="sync" id="sync">${syncMsg}</p>
+  </section></div>`;
+  document.getElementById("b-hoy").onclick=()=>go("hoy");
+  document.getElementById("b-sim").onclick=()=>go("examen");
+  document.getElementById("exd").onchange=e=>{S.exam=e.target.value; save(); inicio()};
+  app.querySelectorAll(".unit").forEach(b=>b.onclick=()=>lesson(b.dataset.u));
+}
+function lesson(u){
+  const all=byU(u), pend=all.filter(b=>!mastered(b.id));
+  app.innerHTML=`<section class="card stack lesson"><div class="eyebrow">Lección · ${uName(u)}</div><h2>Lo que tienes que saber</h2>
+  <ul>${LESSON[u].map(x=>`<li>${x}</li>`).join("")}</ul>
+  <div class="row"><button class="btn flag" id="p1">Practicar las que no domino (${pend.length})</button><button class="btn alt" id="p2">Todas (${all.length})</button><button class="btn alt" id="bk">Volver</button></div></section>`;
+  document.getElementById("p1").onclick=()=>practice(u,shuffle(pend.length?pend:all));
+  document.getElementById("p2").onclick=()=>practice(u);
+  document.getElementById("bk").onclick=()=>go("inicio");
+}
+function hoy(){
+  const N=20, pick=[], has=new Set(), add=b=>{if(pick.length<N&&!has.has(b.id)){pick.push(b);has.add(b.id)}};
+  shuffle(BANK.filter(b=>due(b.id))).forEach(add);
+  BANK.filter(b=>S.wrong[b.id]).sort((a,b)=>S.wrong[b.id]-S.wrong[a.id]).forEach(add);
+  const weak=UNITS.map(u=>({u,need:u.q*(1-uMastery(u.id))+(u.min?2:0)})).sort((a,b)=>b.need-a.need);
+  for(const w of weak){shuffle(byU(w.u.id).filter(b=>!S.m[b.id])).slice(0,4).forEach(add)}
+  shuffle(BANK.filter(b=>!mastered(b.id))).forEach(add);
+  if(!pick.length){app.innerHTML=`<section class="card stack"><h2>Hoy no te toca nada</h2><p>Lo dominas todo. Haz un simulacro para comprobarlo.</p><div class="row"><button class="btn flag" id="s">Simulacro</button></div></section>`;document.getElementById("s").onclick=()=>go("examen");return}
+  practice(null,pick,"Sesión de hoy");
+}
+
+function practice(u,list,title){
+  const qs=(list||shuffle(byU(u))).map(prep); let i=0,ok=0; title=title||(u?uName(u):"Mis fallos");
+  function show(){
+    if(i>=qs.length){const R=readiness();app.innerHTML=`<section class="card stack"><div class="eyebrow">${title}</div><div class="result">${ok}/${qs.length}</div><p>${ok===qs.length?"Perfecto.":"Las que fallaste volverán mañana para que las fijes."} Dominas ya el <b>${Math.round(R.dom*100)} %</b> del temario.</p><div class="row"><button class="btn" id="again">Otra ronda</button><button class="btn alt" id="home">Inicio</button></div></section>`;document.getElementById("again").onclick=()=>title==="Sesión de hoy"?hoy():u?lesson(u):fallos();document.getElementById("home").onclick=()=>go("inicio");return}
+    const b=qs[i];
+    app.innerHTML=`<section class="card stack"><div class="qhead"><span>${uName(b.u)}</span><span class="mono">${i+1}/${qs.length} · ${ok} bien</span></div>
+    <div class="qtext">${b.q}</div><div class="opts">${b.opts.map((o,k)=>`<button class="opt" data-k="${k}"><span class="k">${"abcd"[k]}</span><span>${o}</span></button>`).join("")}</div>
+    <div id="fb"></div></section>`;
+    app.querySelectorAll(".opt").forEach(el=>el.onclick=()=>{
+      if(app.querySelector(".opt.ok"))return; const k=+el.dataset.k, good=k===b.ans; if(good)ok++; mark(b,good);
+      app.querySelectorAll(".opt").forEach(x=>{const kk=+x.dataset.k; if(kk===b.ans)x.classList.add("ok"); else if(kk===k)x.classList.add("bad")});
+      document.getElementById("fb").innerHTML=`<div class="stack"><div class="explain"><b>${good?"Correcto.":"Incorrecto."}</b> ${b.e}</div><div class="row"><button class="btn" id="next">Siguiente</button><button class="btn alt" id="out">Salir</button></div></div>`;
+      document.getElementById("next").onclick=()=>{i++;show()}; document.getElementById("out").onclick=()=>go("inicio");
+    });
+  } show();
+}
+
+function examIntro(){
+  app.innerHTML=`<section class="card stack"><div class="eyebrow">Simulacro</div><h2>45 preguntas en 90 minutos, como el examen</h2>
+  <p>Mismo reparto por temas que el examen oficial. No verás si aciertas hasta entregar. Al final te digo si serías <b>apto</b> (32 bien y los mínimos de balizamiento, RIPA y carta).</p>
+  <div class="row"><button class="btn flag" id="start">Empezar</button></div></section>`;
+  document.getElementById("start").onclick=exam;
+}
+function exam(){
+  const qs=UNITS.flatMap(u=>shuffle(byU(u.id)).slice(0,u.q)).map(prep); const ans=Array(qs.length).fill(null); let i=0, end=Date.now()+90*60e3;
+  function fmt(ms){ms=Math.max(0,ms);const m=Math.floor(ms/60e3),s=Math.floor(ms%60e3/1e3);return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
+  function show(){
+    const b=qs[i];
+    app.innerHTML=`<div class="stack"><section class="card stack"><div class="qhead"><span>${uName(b.u)}</span><span class="timer" id="t">${fmt(end-Date.now())}</span></div>
+    <div class="qtext"><span class="mono">${i+1}.</span> ${b.q}</div><div class="opts">${b.opts.map((o,k)=>`<button class="opt${ans[i]===k?" sel":""}" data-k="${k}"><span class="k">${"abcd"[k]}</span><span>${o}</span></button>`).join("")}</div>
+    <div class="row"><button class="btn alt" id="prev" ${i?"":"disabled"}>Anterior</button><button class="btn" id="nx">${i<qs.length-1?"Siguiente":"Revisar"}</button><button class="btn flag" id="fin">Entregar</button></div></section>
+    <section class="card stack"><div class="eyebrow">Hoja de respuestas · ${ans.filter(x=>x!==null).length}/45 contestadas</div><div class="grid45">${qs.map((_,k)=>`<button data-j="${k}" class="${ans[k]!==null?"done":""} ${k===i?"cur":""}">${k+1}</button>`).join("")}</div></section></div>`;
+    app.querySelectorAll(".opt").forEach(el=>el.onclick=()=>{ans[i]=+el.dataset.k; if(i<qs.length-1){i++} show()});
+    document.getElementById("prev").onclick=()=>{i--;show()}; document.getElementById("nx").onclick=()=>{if(i<qs.length-1)i++;show()};
+    document.getElementById("fin").onclick=confirmEnd; app.querySelectorAll(".grid45 button").forEach(el=>el.onclick=()=>{i=+el.dataset.j;show()});
+  }
+  function confirmEnd(){const blank=ans.filter(x=>x===null).length; const box=document.createElement("div"); box.className="card stack"; box.innerHTML=`<b>¿Entregar el examen?</b><span class="muted">${blank?`Te quedan ${blank} sin contestar. Los fallos no restan: mejor marcar algo.`:"Has contestado todas."}</span><div class="row"><button class="btn flag" id="yes">Sí, entregar</button><button class="btn alt" id="no">Seguir</button></div>`; app.prepend(box); document.getElementById("yes").onclick=finish; document.getElementById("no").onclick=()=>box.remove(); window.scrollTo(0,0)}
+  function finish(){
+    clearInterval(timerId); const res={}; let tot=0;
+    qs.forEach((b,k)=>{const g=ans[k]===b.ans; if(ans[k]!==null)mark(b,g); res[b.u]=res[b.u]||{ok:0,n:0}; res[b.u].n++; if(g){res[b.u].ok++;tot++}});
+    const mins=UNITS.filter(u=>u.min).map(u=>({u,ok:res[u.id].ok>=u.min}));
+    const apto=tot>=32&&mins.every(m=>m.ok); S.exams.push({d:Date.now(),s:tot,ok:apto}); save();
+    app.innerHTML=`<div class="stack"><section class="card stack"><div class="eyebrow">Resultado</div><div class="row"><div class="result">${tot}/45</div><span class="pill ${apto?"ok":"bad"}">${apto?"APTO":"NO APTO"}</span></div>
+    <div class="tw"><table><tr><th>Tema</th><th>Bien</th><th>Mínimo</th></tr>${UNITS.map(u=>`<tr><td>${u.n}</td><td class="mono">${res[u.id].ok}/${res[u.id].n}</td><td>${u.min?(res[u.id].ok>=u.min?'<span class="pill ok">OK</span>':'<span class="pill bad">Falta</span>'):"—"}</td></tr>`).join("")}</table></div>
+    <div class="row"><button class="btn" id="rev">Ver correcciones</button><button class="btn alt" id="home">Inicio</button></div></section><div id="review" class="stack"></div></div>`;
+    document.getElementById("home").onclick=()=>go("inicio");
+    document.getElementById("rev").onclick=()=>{document.getElementById("review").innerHTML=qs.map((b,k)=>{const g=ans[k]===b.ans;return `<section class="card stack"><div class="qhead"><span>${k+1}. ${uName(b.u)}</span><span class="pill ${g?"ok":"bad"}">${g?"Bien":ans[k]===null?"En blanco":"Mal"}</span></div><div><b>${b.q}</b></div><div class="muted">Correcta: <b>${b.opts[b.ans]}</b>${!g&&ans[k]!==null?` · Tu respuesta: ${b.opts[ans[k]]}`:""}</div><div class="explain">${b.e}</div></section>`}).join("")};
+  }
+  show(); timerId=setInterval(()=>{const t=document.getElementById("t"); if(t)t.textContent=fmt(end-Date.now()); if(Date.now()>=end){finish()}},1000);
+}
+
+function fallos(){
+  const list=BANK.filter(b=>S.wrong[b.id]).sort((a,b)=>S.wrong[b.id]-S.wrong[a.id]);
+  app.innerHTML=`<section class="card stack"><div class="eyebrow">Mis fallos</div><h2>${list.length?`${list.length} preguntas por repasar`:"Sin fallos guardados"}</h2>
+  <p class="muted">${list.length?"Cada vez que aciertas una, baja su contador; al llegar a cero sale de la lista.":"Cuando falles en la práctica o en un simulacro, aparecerán aquí."}</p>
+  ${list.length?`<div class="row"><button class="btn flag" id="rep">Repasar mis fallos</button></div><div class="tw"><table><tr><th>Pregunta</th><th>Tema</th><th>Fallos</th></tr>${list.map(b=>`<tr><td>${b.q}</td><td>${uName(b.u)}</td><td class="mono">${S.wrong[b.id]}</td></tr>`).join("")}</table></div>`:""}</section>`;
+  const r=document.getElementById("rep"); if(r)r.onclick=()=>practice(null,shuffle(list));
+}
+
+function chuleta(){
+  app.innerHTML=`<div class="stack">
+  <section class="card stack"><div class="eyebrow">Balizamiento · región A</div><div class="tw"><table>
+  <tr><th>Marca</th><th>Tope</th><th>Luz</th></tr>
+  <tr><td>Lateral babor</td><td>Cilindro rojo</td><td>Roja</td></tr>
+  <tr><td>Lateral estribor</td><td>Cono verde (punta arriba)</td><td>Verde</td></tr>
+  <tr><td>Cardinal Norte</td><td>▲▲ puntas arriba</td><td>Blanca continua</td></tr>
+  <tr><td>Cardinal Este</td><td>▲▼ bases opuestas</td><td>Blanca, 3</td></tr>
+  <tr><td>Cardinal Sur</td><td>▼▼ puntas abajo</td><td>Blanca, 6 + 1 larga</td></tr>
+  <tr><td>Cardinal Oeste</td><td>▼▲ vértices opuestos</td><td>Blanca, 9</td></tr>
+  <tr><td>Peligro aislado</td><td>Dos esferas negras</td><td>Blanca Fl(2)</td></tr>
+  <tr><td>Aguas navegables</td><td>Esfera roja</td><td>Blanca Iso / Oc / Morse A</td></tr>
+  <tr><td>Especial</td><td>Aspa amarilla</td><td>Amarilla</td></tr>
+  <tr><td>Nuevo peligro</td><td>Cruz amarilla</td><td>Azul y amarilla</td></tr></table></div></section>
+  <section class="card stack"><div class="eyebrow">RIPA · quién maniobra</div><ul>
+  <li>Cruce motor-motor: maniobra quien tiene al otro <b>por estribor</b>.</li><li>Vuelta encontrada: <b>los dos a estribor</b>.</li><li>Alcance: maniobra <b>el que alcanza</b>.</li>
+  <li>Orden de preferencia: sin gobierno › maniobra restringida › calado › pesca › vela › motor.</li>
+  <li>Veleros: viento por bandas distintas, cede el que lo recibe <b>por babor</b>; misma banda, cede el de <b>barlovento</b>.</li>
+  <li>Velero con cono (vértice abajo) = va a motor: cuenta como <b>buque de motor</b>.</li></ul></section>
+  <section class="card stack"><div class="eyebrow">RIPA · marcas, luces y sonido</div><div class="tw"><table>
+  <tr><th>Situación</th><th>De día</th><th>De noche</th></tr>
+  <tr><td>Fondeado</td><td>1 bola</td><td>Blanca todo horizonte</td></tr>
+  <tr><td>Sin gobierno</td><td>2 bolas</td><td>2 rojas vertical</td></tr>
+  <tr><td>Varado</td><td>3 bolas</td><td>Fondeo + 2 rojas</td></tr>
+  <tr><td>Maniobra restringida</td><td>Bola-rombo-bola</td><td>Roja-blanca-roja</td></tr>
+  <tr><td>Restringido por calado</td><td>Cilindro</td><td>3 rojas</td></tr>
+  <tr><td>Pesca</td><td>2 conos vértices unidos</td><td>Arrastre verde/blanca · otra roja/blanca</td></tr>
+  <tr><td>Práctico</td><td>—</td><td>Blanca sobre roja</td></tr></table></div>
+  <p class="mono">Arcos: tope 225º · costados 112,5º · alcance 135º · remolque amarilla 135º</p>
+  <p class="mono">Pitadas: corta 1 s · larga 4–6 s · 1 estribor · 2 babor · 3 atrás · 5+ duda</p>
+  <p class="mono">Niebla: motor con arrancada 1 larga/2 min · sin arrancada 2 largas · vela, pesca, sin gobierno 1 larga + 2 cortas · fondeado campana 5 s/min</p></section>
+  <section class="card stack"><div class="eyebrow">Navegación y carta</div><ul>
+  <li>Ct = declinación + desvío · Rv = Ra + Ct · Dv = Da + Ct</li><li>Enfilación u oposición: <b>Ct = Dv (carta) − Da</b></li>
+  <li>Declinación: años × variación anual, sumar si va hacia el mismo lado, restar si es contrario</li>
+  <li>Marcación a estribor se suma al rumbo; a babor se resta</li><li>1' de latitud = 1 milla = 1852 m · tiempo = distancia / velocidad</li>
+  <li>Sonda momento = sonda carta + altura de marea − (presión − 1013) cm</li></ul></section></div>`;
+}
+go("inicio");
+</script>
+</body></html>
