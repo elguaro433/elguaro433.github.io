@@ -89,9 +89,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,.dot:focus-visible{outl
 .tabs button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .tabs button.rainbtn[aria-pressed=true]{background:var(--rain);border-color:var(--rain);color:#fff}
 .timeline{list-style:none;margin:0;padding:0;display:grid;gap:0}
-.timeline li{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:6px 0;border-left:2px dashed var(--line);margin-left:30px;padding-left:14px;position:relative}
+.timeline li{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:6px 0;border-left:2px dashed var(--line);margin-left:44px;padding-left:14px;position:relative}
 .timeline li::before{content:"";position:absolute;left:-7px;top:12px;width:12px;height:12px;border-radius:50%;background:var(--hc);border:2px solid var(--paper)}
-.timeline .h{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);margin-left:-60px;width:52px;text-align:right}
+.timeline .h{font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);margin-left:-74px;width:52px;text-align:right}
 .timeline li{grid-template-columns:0 1fr}
 .places{display:grid;gap:10px}
 .place{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:start;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper)}
@@ -393,6 +393,15 @@ const DAYS=[
   places:[{ic:'train',n:'Recoger el coche en el parking de Barajas T4',d:'Reservad el parking de larga estancia de la T4 por internet. Ya está en el presupuesto.',g:'Aparcamiento larga estancia Barajas T4',web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html',a:0,c:0},
           {id:'madhotel',opt:true,ic:'castle',n:'Descanso en hotel junto a Barajas (opcional)',d:'Si no habéis dormido en el avión, mejor descansar unas horas (o la noche) antes de las 6 h de coche. Precio aproximado para los 4.',g:'hoteles aeropuerto Madrid Barajas',web:'https://www.booking.com/searchresults.es.html?ss=Aeropuerto+Madrid+Barajas',fam:17000}]}
 ];
+const CLIMA={
+ tokio:{t:'31° / 24°',s:'☀️⛅',d:'Calor húmedo (humedad ~75 %): se nota como 35° o más. Sol con nubes; a veces un chaparrón corto por la tarde (más o menos 1 de cada 4 días).'},
+ disney:{t:'31° / 24°',s:'☀️⛅',d:'Igual que Tokio, con algo de brisa del mar pero poca sombra en las colas. Agua, gorra y descanso a mediodía. Chaparrón corto 1 de cada 4 días más o menos.'},
+ hakone:{t:'27° / 20°',s:'⛅🌫',d:'En la montaña hace unos 5° menos que en Tokio: agradable. Son frecuentes la niebla y la lluvia (1 de cada 3 días); el Fuji se ve pocos días en verano.'},
+ kioto:{t:'34° / 25°',s:'☀️',d:'El sitio más caluroso del viaje: entre las montañas no corre el aire. Salid temprano y siesta de 13:00 a 16:00. Lluvia 1 de cada 4 días más o menos.'},
+ nara:{t:'33° / 23°',s:'☀️',d:'Muy caluroso y con poca sombra en el parque. Mejor por la mañana temprano y al anochecer.'},
+ narita:{t:'31° / 24°',s:'☀️⛅',d:'Como en Tokio: calor húmedo y algún chaparrón por la tarde.'},
+ madrid:{t:'34° / 19°',s:'☀️',d:'Seco y soleado. Mucho calor en el coche al mediodía: salid temprano y con agua.'}
+};
 const MES={jul:'julio',ago:'agosto'};const K=d=>d.m==='jul'?'j'+d.d:''+d.d;
 const HOTELS=[
  {c:'Tokio',when:'30 jul–6 ago y 11–14 ago · 10 noches · Airbnb visto el 16-nov-2026 con fechas viejas: volver a mirar',list:[
@@ -522,8 +531,9 @@ function renderDay(){
     body=`<div class="places">${d.places.map(p=>placeHtml(p,col)).join('')}</div>`;
   }
   card.innerHTML=`<div class="hero" style="--hc:${col}">${svg(d.ic,'#fff')}<div><div style="font-weight:700;opacity:.9">${d.w} ${d.d} de ${MES[d.m]}</div><h2>${d.t}</h2>
-    <div class="meta"><span>${d.tag}</span><span>🛏 ${d.stay}</span><span>📍 ${(CITIES[d.city]||{n:'Madrid'}).n}</span></div></div></div>
+    <div class="meta"><span>${d.tag}</span><span>🛏 ${d.stay}</span><span>📍 ${(CITIES[d.city]||{n:'Madrid'}).n}</span><span>${CLIMA[d.city].s} ${CLIMA[d.city].t}</span></div></div></div>
    <div class="inner">
+    <div class="tip" style="margin-bottom:12px"><b>${CLIMA[d.city].s} Clima normal: ${CLIMA[d.city].t}</b> (máx. / mín.). ${CLIMA[d.city].d} <span class="small">Es la media de otros años, no una previsión: mirad el tiempo la semana antes. Agosto es época de tifones; si viene uno, avisan con días.</span></div>
     ${d.rain?`<div class="tabs" role="group" aria-label="Plan del día"><button type="button" data-r="0" aria-pressed="${!st.rain}">☀ Plan normal</button><button type="button" class="rainbtn" data-r="1" aria-pressed="${st.rain}">☔ Si llueve</button></div>`:''}
     ${(EVENTS[K(d)]||[]).map(e=>`<div class="evbox"><div class="evh">🎉 Fiesta o evento · ${e.h}</div><h3>${e.n}</h3><p>${e.d}</p><p class="small"><b>Fecha:</b> ${e.when}</p><div class="links"><a href="${G(e.g)}" target="_blank" rel="noopener">📍 Google Maps</a><a href="${R(e.g)}" target="_blank" rel="noopener">🚇 Cómo llegar</a><a href="${F(e.n)}" target="_blank" rel="noopener">📷 Ver fotos</a><a href="${e.web}" target="_blank" rel="noopener">🌐 Web</a></div></div>`).join('')}
     <div><h3 style="font-size:17px;margin-bottom:6px">Horario del día</h3><ul class="timeline">${d.sched.map(([h,t])=>`<li><span class="h">${h}</span><span>${t}</span></li>`).join('')}</ul></div>
