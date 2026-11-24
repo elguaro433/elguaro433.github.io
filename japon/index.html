@@ -156,6 +156,23 @@ input,textarea,select{font-size:16px}
 .strip .bar{scroll-snap-type:x mandatory}
 .strip button{scroll-snap-align:start;min-height:64px}
 @media (max-width:600px){h1{font-size:28px}.hero{grid-template-columns:76px 1fr}.hero h2{font-size:21px}.banner{max-height:120px}}
+.hoy{background:linear-gradient(135deg,var(--shu),#e8804f);color:#fff;border-radius:16px;padding:14px 16px;margin:14px 0 4px;box-shadow:0 4px 14px rgba(200,69,44,.25)}
+.hoy h3{color:#fff;font-size:18px;margin:2px 0 4px}.hoy .big2{font-family:var(--display);font-size:38px;font-weight:900;line-height:1}
+.hoy a,.hoy button{color:#fff;background:rgba(255,255,255,.18);border:0;border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;text-decoration:none;min-height:36px;display:inline-flex;align-items:center;cursor:pointer}
+.hoy .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.conv{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}.conv input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+.conv .q{display:flex;flex-wrap:wrap;gap:6px;grid-column:1/-1}.conv .q button{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 10px;font:inherit;font-size:14px;cursor:pointer;min-height:36px}
+.soon{color:#c0392b;font-weight:700}
+li.urg{border-left:4px solid #c0392b;padding-left:8px}
+.gasto{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.gasto button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;min-height:36px;min-width:36px}
+.gform{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gform input,.gform select{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);width:100%}
+.gform button{grid-column:1/-1;background:var(--shu);color:#fff;border:0;border-radius:10px;padding:12px;font:inherit;font-weight:700;cursor:pointer}
+.tarjeta{border:3px solid var(--shu);border-radius:16px;padding:16px;background:#fff;color:#222;max-width:420px}
+.tarjeta h3{color:#c8452c;margin:0 0 6px}.tarjeta .jp{font-size:18px;font-weight:700;margin:8px 0}
+.tk input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);margin-top:4px}
+.ruta{display:grid;gap:6px;margin-top:10px;font-size:14px}.ruta span b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;color:#fff;margin-right:6px;font-size:13px}
+@media print{body *{visibility:hidden}#tarjetaPrint,#tarjetaPrint *{visibility:visible}#tarjetaPrint{position:absolute;left:0;top:0}.appbar,.tabbar{display:none}}
 </style>
 
 <header class="appbar">
@@ -180,6 +197,7 @@ input,textarea,select{font-size:16px}
   <h1>Tokio, Hakone, <span>Kioto y Nara</span></h1>
   <p class="sub">Toca un día para ver qué hacemos, dónde está y cuánto cuesta.</p>
 
+  <div class="hoy" id="hoy"></div>
   <div class="strip">
     <div class="bar" id="days" role="toolbar" aria-label="Días del viaje"></div>
     <div class="citykey"><span style="--k:var(--c-tokio)">Tokio</span><span style="--k:var(--c-disney)">Disney</span><span style="--k:var(--c-hakone)">Hakone</span><span style="--k:var(--c-kioto)">Kioto</span><span style="--k:var(--c-nara)">Nara</span></div>
@@ -190,6 +208,7 @@ input,textarea,select{font-size:16px}
   <details class="card mapbox">
     <summary>🗺 Ver el mapa de la ruta</summary>
     <svg id="map" viewBox="0 0 700 430" role="img" aria-label="Mapa de Japón con la ruta del viaje"></svg>
+    <div class="ruta" id="ruta"></div>
   </details>
 </div>
 
@@ -241,11 +260,41 @@ input,textarea,select{font-size:16px}
     <div><b>+81 3-3583-8531</b>Embajada de España</div>
   </div>
   <p class="small">Si alguien se pierde: quedad en la puerta del hotel. Los niños llevan una tarjeta con el hotel y vuestro teléfono.</p>
+  <h2 class="sec" style="margin-top:28px">Tarjeta para los niños</h2>
+  <p class="small">Rellenad los datos (se comparten entre los móviles), pulsad «Imprimir» y meted una en la mochila de cada niño. Si se pierden, la enseñan a un policía o a un empleado.</p>
+  <div class="grid2">
+   <div class="card tk">
+    <label class="small">Hotel de Tokio<input id="tk_ht" placeholder="Nombre y dirección (copiadla de la reserva)"></label>
+    <label class="small" style="display:block;margin-top:8px">Hotel de Kioto<input id="tk_hk" placeholder="Nombre y dirección"></label>
+    <label class="small" style="display:block;margin-top:8px">Teléfono de papá o mamá (con +34 o +376)<input id="tk_tel" inputmode="tel" placeholder="+376 …"></label>
+    <button type="button" id="tkPrint" style="margin-top:12px;background:var(--shu);color:#fff;border:0;border-radius:10px;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;width:100%">🖨 Imprimir tarjeta</button>
+   </div>
+   <div id="tarjetaPrint"><div class="tarjeta" id="tarjeta"></div></div>
+  </div>
   <div class="card" style="margin-top:12px"><h3 style="font-size:17px;margin-bottom:8px">Frases en japonés</h3><div class="phr" id="phr"></div></div>
 </div>
 
 <div class="view" id="v-dinero" hidden>
-  <h2 class="sec">Presupuesto</h2>
+  <h2 class="sec">Conversor rápido</h2>
+  <div class="card conv">
+    <input id="cvY" type="number" inputmode="numeric" placeholder="Yenes" aria-label="Yenes"><span>¥ =</span><input id="cvE" type="number" inputmode="decimal" placeholder="Euros" aria-label="Euros">
+    <div class="q" id="cvQ"></div>
+  </div>
+  <h2 class="sec" style="margin-top:28px">Gastos del viaje</h2>
+  <div class="card">
+    <div class="count"><b id="gTot">0 €</b><span id="gTxt">gastado de lo presupuestado</span></div>
+    <div class="bar2" aria-hidden="true"><i id="gBar" style="width:0"></i></div>
+    <form class="gform" id="gForm" style="margin-top:12px">
+      <input id="gN" placeholder="Qué (ej.: ramen, Suica…)" required>
+      <input id="gY" type="number" inputmode="numeric" placeholder="Yenes" required>
+      <select id="gD" aria-label="Día"></select>
+      <select id="gW" aria-label="Quién pagó"><option>Papá</option><option>Mamá</option></select>
+      <button type="submit">➕ Apuntar gasto</button>
+    </form>
+    <div id="gList" style="margin-top:10px"></div>
+    <p class="small">Se comparte entre los móviles. Los gastos ya pagados antes (vuelos, hoteles) apuntadlos también, en yenes o pasando los euros con el conversor.</p>
+  </div>
+  <h2 class="sec" style="margin-top:28px">Presupuesto</h2>
   <div class="card">
     <div class="big" id="totEur2">—</div>
     <div class="small" id="totYen">—</div>
@@ -587,7 +636,11 @@ function renderMap(){
      <text x="${x+c.dx}" y="${y+c.dy}" text-anchor="${c.anchor}" font-family="var(--display)" font-weight="900" font-size="${active?18:15}" fill="var(--ink)">${c.n}</text>
      <text x="${x+c.dx}" y="${y+c.dy+15}" text-anchor="${c.anchor}" font-family="var(--body)" font-size="11" fill="var(--muted)">${days}</text></g>`;
   }
+  const STOPS=[['tokio','Tokio y Disney','30 jul – 5 ago'],['hakone','Hakone','6 ago'],['kioto','Kioto','7 – 10 ago'],['nara','Nara (excursión desde Kioto)','9 ago'],['tokio','Tokio','11 – 14 ago']];
+  STOPS.forEach(([k],i)=>{const [x,y]=P(k);const off=[[-30,10],[-6,26],[16,-26],[22,14],[-34,-12]][i];
+    s+=`<g><circle cx="${x+off[0]}" cy="${y+off[1]}" r="11" fill="var(--shu)" stroke="var(--paper)" stroke-width="2"/><text x="${x+off[0]}" y="${y+off[1]+4}" text-anchor="middle" font-size="12" font-weight="900" fill="#fff" font-family="var(--body)">${i+1}</text></g>`});
   $('map').innerHTML=s;
+  $('ruta').innerHTML=STOPS.map(([k,n,f],i)=>`<span><b style="background:var(--shu)">${i+1}</b>${n} · ${f}</span>`).join('')+'<span class="small">✈ Llegada y salida por Narita. Disney (2 y 3 ago) está al lado de Tokio.</span>';
   $('map').querySelectorAll('.dot').forEach(g=>{const go=()=>{st.day=+g.dataset.i;st.rain=false;save();renderAll()};g.onclick=go;g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}}});
 }
 // ---------- datos compartidos (db) con respaldo local ----------
@@ -604,10 +657,10 @@ function renderRes(){
   $('cdDays').textContent=Math.max(0,Math.ceil((dep-today)/864e5)).toLocaleString('es-ES');
   const done=RES.filter(r=>checks.res[r.k]).length;
   $('resBar').style.width=(done/RES.length*100)+'%';
-  $('resTxt').textContent=`${done} de ${RES.length} reservas hechas. Están ordenadas por fecha límite aproximada.`;
+  const urg=RES.filter(r=>!checks.res[r.k]&&(new Date(r.date)-today)/864e5<=30).length;$('resTxt').textContent=`${done} de ${RES.length} reservas hechas. Están ordenadas por fecha límite aproximada.`+(urg?` ⏰ ${urg} con fecha límite en menos de un mes (en rojo).`:'');
   const list=[...RES].sort((a,b)=>a.date.localeCompare(b.date));
-  $('resList').innerHTML=list.map(r=>{const ok=!!checks.res[r.k];const late=!ok&&new Date(r.date)<today;
-   return `<li class="${ok?'done':''}"><input type="checkbox" id="r-${r.k}" data-res="${r.k}" ${ok?'checked':''}><label for="r-${r.k}"><span class="t"><b>${r.n}</b></span><br><span class="w ${late?'late':''}">${late?'⚠ ':''}${r.when} · antes del ${new Date(r.date).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'})}</span></label>${r.web?`<a href="${r.web}" target="_blank" rel="noopener" class="small">Abrir web</a>`:'<span></span>'}</li>`}).join('');
+  $('resList').innerHTML=list.map(r=>{const ok=!!checks.res[r.k];const late=!ok&&new Date(r.date)<today;const dleft=Math.ceil((new Date(r.date)-today)/864e5);const soon=!ok&&!late&&dleft<=30;
+   return `<li class="${ok?'done':''} ${late||soon?'urg':''}"><input type="checkbox" id="r-${r.k}" data-res="${r.k}" ${ok?'checked':''}><label for="r-${r.k}"><span class="t"><b>${r.n}</b></span><br><span class="w ${late?'late':soon?'soon':''}">${late?'⚠ ¡Pasada! ':soon?`⏰ Quedan ${dleft} ${dleft===1?'día':'días'} · `:''}${r.when} · antes del ${new Date(r.date).toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'})}</span></label>${r.web?`<a href="${r.web}" target="_blank" rel="noopener" class="small">Abrir web</a>`:'<span></span>'}</li>`}).join('');
   $('resList').querySelectorAll('[data-res]').forEach(c=>c.onchange=()=>{checks.res[c.dataset.res]=c.checked;renderRes();writeChecks('res')});
 }
 function renderPack(){
@@ -630,7 +683,52 @@ function renderStatic(){
     ['res','pack'].forEach(w=>db.doc('marcas/'+w).onSnapshot(s=>{if(s.exists){checks[w]={...s.data()};saveLocal();w==='res'?renderRes():renderPack()}},()=>{}));
   }catch(e){}
 })();
-function renderAll(){renderDays();renderDay();renderBudget();renderMap();renderRes();renderPack()}
+// ---------- fecha de cada día, «Hoy», gastos, tarjeta ----------
+const DATE=d=>new Date(2027,d.m==='jul'?6:7,d.d);
+const hoy0=()=>{const t=new Date();return new Date(t.getFullYear(),t.getMonth(),t.getDate())};
+function renderHoy(){
+  const t=hoy0(),first=DATE(DAYS[0]),last=DATE(DAYS[DAYS.length-1]);const box=$('hoy');
+  if(t<first){const n=Math.round((first-t)/864e5);
+    box.innerHTML=`<div class="small" style="color:#fff;opacity:.9">Cuenta atrás</div><div class="big2">${n.toLocaleString('es-ES')} ${n===1?'día':'días'}</div><h3>para salir hacia Japón 🇯🇵 (jueves 29 de julio)</h3><div class="row"><button type="button" data-go2="reservas">✅ Ver reservas pendientes</button></div>`;
+  } else if(t>last){box.innerHTML=`<h3>¡Bienvenidos a casa! 🏠</h3><p style="margin:0">Mirad los gastos del viaje en la pestaña Dinero.</p>`;
+  } else {const i=DAYS.findIndex(d=>+DATE(d)===+t),d=DAYS[i];const now=new Date(),hm=now.getHours()*60+now.getMinutes();
+    const next=d.sched.find(([h])=>{const m=/^(\d{1,2}):(\d\d)/.exec(h);return m&&(+m[1]*60+ +m[2])>=hm})||d.sched.find(([h])=>!/^\d/.test(h));
+    const p=(d.places||[])[0];
+    box.innerHTML=`<div class="small" style="color:#fff;opacity:.9">Hoy · ${d.w} ${d.d} de ${MES[d.m]} · día ${i+1} de ${DAYS.length}</div><h3>${d.t}</h3>${next?`<p style="margin:0"><b>Lo siguiente:</b> ${next[0]} · ${next[1]}</p>`:''}<div class="row"><button type="button" data-hoyday="${i}">📋 Ver el día</button>${p?`<a href="${R(p.g)}" target="_blank" rel="noopener">🚇 Cómo llegar a ${esc(p.n.split(' (')[0])}</a>`:''}</div>`;}
+  box.querySelectorAll('[data-go2]').forEach(b=>b.onclick=()=>go(b.dataset.go2));
+  box.querySelectorAll('[data-hoyday]').forEach(b=>b.onclick=()=>{st.day=+b.dataset.hoyday;save();renderAll();$('day').scrollIntoView({behavior:'smooth'})});
+}
+function renderConv(){
+  const r=rate();$('cvQ').innerHTML=[100,500,1000,3000,5000,10000].map(y=>`<button type="button" data-y="${y}">${fmtY(y)} = ${(y/r).toFixed(y<1000?2:0).replace('.',',')} €</button>`).join('');
+  $('cvQ').querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>{$('cvY').value=b.dataset.y;$('cvE').value=(b.dataset.y/rate()).toFixed(2)});
+}
+function renderGastos(){
+  const g=checks.gastos||{};const r=rate();const list=Object.entries(g).sort((a,b)=>b[1].t-a[1].t);
+  const totY=list.reduce((s,[,x])=>s+(+x.y||0),0);const pres=parseFloat(($('totEur').textContent||'0').replace(/[^\d]/g,''))||0;
+  $('gTot').textContent=fmtE(totY/r);$('gTxt').textContent=`gastado (${fmtY(totY)}) de unos ${fmtE(pres)} presupuestados`;
+  $('gBar').style.width=Math.min(100,pres?totY/r/pres*100:0)+'%';
+  if(!$('gD').options.length)$('gD').innerHTML='<option value="antes">Antes del viaje</option>'+DAYS.map(d=>`<option value="${K(d)}">${d.w} ${d.d} ${d.m}</option>`).join('');
+  const dl=k=>{const d=DAYS.find(x=>K(x)===k);return d?`${d.d} ${d.m}`:'antes'};
+  $('gList').innerHTML=list.length?list.map(([id,x])=>`<div class="gasto"><span><b>${esc(x.n)}</b><br><span class="small">${dl(x.d)} · ${esc(x.w||'')}</span></span><span style="text-align:right">${fmtY(+x.y)}<br><span class="small">${fmtE(x.y/r)}</span></span><button type="button" data-gdel="${id}" aria-label="Borrar ${esc(x.n)}">✕</button></div>`).join(''):'<p class="small">Todavía no hay gastos apuntados.</p>';
+  $('gList').querySelectorAll('[data-gdel]').forEach(b=>b.onclick=()=>{if(!confirm('¿Borrar este gasto?'))return;const g2={...(checks.gastos||{})};delete g2[b.dataset.gdel];checks.gastos=g2;saveLocal();renderGastos()});
+}
+function renderTarjeta(){
+  const v=k=>notes[k]||'';
+  ['tk_ht','tk_hk','tk_tel'].forEach(k=>{const el=$(k);if(document.activeElement!==el)el.value=v(k)});
+  $('tarjeta').innerHTML=`<h3>🇯🇵 迷子です · Me he perdido</h3>
+   <div class="jp">この番号に電話してください。</div><div class="small" style="color:#555">Por favor, llame a este número · Please call this number</div>
+   <div style="font-size:22px;font-weight:900;margin:8px 0">📞 ${esc(v('tk_tel')||'+___ ___ ___ ___')}</div>
+   <div><b>ホテル (Hotel) Tokio:</b> ${esc(v('tk_ht')||'—')}</div>
+   <div style="margin-top:4px"><b>ホテル (Hotel) Kioto:</b> ${esc(v('tk_hk')||'—')}</div>
+   <div class="small" style="color:#555;margin-top:8px">スペインからの旅行者です。日本語は話せません。<br>Somos turistas de España/Andorra. No hablo japonés.</div>`;
+}
+function renderAll(){renderHoy();renderDays();renderDay();renderBudget();renderMap();renderRes();renderPack();renderConv();renderGastos();renderTarjeta()}
+$('cvY').oninput=()=>{$('cvE').value=$('cvY').value?(+$('cvY').value/rate()).toFixed(2):''};
+$('cvE').oninput=()=>{$('cvY').value=$('cvE').value?Math.round(+$('cvE').value*rate()):''};
+$('gForm').onsubmit=e=>{e.preventDefault();const n=$('gN').value.trim(),y=Math.round(+$('gY').value);if(!n||!y)return;
+  checks.gastos={...(checks.gastos||{}),['g'+Date.now()]:{n,y,d:$('gD').value,w:$('gW').value,t:Date.now()}};saveLocal();$('gN').value='';$('gY').value='';renderGastos()};
+['tk_ht','tk_hk','tk_tel'].forEach(k=>$(k).oninput=()=>{notes[k]=$(k).value;queueNote(k,$(k).value);renderTarjeta()});
+$('tkPrint').onclick=()=>window.print();
 renderStatic();
 
 function go(v){
@@ -646,6 +744,7 @@ go(location.hash.slice(1));
 
 $('rate').oninput=renderAll;$('junior').onchange=renderAll;
 if(st.day<0||st.day>=DAYS.length)st.day=0;
+{const i=DAYS.findIndex(d=>+DATE(d)===+hoy0());if(i>=0)st.day=i;}
 renderAll();
 
 // ▼ NUBE · lo marcado (reservas, maleta, notas, opciones del presupuesto y plan de los niños) se comparte
@@ -668,7 +767,7 @@ renderAll();
       const j=await r.json(), d=JSON.parse((j.fields&&j.fields.datos&&j.fields.datos.stringValue)||'{}'), rt=+(d.t||0);
       cargado=true;
       if(rt>local&&!pendiente){
-        notes=d.notes||{}; checks=Object.assign({res:{},pack:{}},d.checks||{}); st.off=d.off||{}; if(d.kid) st.kid=d.kid;
+        notes=d.notes||{}; checks=Object.assign({res:{},pack:{},gastos:{}},d.checks||{}); st.off=d.off||{}; if(d.kid) st.kid=d.kid;
         try{ localStorage.setItem('jp27data',JSON.stringify({notes,checks})); localStorage.setItem('jp27',JSON.stringify({off:st.off,day:st.day,kid:st.kid})); }catch(e){}
         marca(rt); ultima=firma(); const ta=document.getElementById('note'); if(ta&&document.activeElement!==ta) ta.value=notes['d'+K(DAYS[st.day])]||'';
         renderAll();
