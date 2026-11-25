@@ -8,7 +8,7 @@
   --bg:#f7f5f0; --paper:#ffffff; --ink:#1f2433; --muted:#5d6475; --line:#e3ded3;
   --ai:#24407a; --ai-soft:#e6ecf7; --shu:#c8452c; --shu-soft:#fbe9e4; --matcha:#4c7a3c; --matcha-soft:#e8f1e2; --sun:#b07a10; --sun-soft:#fbf1dc; --rain:#2f6f8f; --rain-soft:#e1eff5;
   --sea:#dbe7ef; --land:#f1ebdd; --landline:#cfc6b3;
-  --c-tokio:#24407a; --c-hakone:#4c7a3c; --c-kioto:#c8452c; --c-nara:#b07a10; --c-disney:#7a3f9a;
+  --c-tokio:#24407a; --c-hakone:#4c7a3c; --c-kioto:#c8452c; --c-nara:#b07a10; --c-disney:#7a3f9a; --c-casa:#7d8394;
   --display:"Zen Maru Gothic","Hiragino Maru Gothic ProN",system-ui,sans-serif;
   --body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -66,7 +66,7 @@ h1 span{color:var(--ai)}
 .emerg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
 .emerg div{background:var(--shu-soft);border-radius:12px;padding:12px}
 .emerg b{display:block;font-family:var(--display);font-size:26px;color:var(--shu)}
-.strip .bar{display:grid;grid-template-columns:repeat(14,minmax(52px,1fr));gap:4px;overflow-x:auto;padding-bottom:6px}
+.strip .bar{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(52px,1fr);gap:4px;overflow-x:auto;padding:5px 0 6px}
 .strip button{border:2px solid transparent;border-radius:10px;padding:8px 2px 6px;cursor:pointer;font:inherit;color:#fff;text-align:center;min-width:52px}
 .strip button b{display:block;font-family:var(--display);font-size:20px;line-height:1}
 .strip button small{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.9}
@@ -119,6 +119,8 @@ h2.sec{font-size:24px;margin-bottom:8px}
 table{border-collapse:collapse;width:100%;min-width:460px;font-variant-numeric:tabular-nums}
 th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left}
 th:nth-child(n+2),td:nth-child(n+2){text-align:right;white-space:nowrap}
+@media (max-width:600px){table{min-width:0;font-size:14px}th,td{padding:8px 5px}tr.grand td{font-size:16px}}
+@media (max-width:480px){.kp{display:none}}
 td.off{opacity:.4;text-decoration:line-through}
 tr.grand td{font-family:var(--display);font-weight:900;font-size:19px;color:var(--ai);border-bottom:none}
 .tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
@@ -177,7 +179,7 @@ li.urg{border-left:4px solid #c0392b;padding-left:8px}
 
 <header class="appbar">
   <div class="appbar-in">
-    <div><div class="kicker">29 jul – 15 ago 2027 · 4 personas</div><div class="apptitle">Japón en familia</div></div>
+    <div><div class="kicker">29 jul – 15 ago 2027<span class="kp"> · 4 personas</span></div><div class="apptitle">Japón en familia</div></div>
     <button type="button" class="totchip" data-go="dinero" aria-label="Ver presupuesto"><span id="totEur">—</span></button>
   </div>
 </header>
@@ -200,7 +202,7 @@ li.urg{border-left:4px solid #c0392b;padding-left:8px}
   <div class="hoy" id="hoy"></div>
   <div class="strip">
     <div class="bar" id="days" role="toolbar" aria-label="Días del viaje"></div>
-    <div class="citykey"><span style="--k:var(--c-tokio)">Tokio</span><span style="--k:var(--c-disney)">Disney</span><span style="--k:var(--c-hakone)">Hakone</span><span style="--k:var(--c-kioto)">Kioto</span><span style="--k:var(--c-nara)">Nara</span></div>
+    <div class="citykey"><span style="--k:var(--c-tokio)">Tokio</span><span style="--k:var(--c-disney)">Disney</span><span style="--k:var(--c-hakone)">Hakone</span><span style="--k:var(--c-kioto)">Kioto</span><span style="--k:var(--c-nara)">Nara</span><span style="--k:var(--c-casa)">Viaje</span></div>
   </div>
 
   <div class="card daycard" id="day"></div>
@@ -362,7 +364,7 @@ const CITIES={
 const DAYS=[
  {d:29,m:'jul',w:'jue',city:'madrid',ic:'plane',t:'Salida: coche a Madrid y vuelo directo',tag:'Viaje',stay:'Avión',
   sched:[['8:00','Salir de casa en coche hacia Madrid (unos 600 km, 6 h con paradas)'],['15:00','Llegar a Barajas, dejar el coche en el parking de la T4'],['18:00','Facturar en la Terminal 4S (3 h antes)'],['21:20','Vuelo directo IB 281 Madrid → Tokio-Narita (14 h 15). Cenar y dormir en el avión']],
-  places:[{ic:'train',n:'Parking larga estancia de Barajas T4',d:'Iberia sale de la T4S. Reservad por internet, que es más barato. Ya está en el presupuesto.',g:'Aparcamiento larga estancia Barajas T4',web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html',a:0,c:0}]},
+  places:[{ic:'train',n:'Parking larga estancia de Barajas T4',d:'Iberia sale de la T4S. Reservad por internet, que es más barato. Ya está en el presupuesto.',g:'Aparcamiento larga estancia Barajas T4',web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html',a:0,c:0,pt:'~145 € (ya en el presupuesto)'}]},
  {d:30,m:'jul',w:'vie',city:'tokio',ic:'plane',t:'Llegada a Tokio',tag:'Viaje',stay:'Hotel en Asakusa',
   sched:[['18:35','Aterrizaje en Narita, Terminal 2. Pasaporte (código QR de Visit Japan Web) y maletas'],['19:45','Tren Skyliner a Ueno (40 min), sale de la misma terminal'],['20:45','Taxi corto al hotel, cena ligera de konbini y a dormir']],
   places:[{ic:'train',n:'Keisei Skyliner (Narita → Ueno)',d:'Tren rápido del aeropuerto. Billete en máquina o en la web.',g:'Keisei Ueno Station',web:'https://www.keisei.co.jp/keisei/tetudou/skyliner/e/',a:2580,c:1290}]},
@@ -390,14 +392,14 @@ const DAYS=[
  {d:5,m:'ago',w:'jue',city:'tokio',ic:'museum',t:'Museo Ghibli y preparar la ruta',tag:'Suave',stay:'Hotel en Asakusa',
   sched:[['8:00','Enviar las maletas grandes a Kioto desde el hotel (llegan en 1–2 días)'],['10:00','Museo Ghibli en Mitaka'],['13:00','Comida y parque Inokashira, al lado del museo'],['Tarde','Descanso y preparar una mochila pequeña para Hakone']],
   places:[{id:'ghibli',opt:true,ic:'museum',n:'Museo Ghibli (Mitaka)',d:'Totoro y el gatobús. Las entradas de agosto salen el 10 de julio; se agotan rápido. Cierra los martes.',g:'Ghibli Museum Mitaka',web:'https://www.ghibli-museum.jp/en/tickets/',a:1000,c:400,j:700},
-          {ic:'shop',n:'Envío de maletas (takkyubin)',d:'Desde la recepción del hotel o una konbini. Unos 2.000–2.500 ¥ por maleta. Así vais a Hakone solo con mochila.',g:'Yamato Transport Asakusa',web:'https://www.global-yamato.com/en/hands-free-travel/',a:0,c:0}],
+          {ic:'shop',n:'Envío de maletas (takkyubin)',d:'Desde la recepción del hotel o una konbini. Unos 2.000–2.500 ¥ por maleta. Así vais a Hakone solo con mochila.',g:'Yamato Transport Asakusa',web:'https://www.global-yamato.com/en/hands-free-travel/',a:0,c:0,pt:'~90 € ida y vuelta (ya en el presupuesto)'}],
   rain:{ic:'museum',n:'Sin cambios',d:'El Museo Ghibli es bajo techo: el plan sirve igual con lluvia.',g:'Ghibli Museum Mitaka',web:'https://www.ghibli-museum.jp/en/',a:0,c:0}},
  {d:6,m:'ago',w:'vie',city:'hakone',ic:'fuji',t:'Hakone: volcán, barco pirata y ryokan',tag:'Medio',stay:'Ryokan con baño termal',
   sched:[['8:00','Tren a Shinjuku con mochila pequeña'],['9:00','Tren Romancecar desde Shinjuku (1 h 30)'],['11:00','Tren de montaña y funicular'],['12:30','Teleférico sobre el volcán de Owakudani y huevos negros'],['14:30','Barco pirata por el lago Ashi'],['17:00','Ryokan: kimono, baño termal y cena japonesa']],
   places:[{id:'hfp',ic:'train',n:'Hakone Free Pass (desde Shinjuku)',d:'Incluye tren, teleférico, barco pirata y buses durante 2 días.',g:'Odakyu Shinjuku Station',web:'https://www.odakyu.jp/english/passes/hakone/',a:6100,c:1100,j:6100},
           {id:'romance',ic:'train',n:'Suplemento Romancecar',d:'Asiento reservado en el tren panorámico.',g:'Shinjuku Station',web:'https://www.odakyu.jp/english/romancecar/',a:1200,c:600,j:1200},
           {ic:'fuji',n:'Owakudani',d:'Valle volcánico humeante. Huevos negros: ~500 ¥ los 5.',g:'Owakudani Hakone',web:'https://www.hakoneropeway.co.jp/foreign/en/',a:0,c:0},
-          {ic:'ship',n:'Barco pirata del lago Ashi',d:'Incluido en el Free Pass. Con suerte se ve el Fuji.',g:'Hakone Sightseeing Cruise Togendai',web:'https://www.hakone-kankosen.co.jp/foreign/en/',a:0,c:0}],
+          {ic:'ship',n:'Barco pirata del lago Ashi',d:'Incluido en el Free Pass. Con suerte se ve el Fuji.',g:'Hakone Sightseeing Cruise Togendai',web:'https://www.hakone-kankosen.co.jp/foreign/en/',a:0,c:0,pt:'Incluido en el Free Pass'}],
   rain:{ic:'spa',n:'Yunessun (parque de aguas termales)',d:'Si el teleférico cierra por viento o lluvia: piscinas termales en bañador, de vino, café o té. Les encanta a los niños.',g:'Hakone Kowakien Yunessun',web:'https://www.yunessun.com/en/',a:2500,c:1300,j:2500}},
  {d:7,m:'ago',w:'sáb',city:'kioto',ic:'train',t:'Tren bala a Kioto',tag:'Viaje',stay:'Hotel o apartamento en Kioto',
   sched:[['9:30','Bus de Hakone a Odawara'],['11:00','Shinkansen a Kioto (unas 2 h)'],['14:00','Hotel, recoger las maletas enviadas y descansar'],['17:30','Gion y las calles de madera de Ninenzaka']],
@@ -439,7 +441,7 @@ const DAYS=[
   rain:{ic:'shop',n:'Kappabashi y Asakusa bajo techo',d:'Las tiendas de Kappabashi y los soportales de Asakusa sirven igual con lluvia.',g:'Kappabashi Dougu Street',web:'https://www.kappabashi.or.jp/en/',a:0,c:0}},
  {d:15,m:'ago',w:'dom',city:'madrid',ic:'plane',t:'Llegada a Madrid y vuelta a casa',tag:'Viaje',stay:'Casa',
   sched:[['6:45','Llegada a Madrid, Terminal 4S'],['7:45','Pasaporte, maletas y recoger el coche del parking de la T4'],['8:15','Desayuno y café antes de conducir'],['8:45','Coche a casa (unos 600 km, 6 h): parar cada 2 h y turnarse al volante'],['15:00','En casa']],
-  places:[{ic:'train',n:'Recoger el coche en el parking de Barajas T4',d:'Reservad el parking de larga estancia de la T4 por internet. Ya está en el presupuesto.',g:'Aparcamiento larga estancia Barajas T4',web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html',a:0,c:0},
+  places:[{ic:'train',n:'Recoger el coche en el parking de Barajas T4',d:'Reservad el parking de larga estancia de la T4 por internet. Ya está en el presupuesto.',g:'Aparcamiento larga estancia Barajas T4',web:'https://www.aena.es/es/adolfo-suarez-madrid-barajas/aparcamientos.html',a:0,c:0,pt:'Pagado con el parking'},
           {id:'madhotel',opt:true,ic:'castle',n:'Descanso en hotel junto a Barajas (opcional)',d:'Si no habéis dormido en el avión, mejor descansar unas horas (o la noche) antes de las 6 h de coche. Precio aproximado para los 4.',g:'hoteles aeropuerto Madrid Barajas',web:'https://www.booking.com/searchresults.es.html?ss=Aeropuerto+Madrid+Barajas',fam:17000}]}
 ];
 const CLIMA={
@@ -538,10 +540,10 @@ const FIXED=[
  {n:'Datos móviles (eSIM) y recuerdos',eur:380},
  {id:'premier',opt:true,n:'Disney Premier Access (saltar colas, 2 días)',eur:150,web:'https://www.tokyodisneyresort.jp/en/ticket/index'}
 ];
-const CITYCOL={tokio:'--c-tokio',disney:'--c-disney',hakone:'--c-hakone',kioto:'--c-kioto',nara:'--c-nara',narita:'--c-tokio',madrid:'--c-kioto'};
-let st={day:0,off:{},kid:'nin',rain:false};
+const CITYCOL={tokio:'--c-tokio',disney:'--c-disney',hakone:'--c-hakone',kioto:'--c-kioto',nara:'--c-nara',narita:'--c-tokio',madrid:'--c-casa'};
+let st={day:0,off:{},kid:'nin',kid2:'nin',rain:false};
 try{const s=JSON.parse(localStorage.getItem('jp27')||'{}');Object.assign(st,s);st.rain=false}catch(e){}
-const save=()=>{try{localStorage.setItem('jp27',JSON.stringify({off:st.off,day:st.day,kid:st.kid}))}catch(e){};window.nubeSubir&&nubeSubir()};
+const save=()=>{try{localStorage.setItem('jp27',JSON.stringify({off:st.off,day:st.day,kid:st.kid,kid2:st.kid2}))}catch(e){};window.nubeSubir&&nubeSubir()};
 const $=id=>document.getElementById(id);
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const rate=()=>Math.max(1,+$('rate').value||170);
@@ -549,9 +551,12 @@ const fmtY=v=>v.toLocaleString('es-ES')+' ¥';
 const fmtE=v=>Math.round(v).toLocaleString('es-ES')+' €';
 function famYen(p){if(p.fam!=null)return p.fam;const kid1=$('junior').checked?(p.j??p.a):p.c;return 2*(p.a||0)+(kid1||0)+(p.c||0)}
 const isOn=id=>!id||!st.off[id];
+// cada día de los niños tiene su propia elección (el 1.º usa st.kid, el 2.º st.kid2)
+const kidKey=d=>DAYS.filter(x=>x.kids).indexOf(d)>0?'kid2':'kid';
+const kidOf=d=>KIDS.find(x=>x.k===st[kidKey(d)])||KIDS[0];
 function priceHtml(p){
   const y=famYen(p);
-  if(!y)return '<b>Gratis</b>';
+  if(!y)return `<b>${p.pt||'Gratis'}</b>`;
   let s=`<b>${fmtY(y)}</b>${fmtE(y/rate())} los 4`;
   if(p.fam==null)s+=`<br><span class="small">Adulto ${fmtY(p.a)} · ${fmtE(p.a/rate())}<br>Niño ${p.c?fmtY(p.c)+' · '+fmtE(p.c/rate()):'gratis'}</span>`;
   return s;
@@ -562,17 +567,20 @@ function placeHtml(p,col){
   <div class="price" style="${isOn(p.id)?'':'opacity:.45'}">${priceHtml(p)}${p.opt?`<label class="opt"><input type="checkbox" data-opt="${p.id}" ${isOn(p.id)?'checked':''}> Lo incluimos</label>`:''}</div></div>`;
 }
 function renderDays(){
-  $('days').innerHTML=DAYS.map((d,i)=>`<button type="button" aria-pressed="${i===st.day}" data-i="${i}" style="background:var(${CITYCOL[d.city]})" aria-label="${d.d} de ${MES[d.m]}, ${d.t}"><small>${d.w}</small><b>${d.d}</b><i>${EVENTS[K(d)]?'🎉':''}${d.kids?'🎮':''}${{plane:'✈',castle:'🏰',ship:'⛵',fuji:'🗻',torii:'⛩',deer:'🦌',bamboo:'🎋',panda:'🐼',tower:'🗼',train:'🚄',game:'🎮',light:'✨'}[d.ic]||''}</i></button>`).join('');
+  $('days').innerHTML=DAYS.map((d,i)=>`<button type="button" aria-pressed="${i===st.day}" data-i="${i}" style="background:var(${CITYCOL[d.city]})" aria-label="${d.d} de ${MES[d.m]}, ${d.t}"><small>${d.w}</small><b>${d.d}</b><i>${EVENTS[K(d)]?'🎉':''}${d.kids?'🎮':({plane:'✈',castle:'🏰',ship:'⛵',fuji:'🗻',torii:'⛩',deer:'🦌',bamboo:'🎋',panda:'🐼',tower:'🗼',train:'🚄',game:'🎮',light:'✨'}[d.ic]||'')}</i></button>`).join('');
   $('days').querySelectorAll('button').forEach(b=>b.onclick=()=>{st.day=+b.dataset.i;st.rain=false;save();renderAll();$('day').scrollIntoView({behavior:'smooth',block:'start'})});
+  // dejar a la vista el día elegido (la tira se desliza de lado)
+  const bar=$('days'),sel=bar.querySelector('[aria-pressed=true]');
+  if(sel&&bar.clientWidth){const br=bar.getBoundingClientRect(),sr=sel.getBoundingClientRect();bar.scrollLeft+=sr.left-br.left-(br.width-sr.width)/2}
 }
 function renderDay(){
   const d=DAYS[st.day];const col=`var(${CITYCOL[d.city]})`;
   const card=$('day');card.style.setProperty('--hc',col);
   let body='';
   if(d.kids){
-    const k=KIDS.find(x=>x.k===st.kid)||KIDS[0];
+    const k=kidOf(d);
     body=`<div><h3 style="font-size:19px">Que elijan los niños 👇</h3><p class="small" style="margin:4px 0 10px">Pulsad una opción. El precio se suma al presupuesto.</p>
-    <div class="kids">${KIDS.map(x=>`<button type="button" class="kid" aria-pressed="${x.k===st.kid}" data-k="${x.k}">${svg(x.ic,col)}<b>${x.n}</b><span>${famYen(x)?fmtY(famYen(x))+' · '+fmtE(famYen(x)/rate())+' los 4':'Gratis'}</span></button>`).join('')}</div></div>
+    <div class="kids">${KIDS.map(x=>`<button type="button" class="kid" aria-pressed="${x.k===k.k}" data-k="${x.k}">${svg(x.ic,col)}<b>${x.n}</b><span>${famYen(x)?fmtY(famYen(x))+' · '+fmtE(famYen(x)/rate())+' los 4':'Gratis'}</span></button>`).join('')}</div></div>
     <div class="places">${placeHtml(k,col)}</div>`;
   } else if(st.rain && d.rain){
     body=`<div class="rainbox"><h3>☔ Plan B si llueve</h3><p class="small" style="margin:4px 0 0">Si hay lluvia fuerte o aviso de tifón, cambiad la parte al aire libre por esto. Su precio no se suma al presupuesto.</p></div><div class="places">${placeHtml(d.rain,'var(--rain)')}</div>`;
@@ -591,15 +599,15 @@ function renderDay(){
      <textarea id="note" rows="3" placeholder="Por ejemplo: reservar mesa, llevar bañador, qué queremos ver…">${esc(notes['d'+K(d)]||'')}</textarea></div>
    </div>`;
   const ta=$('note');ta.oninput=()=>{notes['d'+K(d)]=ta.value;queueNote('d'+K(d),ta.value)};
-  $('noteState').textContent=dbRef?'· se comparte con quien tenga acceso a la guía':'· se guarda solo en este navegador';
+  $('noteState').textContent='· se comparte entre los móviles de la familia';
   card.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{st.rain=b.dataset.r==='1';renderDay()});
-  card.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{st.kid=b.dataset.k;save();renderAll()});
+  card.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{st[kidKey(d)]=b.dataset.k;save();renderAll()});
   card.querySelectorAll('[data-opt]').forEach(c=>c.onchange=()=>{const id=c.dataset.opt;if(c.checked)delete st.off[id];else st.off[id]=1;save();renderAll()});
 }
 function renderBudget(){
   const r=rate();let rows=[],totE=0;
   DAYS.forEach(d=>{
-    const list=d.kids?[KIDS.find(x=>x.k===st.kid)||KIDS[0]]:d.places;
+    const list=d.kids?[kidOf(d)]:d.places;
     list.forEach(p=>{const y=famYen(p);if(!y)return;const on=isOn(p.id);rows.push({n:`${d.d}-${d.m} · ${p.n}`,y,e:y/r,on});if(on)totE+=y/r});
   });
   FIXED.forEach(f=>{const on=isOn(f.id);rows.push({n:f.n,y:Math.round(f.eur*r),e:f.eur,on,web:f.web,opt:f.opt,id:f.id});if(on)totE+=f.eur});
@@ -767,8 +775,8 @@ renderAll();
       const j=await r.json(), d=JSON.parse((j.fields&&j.fields.datos&&j.fields.datos.stringValue)||'{}'), rt=+(d.t||0);
       cargado=true;
       if(rt>local&&!pendiente){
-        notes=d.notes||{}; checks=Object.assign({res:{},pack:{},gastos:{}},d.checks||{}); st.off=d.off||{}; if(d.kid) st.kid=d.kid;
-        try{ localStorage.setItem('jp27data',JSON.stringify({notes,checks})); localStorage.setItem('jp27',JSON.stringify({off:st.off,day:st.day,kid:st.kid})); }catch(e){}
+        notes=d.notes||{}; checks=Object.assign({res:{},pack:{},gastos:{}},d.checks||{}); st.off=d.off||{}; if(d.kid) st.kid=d.kid; if(d.kid2) st.kid2=d.kid2;
+        try{ localStorage.setItem('jp27data',JSON.stringify({notes,checks})); localStorage.setItem('jp27',JSON.stringify({off:st.off,day:st.day,kid:st.kid,kid2:st.kid2})); }catch(e){}
         marca(rt); ultima=firma(); const ta=document.getElementById('note'); if(ta&&document.activeElement!==ta) ta.value=notes['d'+K(DAYS[st.day])]||'';
         renderAll();
       } else if(local>rt){ pendiente=true; subir(); }
@@ -779,11 +787,11 @@ renderAll();
     pendiente=false; const ahora=Date.now();
     try{
       const r=await fetch(url(FAM,'japon-2027'),{method:'PATCH',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({fields:{datos:{stringValue:JSON.stringify({notes,checks,off:st.off,kid:st.kid,t:ahora})},actualizado:{timestampValue:new Date(ahora).toISOString()}}})});
+        body:JSON.stringify({fields:{datos:{stringValue:JSON.stringify({notes,checks,off:st.off,kid:st.kid,kid2:st.kid2,t:ahora})},actualizado:{timestampValue:new Date(ahora).toISOString()}}})});
       if(!r.ok) throw r.status; marca(ahora);
     }catch(e){ pendiente=true; }
   }
-  const firma=()=>JSON.stringify({notes,checks,off:st.off,kid:st.kid});
+  const firma=()=>JSON.stringify({notes,checks,off:st.off,kid:st.kid,kid2:st.kid2});
   let ultima=firma();
   window.nubeSubir=()=>{ const f=firma(); if(f===ultima) return; ultima=f; marca(Date.now()); if(!FAM) return; pendiente=true; clearTimeout(t); t=setTimeout(subir,1500); };
   addEventListener('online',()=>{ subir(); bajar(); });
