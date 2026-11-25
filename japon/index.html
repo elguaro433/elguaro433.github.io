@@ -174,6 +174,24 @@ li.urg{border-left:4px solid #c0392b;padding-left:8px}
 .tarjeta h3{color:#c8452c;margin:0 0 6px}.tarjeta .jp{font-size:18px;font-weight:700;margin:8px 0}
 .tk input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);margin-top:4px}
 .ruta{display:grid;gap:6px;margin-top:10px;font-size:14px}.ruta span b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;color:#fff;margin-right:6px;font-size:13px}
+/* v10: más compacta y clara en el móvil */
+.hoy.mini{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;margin:4px 0}
+.hoy.mini .big3{font-family:var(--display);font-size:22px;font-weight:900;line-height:1.1}
+.hoy.mini .small{color:#fff;opacity:.92}
+.hoy.mini button{white-space:nowrap;flex:0 0 auto}
+.clima{background:var(--sun-soft);border-radius:10px;padding:6px 12px;font-size:14px}
+.clima summary{cursor:pointer;min-height:36px;display:flex;align-items:center;gap:4px}
+.clima summary b{color:var(--sun)}
+.clima p{margin:4px 0 6px}
+.place .links{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(68px,1fr));gap:6px;margin-top:0}
+.place .links a{justify-content:center;padding:4px 6px}
+.price b{display:inline}
+.price .pe{color:var(--muted)}
+.daynav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.daynav button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:10px;font:inherit;font-weight:700;min-height:44px;cursor:pointer}
+.daynav button:disabled{opacity:.35;cursor:default}
+.tabbar button span svg{width:24px;height:24px;display:block}
+@media (max-width:600px){#v-viaje>.banner,#v-viaje>h1,#v-viaje>.sub{display:none}.inner{gap:12px;padding:14px}.citykey{gap:4px 10px;font-size:12px}.hero{padding:16px 14px}}
 @media print{body *{visibility:hidden}#tarjetaPrint,#tarjetaPrint *{visibility:visible}#tarjetaPrint{position:absolute;left:0;top:0}.appbar,.tabbar{display:none}}
 </style>
 
@@ -310,10 +328,10 @@ li.urg{border-left:4px solid #c0392b;padding-left:8px}
 </main>
 
 <nav class="tabbar" aria-label="Secciones">
-  <button type="button" data-go="viaje" aria-pressed="true"><span>🗓</span>Viaje</button>
-  <button type="button" data-go="reservas" aria-pressed="false"><span>✅</span>Reservas</button>
-  <button type="button" data-go="preparar" aria-pressed="false"><span>🎒</span>Preparar</button>
-  <button type="button" data-go="dinero" aria-pressed="false"><span>💶</span>Dinero</button>
+  <button type="button" data-go="viaje" aria-pressed="true"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>Viaje</button>
+  <button type="button" data-go="reservas" aria-pressed="false"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h9"/></svg></span>Reservas</button>
+  <button type="button" data-go="preparar" aria-pressed="false"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg></span>Preparar</button>
+  <button type="button" data-go="dinero" aria-pressed="false"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l6 8 6-8M12 11v10M7 13h10M7 17h10"/></svg></span>Dinero</button>
 </nav>
 <script>
 const G=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
@@ -557,14 +575,14 @@ const kidOf=d=>KIDS.find(x=>x.k===st[kidKey(d)])||KIDS[0];
 function priceHtml(p){
   const y=famYen(p);
   if(!y)return `<b>${p.pt||'Gratis'}</b>`;
-  let s=`<b>${fmtY(y)}</b>${fmtE(y/rate())} los 4`;
-  if(p.fam==null)s+=`<br><span class="small">Adulto ${fmtY(p.a)} · ${fmtE(p.a/rate())}<br>Niño ${p.c?fmtY(p.c)+' · '+fmtE(p.c/rate()):'gratis'}</span>`;
+  let s=`<b>${fmtY(y)}</b><span class="pe"> ≈ ${fmtE(y/rate())} los 4</span>`;
+  if(p.fam==null)s+=`<div class="small">Adulto ${fmtY(p.a)} · Niño ${p.c?fmtY(p.c):'gratis'}</div>`;
   return s;
 }
 function placeHtml(p,col){
-  return `<div class="place"><div class="ic">${svg(p.ic,col)}</div><div style="min-width:0"><h3>${p.n}</h3><p>${p.d}</p>
-  <div class="links"><a href="${G(p.g)}" target="_blank" rel="noopener">📍 Google Maps</a><a href="${R(p.g)}" target="_blank" rel="noopener">🚇 Cómo llegar</a><a href="${F(p.g)}" target="_blank" rel="noopener">📷 Ver fotos</a>${p.web?`<a href="${p.web}" target="_blank" rel="noopener">🌐 Web / reservar</a>`:''}</div></div>
-  <div class="price" style="${isOn(p.id)?'':'opacity:.45'}">${priceHtml(p)}${p.opt?`<label class="opt"><input type="checkbox" data-opt="${p.id}" ${isOn(p.id)?'checked':''}> Lo incluimos</label>`:''}</div></div>`;
+  return `<div class="place"><div class="ic">${svg(p.ic,col)}</div><div style="min-width:0"><h3>${p.n}</h3><p>${p.d}</p></div>
+  <div class="price" style="${isOn(p.id)?'':'opacity:.45'}">${priceHtml(p)}${p.opt?`<label class="opt"><input type="checkbox" data-opt="${p.id}" ${isOn(p.id)?'checked':''}> Lo incluimos</label>`:''}</div>
+  <div class="links"><a href="${G(p.g)}" target="_blank" rel="noopener">📍 Mapa</a><a href="${R(p.g)}" target="_blank" rel="noopener">🚇 Ir</a><a href="${F(p.g)}" target="_blank" rel="noopener">📷 Fotos</a>${p.web?`<a href="${p.web}" target="_blank" rel="noopener">🌐 Web</a>`:''}</div></div>`;
 }
 function renderDays(){
   $('days').innerHTML=DAYS.map((d,i)=>`<button type="button" aria-pressed="${i===st.day}" data-i="${i}" style="background:var(${CITYCOL[d.city]})" aria-label="${d.d} de ${MES[d.m]}, ${d.t}"><small>${d.w}</small><b>${d.d}</b><i>${EVENTS[K(d)]?'🎉':''}${d.kids?'🎮':({plane:'✈',castle:'🏰',ship:'⛵',fuji:'🗻',torii:'⛩',deer:'🦌',bamboo:'🎋',panda:'🐼',tower:'🗼',train:'🚄',game:'🎮',light:'✨'}[d.ic]||'')}</i></button>`).join('');
@@ -590,14 +608,16 @@ function renderDay(){
   card.innerHTML=`<div class="hero" style="--hc:${col}">${svg(d.ic,'#fff')}<div><div style="font-weight:700;opacity:.9">${d.w} ${d.d} de ${MES[d.m]}</div><h2>${d.t}</h2>
     <div class="meta"><span>${d.tag}</span><span>🛏 ${d.stay}</span><span>📍 ${(CITIES[d.city]||{n:'Madrid'}).n}</span><span>${CLIMA[d.city].s} ${CLIMA[d.city].t}</span></div></div></div>
    <div class="inner">
-    <div class="tip" style="margin-bottom:12px"><b>${CLIMA[d.city].s} Clima normal: ${CLIMA[d.city].t}</b> (máx. / mín.). ${CLIMA[d.city].d} <span class="small">Es la media de otros años, no una previsión: mirad el tiempo la semana antes. Agosto es época de tifones; si viene uno, avisan con días.</span></div>
+    <details class="clima"><summary>${CLIMA[d.city].s} <b>Clima normal: ${CLIMA[d.city].t}</b> <span class="small">· ver más</span></summary><p>Máxima / mínima. ${CLIMA[d.city].d} <span class="small">Es la media de otros años, no una previsión: mirad el tiempo la semana antes. Agosto es época de tifones; si viene uno, avisan con días.</span></p></details>
     ${d.rain?`<div class="tabs" role="group" aria-label="Plan del día"><button type="button" data-r="0" aria-pressed="${!st.rain}">☀ Plan normal</button><button type="button" class="rainbtn" data-r="1" aria-pressed="${st.rain}">☔ Si llueve</button></div>`:''}
     ${(EVENTS[K(d)]||[]).map(e=>`<div class="evbox"><div class="evh">🎉 Fiesta o evento · ${e.h}</div><h3>${e.n}</h3><p>${e.d}</p><p class="small"><b>Fecha:</b> ${e.when}</p><div class="links"><a href="${G(e.g)}" target="_blank" rel="noopener">📍 Google Maps</a><a href="${R(e.g)}" target="_blank" rel="noopener">🚇 Cómo llegar</a><a href="${F(e.n)}" target="_blank" rel="noopener">📷 Ver fotos</a><a href="${e.web}" target="_blank" rel="noopener">🌐 Web</a></div></div>`).join('')}
     <div><h3 style="font-size:17px;margin-bottom:6px">Horario del día</h3><ul class="timeline">${d.sched.map(([h,t])=>`<li><span class="h">${h}</span><span>${t}</span></li>`).join('')}</ul></div>
     ${body}
     <div class="notebox"><label for="note" class="small"><b>📝 Notas de la familia para este día</b> <span id="noteState"></span></label>
      <textarea id="note" rows="3" placeholder="Por ejemplo: reservar mesa, llevar bañador, qué queremos ver…">${esc(notes['d'+K(d)]||'')}</textarea></div>
+    <div class="daynav"><button type="button" data-dn="-1" ${st.day===0?'disabled':''}>‹ Día anterior</button><button type="button" data-dn="1" ${st.day===DAYS.length-1?'disabled':''}>Día siguiente ›</button></div>
    </div>`;
+  card.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>{st.day=Math.min(DAYS.length-1,Math.max(0,st.day+ +b.dataset.dn));st.rain=false;save();renderAll();card.scrollIntoView({behavior:'smooth',block:'start'})});
   const ta=$('note');ta.oninput=()=>{notes['d'+K(d)]=ta.value;queueNote('d'+K(d),ta.value)};
   $('noteState').textContent='· se comparte entre los móviles de la familia';
   card.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{st.rain=b.dataset.r==='1';renderDay()});
@@ -695,9 +715,9 @@ function renderStatic(){
 const DATE=d=>new Date(2027,d.m==='jul'?6:7,d.d);
 const hoy0=()=>{const t=new Date();return new Date(t.getFullYear(),t.getMonth(),t.getDate())};
 function renderHoy(){
-  const t=hoy0(),first=DATE(DAYS[0]),last=DATE(DAYS[DAYS.length-1]);const box=$('hoy');
+  const t=hoy0(),first=DATE(DAYS[0]),last=DATE(DAYS[DAYS.length-1]);const box=$('hoy');box.classList.toggle('mini',t<first);
   if(t<first){const n=Math.round((first-t)/864e5);
-    box.innerHTML=`<div class="small" style="color:#fff;opacity:.9">Cuenta atrás</div><div class="big2">${n.toLocaleString('es-ES')} ${n===1?'día':'días'}</div><h3>para salir hacia Japón 🇯🇵 (jueves 29 de julio)</h3><div class="row"><button type="button" data-go2="reservas">✅ Ver reservas pendientes</button></div>`;
+    box.innerHTML=`<div><div class="big3">Faltan ${n.toLocaleString('es-ES')} ${n===1?'día':'días'}</div><div class="small">Salida el jueves 29 de julio</div></div><button type="button" data-go2="reservas">Reservas ›</button>`;
   } else if(t>last){box.innerHTML=`<h3>¡Bienvenidos a casa! 🏠</h3><p style="margin:0">Mirad los gastos del viaje en la pestaña Dinero.</p>`;
   } else {const i=DAYS.findIndex(d=>+DATE(d)===+t),d=DAYS[i];const now=new Date(),hm=now.getHours()*60+now.getMinutes();
     const next=d.sched.find(([h])=>{const m=/^(\d{1,2}):(\d\d)/.exec(h);return m&&(+m[1]*60+ +m[2])>=hm})||d.sched.find(([h])=>!/^\d/.test(h));
